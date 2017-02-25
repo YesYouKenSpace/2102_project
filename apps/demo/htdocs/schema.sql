@@ -32,7 +32,7 @@ CREATE TABLE Trans(
 	transactionNo VARCHAR(64) PRIMARY KEY,
 	date DATE NOT NULL,
 	email VARCHAR(64),
-	projectId VARCHAR(64),
+	projectId SERIAL,
 	FOREIGN KEY (email) REFERENCES Member(email),
 	FOREIGN KEY (projectId) REFERENCES Project(id)
 );
