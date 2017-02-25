@@ -1,0 +1,6 @@
+/*
+!/apache2/conf
+!/apache2/htdocs
+!/apps/demo
+!/postgresql/data
+!.gitignore
