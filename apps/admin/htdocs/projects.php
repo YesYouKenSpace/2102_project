@@ -177,7 +177,7 @@
 									$result = pg_query($query) or die('Query failed: ' . pg_last_error());
 						 
 									while($row=pg_fetch_assoc($result)) {
-											echo "<option value=".$row['id'].">".$row['name']."</option>";
+											echo "<option value='".$row['name']."'>".$row['name']."</option>";
 										}
 									
 									pg_free_result($result);
@@ -195,7 +195,7 @@
 										$result = pg_query($query) or die('Query failed: ' . pg_last_error());
 							 
 										while($row=pg_fetch_assoc($result)) {
-												echo "<option value=".$row['email'].">".$row['firstname']." ".$row['lastname']." (".$row['email'].")</option>";
+												echo "<option value='".$row['email']."'>".$row['firstname']." ".$row['lastname']." (".$row['email'].")</option>";
 											}
 										
 										pg_free_result($result);
@@ -216,10 +216,10 @@
 							$endDate = date('Y-m-d', strtotime(str_replace('/', '-', $dateArr[0])));
 							
 							$query = "INSERT INTO Project (title, description, startDate, endDate, categoryName, amountFundingSought, email)
-									VALUES ('".$_POST['title']."','".$_POST['description']."','".$startDate."','".$endDate."',".$_POST['category'].",".$_POST['amount'].",'".$_POST['organiser']."')'";
+									VALUES ('".$_POST['title']."','".$_POST['description']."','".$startDate."','".$endDate."','".$_POST['category']."',".$_POST['amount'].",'".$_POST['organiser']."')";
 							
 							$result = pg_query($query) or die('Query failed: ' . pg_last_error());
-							//echo "<script type='text/javascript'>alert('".pg_affected_rows($result)."');</script>";
+							//echo "<script type='text/javascript'>alert($query);</script>";
 						}
 					?>	
 				</div>
@@ -249,7 +249,7 @@
 					$result = pg_query($query) or die('Query failed: ' . pg_last_error());
          
 					while($row=pg_fetch_assoc($result)) {
-							if ($row['sum'] > $row['goal_amount']) { 
+							if ((!is_null($row['sum'])) && ($row['sum'] >= $row['amountfundingsought'])) { 
 								echo "<tr style=\"background-color:#c9ffc9;\">";
 							} else {
 								echo "<tr>";
@@ -267,7 +267,7 @@
 							
 							if (is_null($row['sum'])) {
 								echo "$0 / $".$row['amountfundingsought'];
-							}else if ($row['sum'] > $row['amountfundingsought']) {
+							}else if ($row['sum'] >= $row['amountfundingsought']) {
 								echo " <strong style=\"color:#5cb85c;\">$".$row['sum']."</strong> / $".$row['amountfundingsought'];
 							} else {
 								echo "$".$row['sum']." / $".$row['amountfundingsought'];
