@@ -4,6 +4,7 @@ DROP TABLE Category;
 DROP TABLE Member;
 DROP TABLE Role;
 DROP TABLE Privilege;
+DROP TABLE Country;
 
 CREATE TABLE Privilege(
 	privilegeLevel INTEGER PRIMARY KEY,
@@ -16,20 +17,22 @@ CREATE TABLE Role(
 	privilegeLevel INTEGER,
 	FOREIGN KEY (privilegeLevel) REFERENCES Privilege(privilegeLevel)
 );
-CREATE TABLE Country(
-	name VARCHAR(64) PRIMARY KEY
-)
+
+CREATE TABLE Country (
+	id SERIAL PRIMARY KEY,
+    name VARCHAR(50) NOT NULL UNIQUE
+);
 
 CREATE TABLE Member(
 	email VARCHAR(64) PRIMARY KEY,
 	password VARCHAR(64) NOT NULL,
-	country VARCHAR(64) NOT NULL,
+	countryId INTEGER NOT NULL,
 	firstName VARCHAR(64) NOT NULL,
 	lastName VARCHAR(64) NOT NULL,
 	registrationDate DATE NOT NULL,
 	roleType VARCHAR(64),
 	FOREIGN KEY (roleType) REFERENCES Role(type),
-	FOREIGN KEY (country) REFERENCES Country(name)
+	FOREIGN KEY (countryId) REFERENCES Country(id)
 );
 
 CREATE TABLE Category (
