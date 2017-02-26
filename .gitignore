@@ -1,3 +1,5 @@
-/**
-\!/apps/admin/**
-\!.gitignore
+/*
+!apps/
+apps/*
+!apps/admin/
+!.gitignore

@@ -16,6 +16,9 @@ CREATE TABLE Role(
 	privilegeLevel INTEGER,
 	FOREIGN KEY (privilegeLevel) REFERENCES Privilege(privilegeLevel)
 );
+CREATE TABLE Country(
+	name VARCHAR(64) PRIMARY KEY
+)
 
 CREATE TABLE Member(
 	email VARCHAR(64) PRIMARY KEY,
@@ -25,7 +28,8 @@ CREATE TABLE Member(
 	lastName VARCHAR(64) NOT NULL,
 	registrationDate DATE NOT NULL,
 	roleType VARCHAR(64),
-	FOREIGN KEY (roleType) REFERENCES Role(type)
+	FOREIGN KEY (roleType) REFERENCES Role(type),
+	FOREIGN KEY (country) REFERENCES Country(name)
 );
 
 CREATE TABLE Category (
