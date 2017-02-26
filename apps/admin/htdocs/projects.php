@@ -189,7 +189,7 @@
 							<select name="organiser" class="form-control">
 								<option value="" disabled selected>Select an organiser</option>
 								<?php
-										$query = 'SELECT u.firstname, u.lastname, u.email FROM users u';
+										$query = 'SELECT u.firstname, u.lastname, u.email FROM Member u';
 										$result = pg_query($query) or die('Query failed: ' . pg_last_error());
 							 
 										while($row=pg_fetch_assoc($result)) {
@@ -213,7 +213,7 @@
 							$startDate = date('Y-m-d', strtotime(str_replace('/', '-', $dateArr[0])));
 							$endDate = date('Y-m-d', strtotime(str_replace('/', '-', $dateArr[0])));
 							
-							$query = "INSERT INTO projects (title, description, start_date, end_date, category, goal_amount, owner_email, isFunded)
+							$query = "INSERT INTO project (title, description, start_date, end_date, category, goal_amount, email, isFunded)
 									VALUES ('".$_POST['title']."','".$_POST['description']."','".$startDate."','".$endDate."',".$_POST['category'].",".$_POST['amount'].",'".$_POST['organiser']."',0)";
 							
 							$result = pg_query($query) or die('Query failed: ' . pg_last_error());
@@ -239,8 +239,8 @@
                 </thead>
                 <tbody id="table_data">
                 <?php
-					$query = 'SELECT p.title, p.start_date, p.end_date, c.name, p.goal_amount, p.owner_email, b.sum
-							FROM category c, projects p LEFT OUTER JOIN (SELECT t.project_id, SUM(t.amount) AS SUM FROM transaction t GROUP BY t.project_id) b ON b.project_id = p.id WHERE c.id = p.category ORDER BY p.end_date DESC, p.start_date DESC';
+					$query = 'SELECT p.title, p.start_date, p.end_date, c.name, p.goal_amount, p.email, b.sum
+							FROM category c, project p LEFT OUTER JOIN (SELECT t.projectid, SUM(t.amount) AS SUM FROM trans t GROUP BY t.projectId) b ON b.projectId = p.id WHERE c.id = p.category ORDER BY p.end_date DESC, p.start_date DESC';
 					$result = pg_query($query) or die('Query failed: ' . pg_last_error());
          
 					while($row=pg_fetch_assoc($result)) {
