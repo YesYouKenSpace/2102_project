@@ -1,3 +1,5 @@
+CREATE EXTENSION pgcrypto;
+
 DROP TABLE Trans;
 DROP TABLE Project;
 DROP TABLE Category;
