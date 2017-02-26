@@ -113,7 +113,7 @@
 				<div class="small-box bg-blue">
 					<div class="inner">
 						<?php
-							$query = 'SELECT COUNT(DISTINCT t.user_email) FROM transaction t';
+							$query = 'SELECT COUNT(DISTINCT t.email) FROM trans t';
 							$result = pg_query($query) or die('Query failed: ' . pg_last_error());
        
 							$data=pg_fetch_assoc($result);
@@ -131,7 +131,7 @@
 				<div class="small-box bg-red">
 					<div class="inner">
 						<?php
-							$query = 'SELECT COUNT(DISTINCT u.email) FROM projects p, users u WHERE p.owner_email = u.email';
+							$query = 'SELECT COUNT(DISTINCT m.email) FROM project p, member m WHERE p.email = m.email';
 							$result = pg_query($query) or die('Query failed: ' . pg_last_error());
        
 							$data=pg_fetch_assoc($result);
@@ -149,7 +149,7 @@
 				<div class="small-box bg-yellow">
 					<div class="inner">
 						<?php
-							$query = 'SELECT COUNT(*) FROM projects p';
+							$query = 'SELECT COUNT(*) FROM project p';
 							$result = pg_query($query) or die('Query failed: ' . pg_last_error());
        
 							$data=pg_fetch_assoc($result);
@@ -167,7 +167,7 @@
 				<div class="small-box bg-green">
 					<div class="inner">
 						<?php
-							$query = 'SELECT SUM(t.amount) FROM transaction t';
+							$query = 'SELECT SUM(t.amount) FROM trans t';
 							$result = pg_query($query) or die('Query failed: ' . pg_last_error());
        
 							$data=pg_fetch_assoc($result);

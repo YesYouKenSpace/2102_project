@@ -206,7 +206,7 @@
 									$result = pg_query($query) or die('Query failed: ' . pg_last_error());
 						 
 									while($row=pg_fetch_assoc($result)) {
-											echo "<option value=".$row['type'].">".$row['type']."</option>";
+											echo "<option value='".$row['type']."'>".$row['type']."</option>";
 										}
 									
 									pg_free_result($result);
