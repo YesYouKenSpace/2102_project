@@ -3,6 +3,12 @@ Execute in this sequence:
 2. Category.sql 
 3. Privilege.sql 
 4. Role.sql 
-5. Member.sql 
-6. Project.sql
-7. Trans.sql
+5. Country.sql
+6. Member.sql 
+7. Project.sql
+8. Trans.sql
+
+
+OR 
+Just run the
+Full_Schema.sql

@@ -9,7 +9,7 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>Dashboard</title>
+    <title>CrowdFunder</title>
 
     <!-- Bootstrap core CSS -->
     <link href="bootstrap/css/bootstrap.min.css" rel="stylesheet">
@@ -92,7 +92,7 @@
           </a>
         </li>
 		<li class="treeview">
-          <a href="index.php">
+          <a href="funding.php">
             <i class="fa fa-dollar"></i> <span>Funding</span>
           </a>
         </li>
@@ -113,7 +113,7 @@
 				<div class="small-box bg-blue">
 					<div class="inner">
 						<?php
-							$query = 'SELECT COUNT(DISTINCT t.email) FROM trans t';
+							$query = 'SELECT COUNT(DISTINCT t.user_email) FROM transaction t';
 							$result = pg_query($query) or die('Query failed: ' . pg_last_error());
        
 							$data=pg_fetch_assoc($result);
@@ -131,7 +131,7 @@
 				<div class="small-box bg-red">
 					<div class="inner">
 						<?php
-							$query = 'SELECT COUNT(DISTINCT u.email) FROM project p, member u WHERE p.email = u.email';
+							$query = 'SELECT COUNT(DISTINCT u.email) FROM projects p, users u WHERE p.owner_email = u.email';
 							$result = pg_query($query) or die('Query failed: ' . pg_last_error());
        
 							$data=pg_fetch_assoc($result);
@@ -149,7 +149,7 @@
 				<div class="small-box bg-yellow">
 					<div class="inner">
 						<?php
-							$query = 'SELECT COUNT(*) FROM project p';
+							$query = 'SELECT COUNT(*) FROM projects p';
 							$result = pg_query($query) or die('Query failed: ' . pg_last_error());
        
 							$data=pg_fetch_assoc($result);
@@ -167,7 +167,7 @@
 				<div class="small-box bg-green">
 					<div class="inner">
 						<?php
-							$query = 'SELECT SUM(t.amount) FROM trans t';
+							$query = 'SELECT SUM(t.amount) FROM transaction t';
 							$result = pg_query($query) or die('Query failed: ' . pg_last_error());
        
 							$data=pg_fetch_assoc($result);
@@ -178,7 +178,7 @@
 					<div class="icon">
 						<i class="ion ion-cash"></i>
 					</div>
-					<a href="#" class="small-box-footer">View Details <i class="fa fa-arrow-circle-right"></i></a>
+					<a href="funding.php" class="small-box-footer">View Details <i class="fa fa-arrow-circle-right"></i></a>
 				</div>
 			</div>
 	   </div>

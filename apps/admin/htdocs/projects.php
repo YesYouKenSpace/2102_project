@@ -103,7 +103,7 @@
           </a>
         </li>
 		<li class="treeview">
-          <a href="index.php">
+          <a href="funding.php">
             <i class="fa fa-dollar"></i> <span>Funding</span>
           </a>
         </li>
@@ -173,7 +173,7 @@
 							<select name="category" class="form-control">
 								 <option value="" disabled selected>Select a category</option>
 								 <?php
-									$query = 'SELECT * FROM category c';
+									$query = 'SELECT * FROM Category c';
 									$result = pg_query($query) or die('Query failed: ' . pg_last_error());
 						 
 									while($row=pg_fetch_assoc($result)) {
@@ -187,9 +187,11 @@
 						<div class="input-group">
 							<span class="input-group-addon"><i class="fa fa-user"></i></span>
 							<select name="organiser" class="form-control">
-								<option value="" disabled selected>Select an organiser</option>
+								<option value="" disabled selected>Select an Organiser</option>
 								<?php
-										$query = 'SELECT u.firstname, u.lastname, u.email FROM Member u';
+										$query = 'SELECT m.firstname, m.lastname, m.email 
+													FROM Member m
+													ORDER BY m.firstname';
 										$result = pg_query($query) or die('Query failed: ' . pg_last_error());
 							 
 										while($row=pg_fetch_assoc($result)) {
@@ -213,8 +215,8 @@
 							$startDate = date('Y-m-d', strtotime(str_replace('/', '-', $dateArr[0])));
 							$endDate = date('Y-m-d', strtotime(str_replace('/', '-', $dateArr[0])));
 							
-							$query = "INSERT INTO project (title, description, start_date, end_date, category, goal_amount, email, isFunded)
-									VALUES ('".$_POST['title']."','".$_POST['description']."','".$startDate."','".$endDate."',".$_POST['category'].",".$_POST['amount'].",'".$_POST['organiser']."',0)";
+							$query = "INSERT INTO Project (title, description, startDate, endDate, categoryName, amountFundingSought, email)
+									VALUES ('".$_POST['title']."','".$_POST['description']."','".$startDate."','".$endDate."',".$_POST['category'].",".$_POST['amount'].",'".$_POST['organiser']."')'";
 							
 							$result = pg_query($query) or die('Query failed: ' . pg_last_error());
 							//echo "<script type='text/javascript'>alert('".pg_affected_rows($result)."');</script>";
@@ -239,8 +241,11 @@
                 </thead>
                 <tbody id="table_data">
                 <?php
-					$query = 'SELECT p.title, p.start_date, p.end_date, c.name, p.goal_amount, p.email, b.sum
-							FROM category c, project p LEFT OUTER JOIN (SELECT t.projectid, SUM(t.amount) AS SUM FROM trans t GROUP BY t.projectId) b ON b.projectId = p.id WHERE c.id = p.category ORDER BY p.end_date DESC, p.start_date DESC';
+					$query = 'SELECT p.title, p.startDate, p.endDate, p.categoryName, p.amountFundingSought, p.email, b.sum
+							FROM Project p LEFT OUTER JOIN (SELECT t.projectId, SUM(t.amount) AS SUM 
+														FROM Trans t 
+														GROUP BY t.projectId) b ON b.projectId = p.id 
+							ORDER BY p.endDate DESC, p.startDate DESC';
 					$result = pg_query($query) or die('Query failed: ' . pg_last_error());
          
 					while($row=pg_fetch_assoc($result)) {
@@ -250,19 +255,26 @@
 								echo "<tr>";
 							}
 							
-							echo "<td>".$row['title']."</td><td>".$row['start_date']."</td><td>".$row['end_date']."</td><td>".$row['name']."</td><td><div class=\"progress\" style=\"margin-bottom:2px;\"><div class=\"progress-bar progress-bar-success\" role=\"progressbar\" aria-valuenow=\"70\"
-							aria-valuemin=\"0\" aria-valuemax=\"100\" style=\"width:".(($row['sum'] / $row['goal_amount'])*100)."%;\">
+							echo "<td>".$row['title']
+							."</td><td>".$row['startdate']
+							."</td><td>".$row['enddate']
+							."</td><td>".$row['categoryname']
+							."</td><td><div class=\"progress\" style=\"margin-bottom:2px;\"><div class=\"progress-bar progress-bar-success\" role=\"progressbar\" aria-valuenow=\"70\"
+							aria-valuemin=\"0\" aria-valuemax=\"100\" style=\"width:"
+							.(($row['sum'] / $row['amountfundingsought'])*100)
+							."%;\">
 							</div></div>"; 
 							
 							if (is_null($row['sum'])) {
-								echo "$0 / $".$row['goal_amount'];
-							}else if ($row['sum'] > $row['goal_amount']) {
-								echo " <strong style=\"color:#5cb85c;\">$".$row['sum']."</strong> / $".$row['goal_amount'];
+								echo "$0 / $".$row['amountfundingsought'];
+							}else if ($row['sum'] > $row['amountfundingsought']) {
+								echo " <strong style=\"color:#5cb85c;\">$".$row['sum']."</strong> / $".$row['amountfundingsought'];
 							} else {
-								echo "$".$row['sum']." / $".$row['goal_amount'];
+								echo "$".$row['sum']." / $".$row['amountfundingsought'];
 							} 
 							
-							echo "</td><td>".$row['owner_email']."</td><td><button class=\"btn btn-primary btn-xs\"><span class=\"glyphicon glyphicon-info-sign\"></span></button></td><td><button class=\"btn btn-danger btn-xs\"><span class=\"glyphicon glyphicon-trash\"></span></button></td></tr>";
+							echo "</td><td>".$row['email']
+							."</td><td><button class=\"btn btn-primary btn-xs\"><span class=\"glyphicon glyphicon-info-sign\"></span></button></td><td><button class=\"btn btn-danger btn-xs\"><span class=\"glyphicon glyphicon-trash\"></span></button></td></tr>";
 						}
 					
 					pg_free_result($result);

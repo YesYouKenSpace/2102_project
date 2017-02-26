@@ -95,7 +95,7 @@
           </a>
         </li>
 		<li class="treeview">
-          <a href="index.php">
+          <a href="funding.php">
             <i class="fa fa-dollar"></i> <span>Funding</span>
           </a>
         </li>
@@ -138,7 +138,17 @@
 				</div>
 				<div class="col-md-2">
 					<select name="search-country" class="form-control">
-						<option value="" disabled selected>Select a country</option>
+					<option value="" disabled selected>Select a country</option>
+								<?php
+									$query = 'SELECT * FROM Country c';
+									$result = pg_query($query) or die('Query failed: ' . pg_last_error());
+						 
+									while($row=pg_fetch_assoc($result)) {
+											echo "<option value=".$row['id'].">".$row['name']."</option>";
+										}
+									
+									pg_free_result($result);
+								?>			
 					</select>
 				</div>
 			</div>
@@ -176,7 +186,7 @@
 							<select name="country" class="form-control">
 								<option value="" disabled selected>Select a country</option>
 								<?php
-									$query = 'SELECT * FROM country c';
+									$query = 'SELECT * FROM Country c';
 									$result = pg_query($query) or die('Query failed: ' . pg_last_error());
 						 
 									while($row=pg_fetch_assoc($result)) {
@@ -192,11 +202,11 @@
 							<select name="role" class="form-control">
 								<option value="" disabled selected>Select a role</option>
 								<?php
-									$query = 'SELECT * FROM role r';
+									$query = 'SELECT * FROM Role r';
 									$result = pg_query($query) or die('Query failed: ' . pg_last_error());
 						 
 									while($row=pg_fetch_assoc($result)) {
-											echo "<option value=".$row['id'].">".$row['type']."</option>";
+											echo "<option value=".$row['type'].">".$row['type']."</option>";
 										}
 									
 									pg_free_result($result);
@@ -212,9 +222,17 @@
 				  <?php
 						if(isset($_POST['userForm'])){
 							
-							$query = "INSERT INTO users
-									VALUES ('".$_POST['firstname']."','".$_POST['lastname']."','".$_POST['email']."',crypt('".$_POST['password']."', gen_salt('bf', 8)),".$_POST['country'].",'".date("Y-m-d")."',".$_POST['role'].")";
-							
+							$query = "INSERT INTO Member (email, password, countryId, firstName, lastName, registrationDate, roleType)
+									VALUES (
+									'".$_POST['email']."',
+									crypt('".$_POST['password']."', gen_salt('bf', 8)),
+									'".$_POST['country']."',
+									'".$_POST['firstname']."',
+									'".$_POST['lastname']."',
+									'".date("Y-m-d")."',
+									'".$_POST['role']."'
+									)";
+								
 							$result = pg_query($query) or die('Query failed: ' . pg_last_error());
 							echo "<script type='text/javascript'>alert('".pg_affected_rows($result)."');</script>";
 						}
@@ -233,6 +251,7 @@
 						<th>Email</th>
 						<th>Country</th>
 						<th>Registration Date</th>
+						<th>Role Type</th>
 						<th>Projects Created</th>
 						<th>Projects Funded</th>
 						<th>Total Donation</th>
@@ -242,17 +261,25 @@
                 </thead>
                 <tbody>
                 <?php
-					$query = 'SELECT u.firstname, u.lastname, u.email, c.name, u.registrationdate, COUNT(p.id) AS proj_created, COUNT(DISTINCT t.project_id) AS proj_funded, SUM(t.amount) AS donation 
-								FROM users u LEFT OUTER JOIN projects p ON u.email = p.owner_email
-											 LEFT OUTER JOIN transaction t ON u.email = t.user_email 
-											 LEFT OUTER JOIN (SELECT t.user_email, SUM(t.amount) FROM transaction t GROUP BY t.user_email) b ON b.user_email = u.email,
-								     country c
-								WHERE c.id = u.country
-								GROUP BY u.firstname, u.lastname, u.email, c.name, u.registrationdate';
+					$query = 'SELECT m.firstName, m.lastName, m.email, c.name AS country_name, m.registrationDate, m.roletype, COUNT(p.id) AS proj_created, COUNT(DISTINCT t.projectId) AS proj_funded, SUM(t.amount) AS donation 
+								FROM Member m LEFT OUTER JOIN Project p ON m.email = p.email
+											 LEFT OUTER JOIN Trans t ON m.email = t.email 
+											 LEFT OUTER JOIN (SELECT t.email, SUM(t.amount) FROM Trans t GROUP BY t.email) b ON b.email = m.email,	
+								Country c
+								WHERE m.countryId = c.id
+								GROUP BY m.firstName, m.lastName, m.email, c.name, m.registrationDate, m.roletype
+								ORDER BY m.firstName, m.lastName';
 					$result = pg_query($query) or die('Query failed: ' . pg_last_error());
          
 					while($row=pg_fetch_assoc($result)) {
-							echo "<tr><td>".$row['firstname']."</td><td>".$row['lastname']."</td><td>".$row['email']."</td><td>".$row['name']."</td><td>".$row['registrationdate']."</td><td>".$row['proj_created']."</td><td>".$row['proj_funded']."</td>"; 
+							echo "<tr><td>".$row['firstname']
+							."</td><td>".$row['lastname']
+							."</td><td>".$row['email']
+							."</td><td>".$row['country_name']
+							."</td><td>".$row['registrationdate']
+							."</td><td>".$row['roletype'] //TODO: Add privilege level here
+							."</td><td>".$row['proj_created']
+							."</td><td>".$row['proj_funded']."</td>"; 
 							
 							if($row['donation'] != 0) {
 								echo "<td>$".$row['donation']."</td>";
@@ -288,19 +315,8 @@
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
     <script src="bootstrap/js/bootstrap.min.js"></script>
 	<!-- DataTables -->
-<script src="plugins/datatables/jquery.dataTables.min.js"></script>
-<script src="plugins/datatables/dataTables.bootstrap.min.js"></script>
-	<script>
-    /*$(function () {
-		$('#usersTable').DataTable({
-			"paging": true,
-			"lengthChange": true,
-			"searching": true,
-			"ordering": true,
-			"info": true,
-			"autoWidth": false
-		});
-	});*/
-</script>
+	<script src="plugins/datatables/jquery.dataTables.min.js"></script>
+	<script src="plugins/datatables/dataTables.bootstrap.min.js"></script>
+
   </body>
 </html>
