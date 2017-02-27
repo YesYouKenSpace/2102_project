@@ -286,8 +286,10 @@
 							} else { 
 								echo "<td>$0</td>"; 
 							} 
-							
-							echo "<td><button class=\"btn btn-primary btn-xs\"><span class=\"glyphicon glyphicon-info-sign\"></span></button></td><td><button class=\"btn btn-danger btn-xs\"><span class=\"glyphicon glyphicon-trash\"></span></button></td></tr>";
+							$user_email = $row['email'];
+
+							echo "<td><button class=\"btn btn-primary btn-xs\"><span class=\"glyphicon glyphicon-info-sign\"></span></button></td>
+							<td><button class=\"btn btn-danger btn-xs delete_user\" user-email=\"$user_email\" href=\"javascript:void(0)\"><span class=\"glyphicon glyphicon-trash\"></span></button></td></tr>";
 						}
 					
 					pg_free_result($result);
@@ -317,6 +319,52 @@
 	<!-- DataTables -->
 	<script src="plugins/datatables/jquery.dataTables.min.js"></script>
 	<script src="plugins/datatables/dataTables.bootstrap.min.js"></script>
+	<script src="plugins/bootbox.min.js"></script>
 
+	  <script>
+	    $(document).ready(function(){
+	        
+	        $('.delete_user').click(function(e){
+	          
+	          e.preventDefault();
+	          
+	          var pid = $(this).attr('user-email');
+	          console.log(pid);
+	          var parent = $(this).parent("td").parent("tr");
+	          bootbox.dialog({
+	            message: "Are you sure you want to delete this user?",
+	            title: "<i class='glyphicon glyphicon-trash'></i> Delete !",
+	            buttons: {
+	            danger: {
+	              label: "Delete!",
+	              className: "btn-danger",
+	              callback: function() {
+
+	                $.post('deletion/delete_user.php', { 'delete':pid })
+	                .done(function(response){
+	                  bootbox.alert(response);
+	                  parent.fadeOut('slow');
+	                })
+	                .fail(function(){
+	                  bootbox.alert('Something Went Wrong ....');
+	                  })                            
+	                }
+	              },
+	            success: {
+	              label: "No",
+	              className: "btn-success",
+	              callback: function() {
+	               $('.bootbox').modal('hide');
+	                }
+	             }
+	              
+	            }
+	          });
+	          
+	          
+	        });
+	        
+	      });
+	</script>
   </body>
 </html>
