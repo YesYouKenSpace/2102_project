@@ -241,7 +241,7 @@
                 </thead>
                 <tbody id="table_data">
                 <?php
-					$query = 'SELECT p.title, p.startDate, p.endDate, p.categoryName, p.amountFundingSought, p.email, b.sum
+					$query = 'SELECT p.id, p.title, p.startDate, p.endDate, p.categoryName, p.amountFundingSought, p.email, b.sum
 							FROM Project p LEFT OUTER JOIN (SELECT t.projectId, SUM(t.amount) AS SUM 
 														FROM Trans t 
 														GROUP BY t.projectId) b ON b.projectId = p.id 
@@ -274,10 +274,11 @@
 							} 
 							
 							echo "</td><td>".$row['email']
-							."</td><td><button class=\"btn btn-primary btn-xs\"><span class=\"glyphicon glyphicon-info-sign\"></span></button></td><td><button class=\"btn btn-danger btn-xs\"><span class=\"glyphicon glyphicon-trash\"></span></button></td></tr>";
+							."</td><td><button class=\"btn btn-primary btn-xs\" onClick=\"location.href='project.php?id=".$row['id']."'\"><span class=\"glyphicon glyphicon-info-sign\"></span></button></td><td><button class=\"btn btn-danger btn-xs\"><span class=\"glyphicon glyphicon-trash\"></span></button></td></tr>";
 						}
 					
 					pg_free_result($result);
+					
 				?>
                 </tbody>
               </table>
