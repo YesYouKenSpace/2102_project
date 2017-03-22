@@ -18,8 +18,27 @@ WHERE M1.email==T1.email AND T1.date-getDate() < 365);
 SELECT P1.title, P1.categoryName, P1.amountFundingSought, totalsum
 FROM Project P1
 WHERE EXISTS
-(SELECT ProjectId as pid, SUM(amount) AS totalsum
+(SELECT ProjectId as pid, SUM(T1.amount) AS totalsum
 FROM Trans T1
-WHERE SUM(amount) >= P1.amountFundingSought
-GROUP BY projectId);
+WHERE SUM(T1.amount) >= P1.amountFundingSought
+GROUP BY T1.projectId);
+
+## Top 100 investors ALL TIME
+SELECT * 
+FROM Member m1 NATURAL JOIN
+(SELECT T1.email, SUM(T1.amount) AS totalsum
+FROM Trans T1
+GROUP BY T1.email)
+ORDER BY totalsum DESC
+LIMIT 100 OFFSET 0;
+
+## Top 100 investors in a week (not THE week)
+SELECT * 
+FROM Member m1 NATURAL JOIN
+(SELECT T1.email, SUM(T1.amount) AS totalsum
+FROM Trans T1
+WHERE T1.date - getDate() <=7
+GROUP BY T1.email)
+ORDER BY totalsum DESC
+LIMIT 100 OFFSET 0;
 
