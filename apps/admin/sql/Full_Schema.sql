@@ -38,11 +38,12 @@ CREATE TABLE Member(
 );
 
 CREATE TABLE Category (
-	name VARCHAR(64) PRIMARY KEY
-);
+	id SERIAL PRIMARY KEY,
+	name VARCHAR(64) NOT NULL UNIQUE
+)
 
 CREATE TABLE Project (
-	id serial PRIMARY KEY,
+	id SERIAL PRIMARY KEY,
 	email VARCHAR(64),
 	title VARCHAR(64) NOT NULL,
 	description VARCHAR(64),
@@ -60,11 +61,13 @@ CREATE TABLE Trans(
 	transactionNo SERIAL PRIMARY KEY,
 	date DATE NOT NULL,
 	email VARCHAR(64),
-	projectId SERIAL,
+	projectId INTEGER,
 	FOREIGN KEY (email) REFERENCES Member(email),
 	FOREIGN KEY (projectId) REFERENCES Project(id),
 	CONSTRAINT amount CHECK (amount>0)
 );
+
+
 
 INSERT INTO Category(name) VALUES ('Real Estate');
 INSERT INTO Category(name) VALUES ('Tech Startup');

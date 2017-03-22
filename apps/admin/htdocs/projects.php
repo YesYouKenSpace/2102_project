@@ -204,7 +204,7 @@
 						</div>
 				  </div>
 				  <div class="modal-footer">
-					<button type="submit" name="projectForm" class="btn btn-primary">Add Projects</button>
+					<button type="submit" name="projectForm" class="btn btn-primary">Add Project</button>
 					<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
 				  </div>
 				</form>			
@@ -234,14 +234,14 @@
 						<th>End Date</th>
 						<th>Category</th>
 						<th>Amount Raised</th>
-						<th>Orgaiser</th>
+						<th>Organiser</th>
 						<th></th>
 						<th></th>
 					</tr>
                 </thead>
                 <tbody id="table_data">
                 <?php
-					$query = 'SELECT p.title, p.startDate, p.endDate, p.categoryName, p.amountFundingSought, p.email, b.sum
+					$query = 'SELECT p.id, p.title, p.startDate, p.endDate, p.categoryName, p.amountFundingSought, p.email, b.sum
 							FROM Project p LEFT OUTER JOIN (SELECT t.projectId, SUM(t.amount) AS SUM 
 														FROM Trans t 
 														GROUP BY t.projectId) b ON b.projectId = p.id 
@@ -272,12 +272,15 @@
 							} else {
 								echo "$".$row['sum']." / $".$row['amountfundingsought'];
 							} 
-							
-							echo "</td><td>".$row['email']
-							."</td><td><button class=\"btn btn-primary btn-xs\"><span class=\"glyphicon glyphicon-info-sign\"></span></button></td><td><button class=\"btn btn-danger btn-xs\"><span class=\"glyphicon glyphicon-trash\"></span></button></td></tr>";
+		                    $proj_id = $row['id'];
+
+							echo "</td><td>".$row['email'].
+							"</td><td><button class=\"btn btn-primary btn-xs\" onClick=\"location.href='project.php?id=$proj_id'\"><span class=\"glyphicon glyphicon-info-sign\"></span></button></td>
+							<td><button class=\"btn btn-danger btn-xs delete_project\" project-id=\"$proj_id\" href=\"javascript:void(0)\"><span class=\"glyphicon glyphicon-trash\"></span></button></td></tr>";
 						}
 					
 					pg_free_result($result);
+					
 				?>
                 </tbody>
               </table>
@@ -298,9 +301,7 @@
     <!-- Bootstrap core JavaScript
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
-    <script src="bootstrap/js/bootstrap.min.js"></script>
-	
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>	
 	<!-- jQuery 2.2.3 -->
 <script src="plugins/jQuery/jquery-2.2.3.min.js"></script>
 
@@ -312,25 +313,56 @@
 <script src="plugins/datepicker/bootstrap-datepicker.js"></script>
 
 	<!-- DataTables -->
+<script src="bootstrap/js/bootstrap.min.js"></script>
 <script src="plugins/datatables/jquery.dataTables.min.js"></script>
 <script src="plugins/datatables/dataTables.bootstrap.min.js"></script>
-	<script>
-    /*$(function () {
-		$('#usersTable').DataTable({
-			"paging": true,
-			"lengthChange": true,
-			"searching": true,
-			"ordering": true,
-			"info": true,
-			"autoWidth": false
-		});
-	});
-  
-	function myFunction() {
-		var table_data = document.getElementById("table_data").innerHTML;
-	}*/
-	
-    //Date range picker
+<script src="plugins/bootbox.min.js"></script>
+
+  <script>
+    $(document).ready(function(){
+        
+        $('.delete_project').click(function(e){
+          
+          e.preventDefault();
+          
+          var pid = $(this).attr('project-id');
+          var parent = $(this).parent("td").parent("tr");
+          bootbox.dialog({
+            message: "Are you sure you want to delete this project?",
+            title: "<i class='glyphicon glyphicon-trash'></i> Delete !",
+            buttons: {
+            danger: {
+              label: "Delete!",
+              className: "btn-danger",
+              callback: function() {
+
+                $.post('deletion/delete_project.php', { 'delete':pid })
+                .done(function(response){
+                  bootbox.alert(response);
+                  parent.fadeOut('slow');
+                })
+                .fail(function(){
+                  bootbox.alert('Something Went Wrong ....');
+                  })                            
+                }
+              },
+            success: {
+              label: "No",
+              className: "btn-success",
+              callback: function() {
+               $('.bootbox').modal('hide');
+                }
+             }
+              
+            }
+          });
+          
+          
+        });
+        
+      });
+</script>
+<script>
 	$(function() {
 		var startDate;
 		var endDate;
