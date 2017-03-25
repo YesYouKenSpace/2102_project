@@ -177,7 +177,7 @@
 									$result = pg_query($query) or die('Query failed: ' . pg_last_error());
 						 
 									while($row=pg_fetch_assoc($result)) {
-											echo "<option value='".$row['name']."'>".$row['name']."</option>";
+											echo "<option value='".$row['id']."'>".$row['name']."</option>";
 										}
 									
 									pg_free_result($result);
@@ -215,7 +215,7 @@
 							$startDate = date('Y-m-d', strtotime(str_replace('/', '-', $dateArr[0])));
 							$endDate = date('Y-m-d', strtotime(str_replace('/', '-', $dateArr[0])));
 							
-							$query = "INSERT INTO Project (title, description, startDate, endDate, categoryName, amountFundingSought, email)
+							$query = "INSERT INTO Project (title, description, startDate, endDate, categoryId, amountFundingSought, email)
 									VALUES ('".$_POST['title']."','".$_POST['description']."','".$startDate."','".$endDate."','".$_POST['category']."',".$_POST['amount'].",'".$_POST['organiser']."')";
 							
 							$result = pg_query($query) or die('Query failed: ' . pg_last_error());
@@ -241,10 +241,12 @@
                 </thead>
                 <tbody id="table_data">
                 <?php
-					$query = 'SELECT p.id, p.title, p.startDate, p.endDate, p.categoryName, p.amountFundingSought, p.email, b.sum
+					$query = 'SELECT p.id, p.title, p.startDate, p.endDate, c.name, p.amountFundingSought, p.email, b.sum
 							FROM Project p LEFT OUTER JOIN (SELECT t.projectId, SUM(t.amount) AS SUM 
-														FROM Trans t 
+														FROM Trans t
 														GROUP BY t.projectId) b ON b.projectId = p.id 
+														, Category c
+							WHERE c.id = p.categoryId 
 							ORDER BY p.endDate DESC, p.startDate DESC';
 					$result = pg_query($query) or die('Query failed: ' . pg_last_error());
          
@@ -258,7 +260,7 @@
 							echo "<td>".$row['title']
 							."</td><td>".$row['startdate']
 							."</td><td>".$row['enddate']
-							."</td><td>".$row['categoryname']
+							."</td><td>".$row['name']
 							."</td><td><div class=\"progress\" style=\"margin-bottom:2px;\"><div class=\"progress-bar progress-bar-success\" role=\"progressbar\" aria-valuenow=\"70\"
 							aria-valuemin=\"0\" aria-valuemax=\"100\" style=\"width:"
 							.(($row['sum'] / $row['amountfundingsought'])*100)

@@ -97,8 +97,8 @@
           </a>
         </li>
 		<li class="treeview">
-          <a href="index.php">
-            <i class="fa fa-gear"></i> <span>Settings</span>
+          <a href="categories.php">
+            <i class="fa fa-gear"></i> <span>Category</span>
           </a>
         </li>
       </ul>

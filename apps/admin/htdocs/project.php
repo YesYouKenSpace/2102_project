@@ -127,11 +127,12 @@
     <!-- Main content -->
 	<section class="content">
 		<?php
-			$query = "SELECT p.title, p.description, p.startdate, p.enddate, p.amountfundingsought, p.categoryname, p.email, m.firstname, m.lastname, b.sum, b.donations, b.donors
+			$query = "SELECT p.title, p.description, p.startdate, p.enddate, p.amountfundingsought, c.name, p.email, m.firstname, m.lastname, b.sum, b.donations, b.donors
 					  FROM Project p INNER JOIN Member m ON p.email = m.email
 									 LEFT OUTER JOIN (SELECT t.projectId, COUNT(t.email) AS Donations, COUNT(DISTINCT t.email) AS Donors, SUM(t.amount) AS SUM 
 													  FROM Trans t 
 													  GROUP BY t.projectId) b ON b.projectId = p.id
+									 INNER JOIN category c ON c.id = p.categoryId
 					  WHERE p.id =".$_GET['id'];
     
 			$result = pg_query($query) or die('Query failed: ' . pg_last_error());
@@ -183,7 +184,7 @@
 								  <b>End Date</b> <a class="pull-right"><?php echo $project['enddate'];?></a>
 								</li>
 								<li class="list-group-item">
-								  <b>Category</b> <a class="pull-right"><?php echo $project['categoryname'];?></a>
+								  <b>Category</b> <a class="pull-right"><?php echo $project['name'];?></a>
 								</li>
 							</ul>	
 						</div>

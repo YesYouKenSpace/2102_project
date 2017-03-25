@@ -4,6 +4,7 @@ body {
     line-height: 1.42857143;
     color: #333;
     background-color: #fff;
+    padding-right: 0 !important;
 }
 
 div {
@@ -363,6 +364,18 @@ a:hover {
     border-top: 3px solid #4288df;
 }
 
+.category-box {
+    border-top: 3px solid #8e44ad;
+}
+
+.category-box h3 {
+    color: #8e44ad;
+}
+
+.category-box h3 strong {
+    padding-left: 38px;
+}
+
 .box-header {
     color: #444;
     display: block;
@@ -660,4 +673,24 @@ img {
     border-radius: 0;
     padding-left: 0;
     padding-right: 0;
+}
+
+.row .category-row {
+    padding-left: 15px;
+}
+
+.row .category-row-box {
+    padding: 0 15px;
+}
+
+.badge-1 {
+    background-color: #f1c40f;
+}
+
+.badge-2, .badge-3 {
+    background-color: #95a5a6;
+}
+
+.badge-4, .badge-5 {
+    background-color: #d35400;
 }

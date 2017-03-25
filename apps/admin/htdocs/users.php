@@ -206,7 +206,7 @@
 									$result = pg_query($query) or die('Query failed: ' . pg_last_error());
 						 
 									while($row=pg_fetch_assoc($result)) {
-											echo "<option value='".$row['type']."'>".$row['type']."</option>";
+											echo "<option value='".$row['id']."'>".$row['type']."</option>";
 										}
 									
 									pg_free_result($result);
@@ -222,7 +222,7 @@
 				  <?php
 						if(isset($_POST['userForm'])){
 							
-							$query = "INSERT INTO Member (email, password, countryId, firstName, lastName, registrationDate, roleType)
+							$query = "INSERT INTO Member (email, password, countryId, firstName, lastName, registrationDate, roleId)
 									VALUES (
 									'".$_POST['email']."',
 									crypt('".$_POST['password']."', gen_salt('bf', 8)),
@@ -261,13 +261,13 @@
                 </thead>
                 <tbody>
                 <?php
-					$query = 'SELECT m.firstName, m.lastName, m.email, c.name AS country_name, m.registrationDate, m.roletype, COUNT(p.id) AS proj_created, COUNT(DISTINCT t.projectId) AS proj_funded, SUM(t.amount) AS donation 
+					$query = 'SELECT m.firstName, m.lastName, m.email, c.name AS country_name, m.registrationDate, r.type, COUNT(p.id) AS proj_created, COUNT(DISTINCT t.projectId) AS proj_funded, SUM(t.amount) AS donation 
 								FROM Member m LEFT OUTER JOIN Project p ON m.email = p.email
 											 LEFT OUTER JOIN Trans t ON m.email = t.email 
 											 LEFT OUTER JOIN (SELECT t.email, SUM(t.amount) FROM Trans t GROUP BY t.email) b ON b.email = m.email,	
-								Country c
-								WHERE m.countryId = c.id
-								GROUP BY m.firstName, m.lastName, m.email, c.name, m.registrationDate, m.roletype
+								Country c, Role r
+								WHERE m.countryId = c.id AND r.id = m.roleId
+								GROUP BY m.firstName, m.lastName, m.email, c.name, m.registrationDate, r.type
 								ORDER BY m.firstName, m.lastName';
 					$result = pg_query($query) or die('Query failed: ' . pg_last_error());
          
@@ -277,7 +277,7 @@
 							."</td><td>".$row['email']
 							."</td><td>".$row['country_name']
 							."</td><td>".$row['registrationdate']
-							."</td><td>".$row['roletype'] //TODO: Add privilege level here
+							."</td><td>".$row['type'] //TODO: Add privilege level here
 							."</td><td>".$row['proj_created']
 							."</td><td>".$row['proj_funded']."</td>"; 
 							
