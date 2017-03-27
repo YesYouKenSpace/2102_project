@@ -6,7 +6,8 @@
 	if ($_REQUEST['delete']) {
 		
 		$projectId = $_REQUEST['delete'];
-		$query = 'DELETE FROM Project 
+		$query = 'UPDATE Project 
+					SET softDelete = TRUE
 					WHERE id= '.$projectId.'';
 		$result = pg_query($query) or die('Query failed: ' . pg_last_error());
 		

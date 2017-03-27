@@ -99,8 +99,13 @@
           </a>
         </li>
     <li class="treeview">
-          <a href="index.php">
-            <i class="fa fa-gear"></i> <span>Settings</span>
+          <a href="categories.php">
+            <i class="fa fa-gear"></i> <span>Category</span>
+          </a>
+        </li>
+    <li class="treeview">
+          <a href="reactivation.php">
+            <i class="fa fa-recycle"></i> <span>Reactivation</span>
           </a>
         </li>
       </ul>
@@ -203,7 +208,7 @@
               </div>
             </div>
             <br/>
-            <table id="usersTable" class="table table-bordered table-hover" >
+            <table id="fundingTable" class="table table-bordered table-hover" >
                       <thead>
                 <tr>
                   <th>Amount</th>
@@ -219,7 +224,7 @@
 
                 $query = 'SELECT t.amount, t.date, p.title, t.email, t.transactionNo
                             FROM Trans t, Project p
-                            WHERE t.projectId = p.id
+                            WHERE t.projectId = p.id AND t.softDelete = FALSE
                             ORDER BY t.date DESC';
                 $result = pg_query($query) or die('Query failed: ' . pg_last_error());
                

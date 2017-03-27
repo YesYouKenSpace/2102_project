@@ -5,14 +5,14 @@
 	
 	if ($_REQUEST['delete']) {
 		
-		$email = $_REQUEST['delete'];
-		$query = "UPDATE Member
-					SET softDelete = TRUE 
-					WHERE email= '".$email."'";
+		$fundId = $_REQUEST['delete'];
+		$query = 'UPDATE Trans 
+					SET softDelete = FALSE
+					WHERE transactionNo= '.$fundId.'';
 		$result = pg_query($query) or die('Query failed: ' . pg_last_error());
 		
 		if ($result) {
-			echo "User Reactivated Successfully ...";
+			echo "Funding Reactivated Successfully ...";
 		}
 		
 	}

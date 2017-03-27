@@ -5,14 +5,14 @@
 	
 	if ($_REQUEST['delete']) {
 		
-		$email = $_REQUEST['delete'];
-		$query = "UPDATE Member
-					SET softDelete = TRUE 
-					WHERE email= '".$email."'";
+		$projectId = $_REQUEST['delete'];
+		$query = 'UPDATE Project 
+					SET softDelete = FALSE
+					WHERE id= '.$projectId.'';
 		$result = pg_query($query) or die('Query failed: ' . pg_last_error());
 		
 		if ($result) {
-			echo "User Reactivated Successfully ...";
+			echo "Project Reactivated Successfully ...";
 		}
 		
 	}

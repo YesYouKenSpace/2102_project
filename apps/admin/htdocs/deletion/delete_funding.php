@@ -6,8 +6,9 @@
 	if ($_REQUEST['delete']) {
 		
 		$fundId = $_REQUEST['delete'];
-		$query = 'DELETE FROM Trans 
-					WHERE transactionNo= '".$fundId."'';
+		$query = 'UPDATE Trans 
+					SET softDelete = TRUE
+					WHERE transactionNo= '.$fundId.'';
 		$result = pg_query($query) or die('Query failed: ' . pg_last_error());
 		
 		if ($result) {

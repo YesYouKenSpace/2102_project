@@ -7,12 +7,12 @@
 		
 		$email = $_REQUEST['delete'];
 		$query = "UPDATE Member
-					SET softDelete = TRUE 
+					SET softDelete = FALSE 
 					WHERE email= '".$email."'";
 		$result = pg_query($query) or die('Query failed: ' . pg_last_error());
 		
 		if ($result) {
-			echo "User Reactivated Successfully ...";
+			echo "User Deleted Successfully ...";
 		}
 		
 	}

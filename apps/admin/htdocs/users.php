@@ -100,8 +100,13 @@
           </a>
         </li>
 		<li class="treeview">
-          <a href="index.php">
-            <i class="fa fa-gear"></i> <span>Settings</span>
+          <a href="categories.php">
+            <i class="fa fa-gear"></i> <span>Category</span>
+          </a>
+        </li>
+		<li class="treeview">
+          <a href="reactivation.php">
+            <i class="fa fa-recycle"></i> <span>Reactivation</span>
           </a>
         </li>
       </ul>
@@ -266,7 +271,7 @@
 											 LEFT OUTER JOIN Trans t ON m.email = t.email 
 											 LEFT OUTER JOIN (SELECT t.email, SUM(t.amount) FROM Trans t GROUP BY t.email) b ON b.email = m.email,	
 								Country c, Role r
-								WHERE m.countryId = c.id AND r.id = m.roleId
+								WHERE m.countryId = c.id AND r.id = m.roleId AND m.softDelete = FALSE
 								GROUP BY m.firstName, m.lastName, m.email, c.name, m.registrationDate, r.type
 								ORDER BY m.firstName, m.lastName';
 					$result = pg_query($query) or die('Query failed: ' . pg_last_error());

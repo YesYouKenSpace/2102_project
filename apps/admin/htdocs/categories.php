@@ -77,6 +77,11 @@
 					    		<i class="fa fa-gear"></i> <span>Category</span>
 					  		</a>
 						</li>
+						<li class="treeview">
+				          <a href="reactivation.php">
+				            <i class="fa fa-recycle"></i> <span>Reactivation</span>
+				          </a>
+				        </li>
 					</ul>
 				</section>
 	  		</aside>
