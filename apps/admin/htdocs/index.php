@@ -284,7 +284,7 @@
         <div class="col-md-12">
          <div class="box project-box">
            <div class="box-body">
-              <h3 class="text-center">Not Invested for More Than 30 Days</h3>
+              <h3 class="text-center">Non-New Users Who Not Invested for More Than 30 Days</h3>
               <table id="usersTable" class="table table-bordered table-hover" >
                         <thead>
         					<tr>
@@ -292,17 +292,19 @@
         						<th>Last Name</th>
         						<th>Email</th>
         						<th>Last Transaction Date</th>
+                    <th>Registration Date</th>
         						<th>Total Funding</th>
         						<th></th>
         					</tr>
                         </thead>
                         <tbody>
                <?php
-               $query = "SELECT m1.firstName, m1.lastName, MAX(t2.date) AS latesttrans, SUM(t2.amount) AS donation, m1.email
+               $query = "SELECT m1.firstName, m1.lastName, MAX(t2.date) AS latesttrans, SUM(t2.amount) AS donation, m1.email, m1.registrationDate
                FROM Member m1 NATURAL JOIN Trans t2
                WHERE NOT EXISTS(SELECT *
-               FROM Trans T1
-               WHERE M1.email=T1.email AND current_date-T1.date < 30)
+                                FROM Trans T1
+                                WHERE M1.email=T1.email AND current_date-T1.date < 30)
+                    AND current_date - m1.registrationDate > 30
                GROUP BY m1.firstName,m1.lastName, m1.email
                ORDER BY latesttrans";
 
@@ -312,7 +314,8 @@
      							echo "<tr><td>".$row['firstname']
      							."</td><td>".$row['lastname']
      							."</td><td>".$row['email']
-     							."</td><td>".$row['latesttrans']."</td>";
+     							."</td><td>".$row['latesttrans']
+                  ."</td><td>".$row['registrationdate']."</td>";
 
 
      							if($row['donation'] != 0) {
