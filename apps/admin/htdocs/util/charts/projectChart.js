@@ -13,7 +13,7 @@ function imageSmoothingEnabled(ctx, state) {
     ctx.imageSmoothingEnabled = state;
 }
 
-function drawLineGraph(e,d,c,b,a, ctx){
+function drawLineGraph(e,d,c,b,a,ctx){
   console.log(isNaN(a));
   if(isNaN(a)){
     a=0;

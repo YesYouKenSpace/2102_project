@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-	
+
     <meta name="description" content="">
     <meta name="author" content="">
 
@@ -16,10 +16,10 @@
 
 	<!-- Font Awesome -->
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.5.0/css/font-awesome.min.css">
-	
+
   <!-- Ionicons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/ionicons/2.0.1/css/ionicons.min.css">
-  
+
     <!-- Custom styles for this template -->
     <link href="main.css" rel="stylesheet">
   </head>
@@ -30,9 +30,9 @@
     or die('Could not connect: ' . pg_last_error());
 	?>
 	<div class="wrapper" style="height: auto;">
-	
-	
-	
+
+
+
     <header class="main-header">
 
     <!-- Logo -->
@@ -113,14 +113,14 @@
     <div class="content-wrapper" style="min-height: 976px;">
 		<!-- Main component for a primary marketing message or call to action -->
 		<section class="content">
-		<div class="row">
+
 			<div class="col-lg-3">
 				<div class="small-box bg-blue">
 					<div class="inner">
 						<?php
 							$query = 'SELECT COUNT(DISTINCT t.email) FROM trans t';
 							$result = pg_query($query) or die('Query failed: ' . pg_last_error());
-       
+
 							$data=pg_fetch_assoc($result);
 							echo "<h3>".$data['count']."</h3>";
 						?>
@@ -138,7 +138,7 @@
 						<?php
 							$query = 'SELECT COUNT(DISTINCT m.email) FROM project p, member m WHERE p.email = m.email';
 							$result = pg_query($query) or die('Query failed: ' . pg_last_error());
-       
+
 							$data=pg_fetch_assoc($result);
 							echo "<h3>".$data['count']."</h3>";
 						?>
@@ -156,7 +156,7 @@
 						<?php
 							$query = 'SELECT COUNT(*) FROM project p';
 							$result = pg_query($query) or die('Query failed: ' . pg_last_error());
-       
+
 							$data=pg_fetch_assoc($result);
 							echo "<h3>".$data['count']."</h3>";
 						?>
@@ -174,7 +174,7 @@
 						<?php
 							$query = 'SELECT SUM(t.amount) FROM trans t';
 							$result = pg_query($query) or die('Query failed: ' . pg_last_error());
-       
+
 							$data=pg_fetch_assoc($result);
 							echo "<h3>$".$data['sum']."</h3>";
 						?>
@@ -186,10 +186,43 @@
 					<a href="funding.php" class="small-box-footer">View Details <i class="fa fa-arrow-circle-right"></i></a>
 				</div>
 			</div>
-	   </div>
-	   </content>
+      <div class="row">
+        <div class="col-md-4">
+         <div class="box project-box">
+           <div class="box-body">
+              <h3 class="text-center">Popular Project of the Month</h3>
+              <ul class="list-group list-group-unbordered">
+               <?php
+               $query = "SELECT SUM(t1.amount) AS sum, p1.title, RANK() OVER (ORDER BY SUM(t1.amount) DESC) as ranking
+                          FROM Trans t1 INNER JOIN Project p1 ON t1.projectId = p1.id
+                          WHERE t1.date - current_date < 30
+                          GROUP BY t1.projectId, p1.title
+                          ORDER BY sum DESC";
+
+               $result = pg_query($query) or die('Query failed: ' . pg_last_error());
+
+               if (pg_num_rows($result) > 0) {
+                  $num_to_display = 10;
+                 while($num_to_display > 0 && $row=pg_fetch_assoc($result)) {
+                    $num_to_display--;
+                   echo "<li class=\"list-group-item\"><strong>#".$row['ranking']." ".$row['title']." </strong><a class=\"pull-right\">$".$row['sum']."</a>";
+                 }
+               } else {
+                 echo "<li class=\"list-group-item text-center\">No funding has been made this month.</li>";
+               }
+
+               pg_free_result($result);
+               ?>
+
+             </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </section>
     </div> <!-- /container -->
-	</div>
+
 
     <!-- Bootstrap core JavaScript
     ================================================== -->
