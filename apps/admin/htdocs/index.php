@@ -195,7 +195,7 @@
                <?php
                $query = "SELECT SUM(t1.amount) AS sum, p1.title, RANK() OVER (ORDER BY SUM(t1.amount) DESC) as ranking
                           FROM Trans t1 INNER JOIN Project p1 ON t1.projectId = p1.id
-                          WHERE t1.date - current_date < 30
+                          WHERE current_date - current_date < 30
                           GROUP BY t1.projectId, p1.title
                           ORDER BY sum DESC";
 
@@ -213,6 +213,69 @@
 
                pg_free_result($result);
                ?>
+
+             </ul>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6">
+         <div class="box project-box">
+           <div class="box-body">
+              <h3 class="text-center">New Projects of the Last 30 Days</h3>
+              <table id="projectsTable" class="table table-bordered table-hover" >
+                        <thead>
+        					<tr>
+        						<th>Title</th>
+        						<th>Start Date</th>
+        						<th>Amount Raised</th>
+                    <th></th>
+        					</tr>
+                        </thead>
+                        <tbody id="table_data">
+                          <?php
+                          $query = "SELECT SUM(t1.amount) AS sum, p1.title, RANK() OVER (ORDER BY p1.startdate DESC) as ranking, p1.amountFundingSought, p1.startDate
+                                     FROM Trans t1 INNER JOIN Project p1 ON t1.projectId = p1.id
+                                     WHERE current_date- p1.startDate  < 30
+                                     GROUP BY t1.projectId, p1.title, p1.amountFundingSought, p1.startDate
+                                     ORDER BY p1.startDate DESC";
+
+                          $result = pg_query($query) or die('Query failed: ' . pg_last_error());
+
+
+        					while($row=pg_fetch_assoc($result)) {
+        							if ((!is_null($row['sum'])) && ($row['sum'] >= $row['amountfundingsought'])) {
+        								echo "<tr style=\"background-color:#c9ffc9;\">";
+        							} else {
+        								echo "<tr>";
+        							}
+
+        							echo "<td>".$row['title']
+        							."</td><td>".$row['startdate']
+        							."</td><td><div class=\"progress\" style=\"margin-bottom:2px;\"><div class=\"progress-bar progress-bar-success\" role=\"progressbar\" aria-valuenow=\"70\"
+        							aria-valuemin=\"0\" aria-valuemax=\"100\" style=\"width:"
+        							.(($row['sum'] / $row['amountfundingsought'])*100)
+        							."%;\">
+        							</div></div>";
+
+        							if (is_null($row['sum'])) {
+        								echo "$0 / $".$row['amountfundingsought'];
+        							}else if ($row['sum'] >= $row['amountfundingsought']) {
+        								echo " <strong style=\"color:#5cb85c;\">$".$row['sum']."</strong> / $".$row['amountfundingsought'];
+        							} else {
+        								echo "$".$row['sum']." / $".$row['amountfundingsought'];
+        							}
+        		                    $proj_id = $row['id'];
+
+        							echo "</td><td><button class=\"btn btn-primary btn-xs\" onClick=\"location.href='project.php?id=$proj_id'\"><span class=\"glyphicon glyphicon-info-sign\"></span></button></td></tr>";
+        						}
+
+        					pg_free_result($result);
+
+        				?>
+                        </tbody>
+                      </table>
+              <ul class="list-group list-group-unbordered">
+
 
              </ul>
             </div>
