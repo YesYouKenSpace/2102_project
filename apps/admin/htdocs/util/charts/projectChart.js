@@ -1,7 +1,19 @@
-var ctx = document.getElementById("myChart");
 Chart.defaults.global.hover.mode = 'nearest';
+Chart.defaults.global.defaultFontFamily = 'Arial';
+Chart.defaults.global.defaultFontSize = 14;
+Chart.defaults.global.defaultFontStyle = 'normal';
+Chart.defaults.global.defaultFontColor = '#000000';
+
 console.log("SETUP");
-function drawGraph(){
+
+function imageSmoothingEnabled(ctx, state) {
+    ctx.mozImageSmoothingEnabled = state;
+    ctx.oImageSmoothingEnabled = state;
+    ctx.webkitImageSmoothingEnabled = state;
+    ctx.imageSmoothingEnabled = state;
+}
+
+function drawLineGraph(e,d,c,b,a, ctx){
   console.log(isNaN(a));
   if(isNaN(a)){
     a=0;
@@ -57,8 +69,9 @@ var option = {
    },
    scales: {
      yAxes:[{
+       display: true,
        ticks:{
-         min: 10000
+         suggestedMin: 1000
        }
      }]
    }
@@ -68,5 +81,7 @@ var option = {
     data: data,
     option: option
   });
+
+  imageSmoothingEnabled(ctx, false);
 
 }

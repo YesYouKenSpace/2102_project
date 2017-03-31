@@ -10,7 +10,7 @@
     <meta name="author" content="">
     <link rel="icon" href="../../favicon.ico">
     <script src="plugins/chart.js/dist/Chart.bundle.min.js"></script>
-
+    <script src="util/charts/projectChart.js"></script>
     <title>Dashboard</title>
 
     <!-- Bootstrap core CSS -->
@@ -243,6 +243,74 @@
 			  </div>
 			</div>
 		</div>
+    <div class="row">
+      <div class="col-md-6">
+        <div class="box project-box">
+          <div class="box-body">
+            <canvas id="progressChart" width="1328" height="664" style="display: block; height: 332px; width: 664px;"></canvas>
+            <script>
+            <?php
+            $query = "SELECT CASE
+                            WHEN current_date - t1.date <7 THEN 'a'
+                            WHEN current_date - t1.date  <15 then 'b'
+                            WHEN current_date - t1.date  <22 then 'c'
+                            WHEN current_date - t1.date  <30 then 'd'
+                            ELSE 'e' END as range, sum(t1.amount) as sum
+                            FROM Trans t1
+                            WHERE t1.projectId = ".$_GET['id']."
+                            GROUP BY range";
+            $result = pg_query($query) or die('Query failed: '.pg_last_error());
+            $graphData = array();
+            while($buffer = pg_fetch_assoc($result)){
+                  $graphData[$buffer['range']] = (int) $buffer['sum'];
+            }
+            ?>
+              console.log("DRAWING");
+              var a = parseInt("<?php echo $graphData['a'] ?>",10);
+              var b = parseInt("<?php echo $graphData['b'] ?>",10);
+              var c = parseInt("<?php echo $graphData['c'] ?>",10) ;
+              var d = parseInt("<?php echo $graphData['d'] ?>",10) ;
+              var e = parseInt("<?php echo $graphData['e'] ?>",10) ;
+
+              drawLineGraph(e,d,c,b,a, document.getElementById("progressChart"));
+            </script>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="box project-box">
+          <div class="box-body">
+            <canvas id="sthChart" width="1328" height="664" style="display: block; height: 2400px; width: 7200px;"></canvas>
+            <script>
+            <?php
+            $query = "SELECT CASE
+                            WHEN current_date - t1.date <7 THEN 'a'
+                            WHEN current_date - t1.date  <15 then 'b'
+                            WHEN current_date - t1.date  <22 then 'c'
+                            WHEN current_date - t1.date  <30 then 'd'
+                            ELSE 'e' END as range, sum(t1.amount) as sum
+                            FROM Trans t1
+                            WHERE t1.projectId = ".$_GET['id']."
+                            GROUP BY range";
+            $result = pg_query($query) or die('Query failed: '.pg_last_error());
+            $graphData = array();
+            while($buffer = pg_fetch_assoc($result)){
+                  $graphData[$buffer['range']] = (int) $buffer['sum'];
+            }
+            ?>
+              console.log("DRAWING");
+              var a = parseInt("<?php echo $graphData['a'] ?>",10);
+              var b = parseInt("<?php echo $graphData['b'] ?>",10);
+              var c = parseInt("<?php echo $graphData['c'] ?>",10) ;
+              var d = parseInt("<?php echo $graphData['d'] ?>",10) ;
+              var e = parseInt("<?php echo $graphData['e'] ?>",10) ;
+
+              drawLineGraph(e,d,c,b,a, document.getElementById("sthChart"));
+            </script>
+          </div>
+        </div>
+      </div>
+    </div>
 		<!-- /.row -->
 		<div class="row">
 			<div class="col-md-12">
@@ -286,48 +354,14 @@
 				</div>
 			</div>
 		</div>
-    <div class="row">
-      <div class="col-md-12">
-        <div class="box project-box">
-          <div class="box-body">
-            <canvas id="myChart" width="200px" height="200px"></canvas>
-          </div>
-        </div>
-      </div>
-    </div>
+
     </section>
     <!-- /.content -->
   </div>
   <!-- /.content-wrapper -->
 	</div>
-  <?php
-  $query = "SELECT CASE
-                  WHEN current_date - t1.date <7 THEN 'a'
-                  WHEN current_date - t1.date  <15 then 'b'
-                  WHEN current_date - t1.date  <22 then 'c'
-                  WHEN current_date - t1.date  <30 then 'd'
-                  ELSE 'e' END as range, sum(t1.amount) as sum
-                  FROM Trans t1
-                  WHERE t1.projectId = ".$_GET['id']."
-                  GROUP BY range";
-  $result = pg_query($query) or die('Query failed: '.pg_last_error());
-  $graphData = array();
-  while($buffer = pg_fetch_assoc($result)){
-        $graphData[$buffer['range']] = (int) $buffer['sum'];
-  }
-  ?>
 
-  <script src="util/charts/projectChart.js"></script>
-  <script>
-    console.log("DRAWING");
-    var a = parseInt("<?php echo $graphData['a'] ?>",10);
-    var b = parseInt("<?php echo $graphData['b'] ?>",10);
-    var c = parseInt("<?php echo $graphData['c'] ?>",10) ;
-    var d = parseInt("<?php echo $graphData['d'] ?>",10) ;
-    var e = parseInt("<?php echo $graphData['e'] ?>",10) ;
 
-    drawGraph();
-  </script>
 
     <!-- Bootstrap core JavaScript
     ================================================== -->
