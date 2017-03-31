@@ -274,15 +274,67 @@
         				?>
                         </tbody>
                       </table>
-              <ul class="list-group list-group-unbordered">
+
+            </div>
+          </div>
+        </div>
+
+      </div>
+      <div class='row'>
+        <div class="col-md-12">
+         <div class="box project-box">
+           <div class="box-body">
+              <h3 class="text-center">Not Invested for More Than 30 Days</h3>
+              <table id="usersTable" class="table table-bordered table-hover" >
+                        <thead>
+        					<tr>
+        						<th>First Name</th>
+        						<th>Last Name</th>
+        						<th>Email</th>
+        						<th>Last Transaction Date</th>
+        						<th>Total Funding</th>
+        						<th></th>
+        					</tr>
+                        </thead>
+                        <tbody>
+               <?php
+               $query = "SELECT m1.firstName, m1.lastName, MAX(t2.date) AS latesttrans, SUM(t2.amount) AS donation, m1.email
+               FROM Member m1 NATURAL JOIN Trans t2
+               WHERE NOT EXISTS(SELECT *
+               FROM Trans T1
+               WHERE M1.email=T1.email AND current_date-T1.date < 30)
+               GROUP BY m1.firstName,m1.lastName, m1.email
+               ORDER BY latesttrans";
+
+               $result = pg_query($query) or die('Query failed: ' . pg_last_error());
+
+               while($row=pg_fetch_assoc($result)) {
+     							echo "<tr><td>".$row['firstname']
+     							."</td><td>".$row['lastname']
+     							."</td><td>".$row['email']
+     							."</td><td>".$row['latesttrans']."</td>";
 
 
-             </ul>
+     							if($row['donation'] != 0) {
+     								echo "<td>$".$row['donation']."</td>";
+     							} else {
+     								echo "<td>$0</td>";
+     							}
+     							$user_email = $row['email'];
+
+     							echo "<td><button class=\"btn btn-primary btn-xs\"><span class=\"glyphicon glyphicon-info-sign\"></span></button></td></tr>";
+     						}
+
+     					pg_free_result($result);
+     				?>
+                     </tbody>
+                   </table>
+                 </div>
+
             </div>
           </div>
         </div>
       </div>
-
     </section>
     </div> <!-- /container -->
 
