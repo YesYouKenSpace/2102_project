@@ -57,10 +57,10 @@
                 </a>
               </li>
               <li class="dropdown user user-menu">
-              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><?php echo $user['firstname']." ".$user['lastname'];?><span class="caret"></span></a>
-              <ul class="dropdown-menu">
-                <li><a href="../logout.php">Sign Out</a></li>
-              </ul>
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><?php echo $user['firstname']." ".$user['lastname'];?><span class="caret"></span></a>
+                <ul class="dropdown-menu">
+                  <li><a href="../logout.php">Sign Out</a></li>
+                </ul>
             </li>
             </ul>
           </div>
