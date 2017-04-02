@@ -14,9 +14,18 @@
     <link href="../main.css" rel="stylesheet">
   	</head>
   	<body>
-		<?php
-			$dbconn = pg_connect("host=localhost port=5432 dbname=postgres user=postgres password=postgres")
-						or die('Could not connect: ' . pg_last_error());
+		<?php    
+		session_start();
+	    if (isset($_SESSION['usr_id'])) {
+	      if ($_SESSION['usr_role'] == 1) {
+	        header("Location: ../index.php");
+	      }
+	    } else {
+	      header("Location: ../login.php");
+	    }
+
+		$dbconn = pg_connect("host=localhost port=5432 dbname=postgres user=postgres password=postgres")
+					or die('Could not connect: ' . pg_last_error());
 		?>
 		<div class="wrapper" style="height: auto;">
     		<header class="main-header">
@@ -66,7 +75,7 @@
 			  				<div class="box project-box">
 								<div class="box-body">
 									<?php
-										if ($project['email'] === 'jwilliams1p@weibo.com') {
+										if ($project['email'] == $_SESSION['usr_id']) {
 											echo "<button type=\"button\" class=\"btn btn-primary pull-right\" data-toggle=\"modal\" data-target=\"#editProjectForm\" show=\"false\"><span><i class=\"fa fa-pencil\"></i></span> </button>";
 										}
 									?>
@@ -155,9 +164,9 @@
 												echo "<strong style=\"color:#00a65a;\">$0</strong> raised of $".$project['amountfundingsought']." goal<br/>";
 											}
 
-											if ($project['email'] === 'jwilliams1p@weibo.com' && new DateTime() > new DateTime($project['enddate'])) {
+											if ($project['email'] == $_SESSION['usr_id'] && new DateTime() > new DateTime($project['enddate'])) {
 												echo "<span class=\"label label-danger\">Inactive</span>";
-											} else if ($project['email'] === 'jwilliams1p@weibo.com') {
+											} else if ($project['email'] == $_SESSION['usr_id']) {
 												echo "<span class=\"label label-success\">Active</span>";
 											}
 											if ($project['sum'] >= $project['amountfundingsought']) {
@@ -205,7 +214,7 @@
 										<?php
 											$query = "SELECT SUM(t.amount) AS tSUM
 													  FROM Trans t
-													  WHERE t.email = 'jwilliams1p@weibo.com' AND t.projectid =".$_GET['id'];
+													  WHERE t.email = '".$_SESSION['usr_id']."' AND t.projectid =".$_GET['id'];
 											$result = pg_query($query) or die('Query failed: ' . pg_last_error());
 											$donation = pg_fetch_assoc($result);
 										?>
@@ -238,7 +247,7 @@
 													<?php
 													if(isset($_POST['donationForm'])){
 														$query = "INSERT INTO Trans (amount, date, email, projectid)
-																VALUES (".$_POST['amount'].", current_date, 'jwilliams1p@weibo.com',".$_GET['id'].")";
+																VALUES (".$_POST['amount'].", current_date, '".$_SESSION['usr_id']."',".$_GET['id'].")";
 														
 														$result = pg_query($query) or die('Query failed: ' . pg_last_error());
 													}

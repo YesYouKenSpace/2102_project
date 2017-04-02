@@ -14,8 +14,25 @@
   </head>
   <body>
     <?php
+    session_start();
+    if (isset($_SESSION['usr_id'])) {
+      if ($_SESSION['usr_role'] == 1) {
+        header("Location: ../index.php");
+      }
+    } else {
+      header("Location: ../login.php");
+    }
+
   	$dbconn = pg_connect("host=localhost port=5432 dbname=postgres user=postgres password=postgres")
       or die('Could not connect: ' . pg_last_error());
+
+    $query = "SELECT m.firstname, m.lastname, m.email, m.registrationdate, COUNT(p.id) AS pCount, COUNT(DISTINCT t.projectid) AS     tCount, SUM(t.amount) AS tSum
+            FROM member m LEFT OUTER JOIN project p ON m.email = p.email
+                          LEFT OUTER JOIN trans t ON t.email = m.email
+            WHERE m.email = '".$_SESSION['usr_id']."'
+            GROUP BY m.firstname, m.lastname, m.email, m.registrationdate";
+    $result = pg_query($query) or die('Query failed: ' . pg_last_error());
+    $user=pg_fetch_assoc($result);     
   	?>
     <div class="wrapper" style="height: auto;">
       <header class="main-header">
@@ -39,11 +56,12 @@
                   <span class="hidden-xs">View Projects</span>
                 </a>
               </li>
-              <li class="user user-menu">
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                  <span class="hidden-xs">Sign Out</span>
-                </a>
-              </li>
+              <li class="dropdown user user-menu">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><?php echo $user['firstname']." ".$user['lastname'];?><span class="caret"></span></a>
+              <ul class="dropdown-menu">
+                <li><a href="../logout.php">Sign Out</a></li>
+              </ul>
+            </li>
             </ul>
           </div>
         </nav>
@@ -54,15 +72,6 @@
 
             <div class="col-lg-3">
 	            <div class="box project-box">
-                <?php
-                  $query = "SELECT m.firstname, m.lastname, m.email, m.registrationdate, COUNT(p.id) AS pCount, COUNT(DISTINCT t.projectid) AS     tCount, SUM(t.amount) AS tSum
-                          FROM member m LEFT OUTER JOIN project p ON m.email = p.email
-                                        LEFT OUTER JOIN trans t ON t.email = m.email
-                          WHERE m.email = 'jwilliams1p@weibo.com'
-                          GROUP BY m.firstname, m.lastname, m.email, m.registrationdate";
-                  $result = pg_query($query) or die('Query failed: ' . pg_last_error());
-                  $user=pg_fetch_assoc($result);
-                ?>
                 <div class="box-body box-profile">
                   <img class="profile-user-img img-responsive img-circle" src="profile.png" alt="User profile picture">
                   <h3 class="profile-username text-center"><?php echo $user['firstname']." ".$user['lastname']; ?></h3>
@@ -117,7 +126,7 @@
                                                                       FROM Trans t
                                                                       GROUP BY t.projectId) b ON b.projectId = p.id
                                                     INNER JOIN category c ON c.id = p.categoryId
-                                      WHERE p.softdelete = false AND p.email = 'jwilliams1p@weibo.com'
+                                      WHERE p.softdelete = false AND p.email = '".$_SESSION['usr_id']."'
                                       ORDER BY p.enddate DESC, p.startdate DESC";
 
                             $result = pg_query($query) or die('Query failed: ' . pg_last_error());
@@ -171,7 +180,7 @@
                             <?php
                             $query = "SELECT t.date, p.title, t.amount
                                       FROM trans t INNER JOIN project p ON t.projectid = p.id
-                                      WHERE t.email = 'jwilliams1p@weibo.com'
+                                      WHERE t.email = '".$_SESSION['usr_id']."'
                                       ORDER BY t.date DESC";
 
                             $result = pg_query($query) or die('Query failed: ' . pg_last_error());
@@ -222,7 +231,7 @@
                                   if(isset($_POST['changePasswordForm'])){
                                     $query = "UPDATE member 
                                               SET password = crypt('".$_POST['newpassword']."', gen_salt('bf',8)) 
-                                              WHERE email = 'jwilliams1p@weibo.com'";
+                                              WHERE email = '".$_SESSION['usr_id']."'";
                                     $result = pg_query($query) or die('Query failed: ' . pg_last_error());
                                   }
                                 ?>  

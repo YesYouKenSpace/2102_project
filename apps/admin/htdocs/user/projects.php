@@ -17,6 +17,15 @@
   </head>
   <body>
 	<?php
+		session_start();
+	    if (isset($_SESSION['usr_id'])) {
+	      if ($_SESSION['usr_role'] == 1) {
+	        header("Location: ../index.php");
+	      }
+	    } else {
+	      header("Location: ../login.php");
+	    }
+
 		$dbconn = pg_connect("host=localhost port=5432 dbname=postgres user=postgres password=postgres")
 	    or die('Could not connect: ' . pg_last_error());
 	?>
@@ -61,7 +70,7 @@
 			                    <ul class="list-group list-group-unbordered">
 			                    	<?php
 										$query = "SELECT COUNT(p.id) AS projcount FROM Project p
-												  WHERE p.softdelete = false AND p.email = 'jwilliams1p@weibo.com'";
+												  WHERE p.softdelete = false AND p.email = '".$_SESSION['usr_id']."'";
 										$result = pg_query($query) or die('Query failed: ' . pg_last_error());
 										$projectCount = pg_fetch_assoc($result);
 									?>
@@ -162,7 +171,7 @@
 														$endDate = date('Y-m-d', strtotime(str_replace('/', '-', $dateArr[1])));
 														
 														$query = "INSERT INTO Project (title, description, startDate, endDate, categoryId, amountFundingSought, email)
-																VALUES ('".$_POST['title']."','".$_POST['description']."','".$startDate."','".$endDate."','".$_POST['category']."',".$_POST['amount'].",'jwilliams1p@weibo.com')";
+																VALUES ('".$_POST['title']."','".$_POST['description']."','".$startDate."','".$endDate."','".$_POST['category']."',".$_POST['amount'].",'".$_SESSION['usr_id']."')";
 														
 														$result = pg_query($query) or die('Query failed: ' . pg_last_error());
 													}
@@ -196,9 +205,8 @@
 					                                                                      FROM Trans t
 					                                                                      GROUP BY t.projectId) b ON b.projectId = p.id
 					                                                    INNER JOIN category c ON c.id = p.categoryId
-					                                      WHERE p.email = 'jwilliams1p@weibo.com' AND p.softDelete = false
+					                                      WHERE p.email = '".$_SESSION['usr_id']."' AND p.softDelete = false
 					                                      ORDER BY p.enddate DESC, p.startdate DESC";
-
 					                            $result = pg_query($query) or die('Query failed: ' . pg_last_error());
 					                         
 					                            if (pg_num_rows($result) > 0) {
@@ -243,7 +251,7 @@
 															</tr>";
 						                              }
 						                            } else {
-						                              echo "<td colspan=9 class\"text-center\">You have not created any project.</td>";
+						                              echo "<td colspan=10 class\"text-center\">You have not created any project.</td>";
 						                            }
 					                          	?>
 				                          	</tbody>
