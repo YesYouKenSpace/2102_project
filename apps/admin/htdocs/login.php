@@ -2,7 +2,11 @@
 session_start();
 
 if(isset($_SESSION['usr_id'])!="") {
-    header("Location: index.php");
+    if ($_SESSION['usr_role'] === 1) {
+      header("Location: index.php");
+    } else {
+      header("Location: user/index.php");
+    }
 }
 
 $dbconn = pg_connect("host=localhost port=5432 dbname=postgres user=postgres password=postgres")
@@ -18,8 +22,12 @@ if (isset($_POST['login'])) {
 
     if ($row = pg_fetch_array($result)) {
         $_SESSION['usr_id'] = $row['email'];
-        $_SESSION['usr_name'] = $row['name'];
-        header("Location: index.php");
+        $_SESSION['usr_role'] = $row['roleid'];
+        if ($_SESSION['usr_role'] == 1) {
+          header("Location: index.php");
+        } else {
+          header("Location: user/index.php");
+        }
     } else {
         $errormsg = "Incorrect Email or Password!!!";
     }
