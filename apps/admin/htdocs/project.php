@@ -247,32 +247,34 @@
       <div class="col-md-6">
         <div class="box project-box">
           <div class="box-body">
-            <canvas id="progressChart" width="1328" height="664" style="display: block; height: 332px; width: 664px;"></canvas>
+            <canvas id="dailyChart" width="1328" height="664" style="display: block; height: 332px; width: 664px;"></canvas>
             <script>
             <?php
-            $query = "SELECT CASE
-                            WHEN current_date - t1.date <7 THEN 'a'
-                            WHEN current_date - t1.date  <15 then 'b'
-                            WHEN current_date - t1.date  <22 then 'c'
-                            WHEN current_date - t1.date  <30 then 'd'
-                            ELSE 'e' END as range, sum(t1.amount) as sum
+            $query = "SELECT t1.date, sum(t1.amount) AS sum
                             FROM Trans t1
                             WHERE t1.projectId = ".$_GET['id']."
-                            GROUP BY range";
+                            GROUP BY t1.date, t1.projectId
+                            ORDER BY t1.date ASC";
             $result = pg_query($query) or die('Query failed: '.pg_last_error());
             $graphData = array();
+            $graphLabels = array();
+            $count =0;
             while($buffer = pg_fetch_assoc($result)){
-                  $graphData[$buffer['range']] = (int) $buffer['sum'];
+                if($count!=0){
+                  $graphData[$count] = (int) ($buffer['sum']); // + $graphData[$count - 1]);
+                  $graphLabels[$count] = $buffer['date'];
+                }else{
+                  $graphData[$count] = (int) $buffer['sum'];
+                  $graphLabels[$count] = $buffer['date'];
+                }
+
+                  $count++;
             }
+            pg_free_result($result);
             ?>
               console.log("DRAWING");
-              var a = parseInt("<?php echo $graphData['a'] ?>",10);
-              var b = parseInt("<?php echo $graphData['b'] ?>",10);
-              var c = parseInt("<?php echo $graphData['c'] ?>",10) ;
-              var d = parseInt("<?php echo $graphData['d'] ?>",10) ;
-              var e = parseInt("<?php echo $graphData['e'] ?>",10) ;
+              drawLineGraph(<?php echo json_encode($graphData) ?>, "$ Raised daily",<?php echo json_encode($graphLabels) ?>, document.getElementById("dailyChart"));
 
-              drawLineGraph(e,d,c,b,a, document.getElementById("progressChart"));
             </script>
           </div>
         </div>
@@ -280,32 +282,43 @@
       <div class="col-md-6">
         <div class="box project-box">
           <div class="box-body">
-            <canvas id="sthChart" width="1328" height="664" style="display: block; height: 2400px; width: 7200px;"></canvas>
+            <canvas id="progressChart" width="1328" height="664" style="display: block; height: 332px; width: 664px;"></canvas>
             <script>
             <?php
-            $query = "SELECT CASE
-                            WHEN current_date - t1.date <7 THEN 'a'
-                            WHEN current_date - t1.date  <15 then 'b'
-                            WHEN current_date - t1.date  <22 then 'c'
-                            WHEN current_date - t1.date  <30 then 'd'
-                            ELSE 'e' END as range, sum(t1.amount) as sum
+            $query = "SELECT sum(t.amount) AS sum
+                      FROM(SELECT   CASE
+                            WHEN current_date - t1.date <7 THEN 1
+                            WHEN current_date - t1.date  <15 then 2
+                            WHEN current_date - t1.date  <22 then 3
+                            WHEN current_date - t1.date  <30 then 4
+                            ELSE 5 END as rank, t1.amount
                             FROM Trans t1
-                            WHERE t1.projectId = ".$_GET['id']."
-                            GROUP BY range";
+                            WHERE t1.projectId = ".$_GET['id'].") AS t
+                            GROUP BY t.rank
+                            ORDER BY t.rank DESC";
             $result = pg_query($query) or die('Query failed: '.pg_last_error());
             $graphData = array();
-            while($buffer = pg_fetch_assoc($result)){
-                  $graphData[$buffer['range']] = (int) $buffer['sum'];
+            $graphLabels = [">1 month ago",  "A month ago", "Three weeks ago" , "Two weeks ago",  "This week"];
+            $count =0;
+            while(($buffer = pg_fetch_assoc($result)) || $count <5){
+                if($buffer ==null && $count==0){
+                  $graphData[$count] = 0;
+                }else if($buffer ==null){
+                  $graphData[$count] = (int) (0 + $graphData[$count - 1]);
+                }
+                else if($count!=0){
+                  $graphData[$count] = (int) ($buffer['sum'] + $graphData[$count - 1]);
+                }else{
+                  $graphData[$count] = (int) ($buffer['sum']);
+                }
+
+                  $count++;
             }
+            pg_free_result($result);
             ?>
               console.log("DRAWING");
-              var a = parseInt("<?php echo $graphData['a'] ?>",10);
-              var b = parseInt("<?php echo $graphData['b'] ?>",10);
-              var c = parseInt("<?php echo $graphData['c'] ?>",10) ;
-              var d = parseInt("<?php echo $graphData['d'] ?>",10) ;
-              var e = parseInt("<?php echo $graphData['e'] ?>",10) ;
+              drawLineGraph(<?php echo json_encode($graphData) ?>, "Aggregate $ raised", <?php echo json_encode($graphLabels) ?>, document.getElementById("progressChart"));
 
-              drawLineGraph(e,d,c,b,a, document.getElementById("sthChart"));
             </script>
           </div>
         </div>
