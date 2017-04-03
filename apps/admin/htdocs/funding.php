@@ -139,7 +139,7 @@
                   <div class="input-group">
                     <input name="search-project-title" type="text" class="form-control" placeholder="Project title"/>
                     <span class="input-group-addon">
-                      <i class="fa fa-search"></i>
+                      <i class="fa fa-info-circle"></i>
                     </span>
                   </div>
                 </div>
@@ -147,11 +147,11 @@
                   <div class="input-group">
                     <input name="search-donor-name" type="text" class="form-control" placeholder="Donor name"/>
                     <span class="input-group-addon">
-                      <i class="fa fa-search"></i>
+                      <i class="fa fa-user"></i>
                     </span>
                   </div>
                 </div>
-                <div class="col-md-2">
+                <div class="col-md-3">
                   <select name="search-amount-donated" class="form-control" method="post">
                     <option disabled selected>Total Amount Donated</option>  
                     <option value="0 1">$0 to $1k Donated</option>
@@ -161,7 +161,7 @@
                     <option value="1000 2147483647">>$1M Donated</option>
                   </select> 
                 </div>
-                <div class="col-md-2">
+                <div class="col-md-1">
                   <button name="search-submit" type="submit" class="btn btn-primary">Search</button>
                 </div>
                 </form>
@@ -287,19 +287,22 @@
                         $amountDonatedMin = $amountDonatedArray[0] * 1000;
                         $amountDonatedMax = $amountDonatedArray[1] * 1000;
 
-                        $query = "SELECT t.amount, t.date, p.title, t.email, t.transactionNo
+                        $baseQuery = "SELECT m.firstName, m.lastName, t.amount, t.date, 
+                                             p.title, t.email, t.transactionNo
                                 FROM Trans t
                                 INNER JOIN Project p ON t.projectId = p.id
                                 INNER JOIN Member m ON t.email = m.email
-                                AND t.softDelete = FALSE
-                                AND p.title LIKE '%{$searchProjectTitle}%'
-                                AND (m.firstName LIKE '%{$searchDonorName}%' OR m.lastName LIKE '%{$searchDonorName}%') ";
+                                WHERE t.softDelete = FALSE";
 
-                        if (!empty($amountDonatedMin) && !empty($amountDonatedMax)) {
-                            $query .= "AND t.amount <= {$amountDonatedMax} AND t.amount >= {$amountRaisedMin} ";
+                        $query = "SELECT * FROM ({$baseQuery}) AS base
+                                WHERE title LIKE '%{$searchProjectTitle}%'
+                                AND (firstName LIKE '%{$searchDonorName}%' OR lastName LIKE '%{$searchDonorName}%') ";
+
+                        if (!empty($amountDonatedMin) || !empty($amountDonatedMax)) {
+                            $query .= "AND amount <= {$amountDonatedMax} AND amount >= {$amountDonatedMin} ";
                         }
 
-                        $query .= "ORDER BY t.date DESC";
+                        $query .= "ORDER BY date DESC";
 
                         $result = pg_query($query) or die('Query failed: ' . pg_last_error());
              

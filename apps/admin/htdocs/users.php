@@ -134,15 +134,60 @@
             </div>
             <!-- /.box-header -->
             <div class="box-body">
-			<div class="row">
-				<form id="search-user-form" role="form" method="post">
-				<div class="col-md-4">
+			<form id="search-user-form" role="form" method="post">
+			<div class="row extra-bottom-padding">
+				<div class="col-md-3">
 					<div class="input-group">
 						<input name="search-user" type="text" class="form-control" placeholder="First name/Last name"/>
 						<span class="input-group-addon">
-							<i class="fa fa-search"></i>
+							<i class="fa fa-user"></i>
 						</span>
 					</div>
+				</div>
+				<div class="col-md-3">
+					<select name="search-projects-created" class="form-control" method="post">
+						<option disabled selected>Number of Projects Created</option>	
+						<option value="0 5"><5</option>
+						<option value="5 10">5 to 10</option>
+						<option value="10 15">10 to 15</option>
+						<option value="15 2147483647">>15</option>
+					</select>	
+				</div>
+				<div class="col-md-3">
+					<select name="search-projects-funded" class="form-control" method="post">
+						<option disabled selected>Number of Projects Funded</option>	
+						<option value="0 5"><5</option>
+						<option value="5 10">5 to 10</option>
+						<option value="10 15">10 to 15</option>
+						<option value="15 2147483647">>15</option>
+					</select>	
+				</div>
+				<div class="col-md-3">
+					<select name="search-donation" class="form-control" method="post">
+						<option disabled selected>Total Amount Donated</option>	
+						<option value="0 1">$0 to $1k Donated</option>
+						<option value="1 10">$1k to $10k Donated</option>
+						<option value="10 100">$10k to $100k Donated</option>
+						<option value="100 1000">$100k to $1M Donated</option>
+						<option value="1000 2147483647">>$1M Donated</option>
+					</select>	
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-md-3">
+					<select name="search-country" class="form-control" method="post">
+					<option disabled selected>Select a country</option>
+						<?php
+							$query = 'SELECT * FROM Country c';
+							$result = pg_query($query) or die('Query failed: ' . pg_last_error());
+				 
+							while($row=pg_fetch_assoc($result)) {
+								echo "<option value=".$row['id'].">".$row['name']."</option>";
+							}
+							
+							pg_free_result($result);
+						?>			
+					</select>	
 				</div>
 				<div class="col-md-2">
 					<select name="search-role" class="form-control" method="post">
@@ -159,54 +204,11 @@
 						?>			
 					</select>	
 				</div>
-				<div class="col-md-2">
-					<select name="search-country" class="form-control" method="post">
-					<option disabled selected>Select a country</option>
-						<?php
-							$query = 'SELECT * FROM Country c';
-							$result = pg_query($query) or die('Query failed: ' . pg_last_error());
-				 
-							while($row=pg_fetch_assoc($result)) {
-								echo "<option value=".$row['id'].">".$row['name']."</option>";
-							}
-							
-							pg_free_result($result);
-						?>			
-					</select>	
-				</div>
-				<div class="col-md-2">
-					<select name="search-projects-created" class="form-control" method="post">
-						<option disabled selected>Projects created</option>	
-						<option value="0 5"><5</option>
-						<option value="5 10">5 to 10</option>
-						<option value="10 15">10 to 15</option>
-						<option value="15 2147483647">>15</option>
-					</select>	
-				</div>
-				<div class="col-md-2">
-					<select name="search-projects-funded" class="form-control" method="post">
-						<option disabled selected>Projects funded</option>	
-						<option value="0 5"><5</option>
-						<option value="5 10">5 to 10</option>
-						<option value="10 15">10 to 15</option>
-						<option value="15 2147483647">>15</option>
-					</select>	
-				</div>
-				<div class="col-md-2">
-					<select name="search-donation" class="form-control" method="post">
-						<option disabled selected>Total Donation</option>	
-						<option value="0 1">$0 to $1k Donated</option>
-						<option value="1 10">$1k to $10k Donated</option>
-						<option value="10 100">$10k to $100k Donated</option>
-						<option value="100 1000">$100k to $1M Donated</option>
-						<option value="1000 2147483647">>$1M Donated</option>
-					</select>	
-				</div>
-				<br/>
-				<div class="col-md-2">
+				<div class="col-md-1 col-md-offset-6">
 					<button name="search-submit" type="submit" class="btn btn-primary">Search</button>
-				</div>				
-				</form>
+				</div>	
+			</div>			
+			</form>
 			</div>
 			
 			<!-- Modal -->
@@ -371,37 +373,47 @@
 						$donationMin = $donationArray[0] * 1000;
 						$donationMax = $donationArray[1] * 1000;
 
-						$query = "SELECT m.firstName, m.lastName, m.email, c.name AS country_name, m.registrationDate, r.type, COUNT(p.id) AS proj_created, COALESCE(b.projFunded, 0) AS proj_funded, COALESCE(b.transactSum, 0) AS donation 
-								FROM Member m LEFT OUTER JOIN Project p ON m.email = p.email
-											  LEFT OUTER JOIN (SELECT t.email, SUM(t.amount) AS transactSum, COUNT(DISTINCT t.projectId) AS projFunded 
+						$baseQuery = "SELECT m.firstName, m.lastName, m.email, m.roleId, m.countryId, 
+										 c.name AS countryName, m.registrationDate, r.type, 
+									     COALESCE(p1.projCreated, 0) AS projCreated,
+									     COALESCE(b.projFunded, 0) AS projFunded, 
+									     COALESCE(b.totalDonation, 0) AS totalDonation 
+								FROM Member m INNER JOIN Country c ON m.countryId = c.id
+											  INNER JOIN Role r ON m.roleId = r.id
+											  LEFT OUTER JOIN (SELECT p.email, COUNT(p.id) AS projCreated
+											  			       FROM Project p 
+											  				   GROUP BY p.email) p1
+											  				   ON m.email = p1.email
+											  LEFT OUTER JOIN (SELECT t.email, SUM(t.amount) AS totalDonation, 
+											  				   		  COUNT(DISTINCT t.projectId) AS projFunded 
 											  				   FROM Trans t GROUP BY t.email) b 
-															   ON b.email = m.email,
-									 Country c, Role r
-								WHERE m.countryId = c.id AND r.id = m.roleId AND m.softDelete = FALSE
-								GROUP BY m.firstName, m.lastName, m.email, c.name, m.registrationDate, r.type, b.projFunded, b.transactSum
-								HAVING (m.firstName LIKE '%{$searchName}%' OR m.lastName LIKE '%{$searchName}%') ";
+															   ON b.email = m.email
+								WHERE m.softDelete = FALSE";
+
+						$query = "SELECT * FROM ({$baseQuery}) AS base
+								WHERE (firstName LIKE '%{$searchName}%' OR lastName LIKE '%{$searchName}%') ";
 
 						if (!empty($searchCountryId)) {
-							$query .= "AND m.countryId = {$searchCountryId} ";
+							$query .= "AND countryId = {$searchCountryId} ";
 						}
 
 						if (!empty($searchRoleId)) {
-							$query .= "AND m.roleId = {$searchRoleId} ";
+							$query .= "AND roleId = {$searchRoleId} ";
 						}
 
-						if (!empty($createdMax) && !empty($createdMin)) {
-							$query .= "AND COUNT(p.id) <= {$createdMax} AND COUNT(p.id) >= {$createdMin} ";
+						if (!empty($createdMax) || !empty($createdMin)) {
+							$query .= "AND projCreated <= {$createdMax} AND projCreated >= {$createdMin} ";
 						}
 
-						if (!empty($fundedMin) && !empty($fundedMax)) {
-							$query .= "AND b.projFunded <= {$fundedMax} AND b.projFunded >= {$fundedMin} ";
+						if (!empty($fundedMin) || !empty($fundedMax)) {
+							$query .= "AND projFunded <= {$fundedMax} AND projFunded >= {$fundedMin} ";
 						}
 
-						if (!empty($donationMax) && !empty($donationMin)) {
-							$query .= "AND b.transactSum <= {$donationMax} AND b.transactSum >= {$donationMin} ";
+						if (!empty($donationMax) || !empty($donationMin)) {
+							$query .= "AND totalDonation <= {$donationMax} AND totalDonation >= {$donationMin} ";
 						}
 
-						$query .= "ORDER BY m.firstName, m.lastName";
+						$query .= "ORDER BY firstName, lastName";
 
 						$result = pg_query($query) or die('Query failed: ' . pg_last_error());
 	         
@@ -409,12 +421,12 @@
 							echo "<tr><td>".$row['firstname']
 							."</td><td>".$row['lastname']
 							."</td><td>".$row['email']
-							."</td><td>".$row['country_name']
+							."</td><td>".$row['countryname']
 							."</td><td>".$row['registrationdate']
 							."</td><td>".$row['type'] //TODO: Add privilege level here
-							."</td><td>".$row['proj_created']
-							."</td><td>".$row['proj_funded']
-							."</td><td>$".$row['donation']."</td>";
+							."</td><td>".$row['projcreated']
+							."</td><td>".$row['projfunded']
+							."</td><td>$".$row['totaldonation']."</td>";
 							
 							$user_email = $row['email'];
 

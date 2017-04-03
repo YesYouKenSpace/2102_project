@@ -676,6 +676,10 @@ img {
     padding: 0 15px;
 }
 
+.row .extra-bottom-padding{
+   margin-bottom: 10px;
+}
+
 .badge-1 {
     background-color: #f1c40f;
 }
