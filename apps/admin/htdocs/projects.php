@@ -18,16 +18,16 @@
 	<!-- Font Awesome -->
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.5.0/css/font-awesome.min.css">
 	
-  <!-- Ionicons -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/ionicons/2.0.1/css/ionicons.min.css">
+  	<!-- Ionicons -->
+  	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/ionicons/2.0.1/css/ionicons.min.css">
   
-    <!-- daterange picker -->
-  <link rel="stylesheet" href="plugins/daterangepicker/daterangepicker.css">
-  <!-- bootstrap datepicker -->
-  <link rel="stylesheet" href="plugins/datepicker/datepicker3.css">
+   	<!-- Include Date Range Picker -->
+	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.4.1/js/bootstrap-datepicker.min.js"></script>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.4.1/css/bootstrap-datepicker3.css"/>
+
   
     <!-- DataTables -->
-  <link rel="stylesheet" href="plugins/datatables/dataTables.bootstrap.css">
+  	<link rel="stylesheet" href="plugins/datatables/dataTables.bootstrap.css">
   
     <!-- Custom styles for this template -->
     <link href="main.css" rel="stylesheet">
@@ -141,6 +141,65 @@
             </div>
             <!-- /.box-header -->
             <div class="box-body">
+            <div class="row">
+				<form id="search-project-form" role="form" method="post">
+				<div class="col-md-4">
+					<div class="input-group">
+						<input name="search-project-title" type="text" class="form-control" placeholder="Project title"/>
+						<span class="input-group-addon">
+							<i class="fa fa-search"></i>
+						</span>
+					</div>
+				</div>
+				<div class="col-md-4">
+					<div class="input-group">
+						<input name="search-owner-name" type="text" class="form-control" placeholder="Project owner name"/>
+						<span class="input-group-addon">
+							<i class="fa fa-search"></i>
+						</span>
+					</div>
+				</div>
+				<div class="col-md-2">
+					<select name="search-category" class="form-control" method="post">
+					<option disabled selected>Select a category</option>
+						<?php
+							$query = 'SELECT * FROM Category c';
+							$result = pg_query($query) or die('Query failed: ' . pg_last_error());
+				 
+							while($row=pg_fetch_assoc($result)) {
+								echo "<option value=".$row['id'].">".$row['name']."</option>";
+							}
+										
+							pg_free_result($result);
+						?>			
+					</select>	
+				</div>
+				<div class="col-md-2">
+					<select name="search-amount-raised" class="form-control" method="post">
+						<option disabled selected>Total Amount Raised</option>	
+						<option value="0 1">$0 to $1k Raised</option>
+						<option value="1 10">$1k to $10k Raised</option>
+						<option value="10 100">$10k to $100k Raised</option>
+						<option value="100 1000">$100k to $1M Raised</option>
+						<option value="1000 2147483647">>$1M Raised</option>
+					</select>	
+				</div>
+				<div class="col-md-2">
+					<select name="search-amount-goal" class="form-control" method="post">
+						<option disabled selected>Total Goal Amount</option>	
+						<option value="0 1">$0 to $1k goal</option>
+						<option value="1 10">$1k to $10k goal</option>
+						<option value="10 100">$10k to $100k goal</option>
+						<option value="100 1000">$100k to $1M goal</option>
+						<option value="1000 2147483647">>$1M goal</option>
+					</select>	
+				</div>
+				<div class="col-md-2">
+					<button name="search-submit" type="submit" class="btn btn-primary">Search</button>
+				</div>
+				</form>
+			</div>
+
 			<!-- Modal -->
 			<div id="projectForm" class="modal fade" role="dialog">
 			  <div class="modal-dialog">
@@ -246,6 +305,7 @@
                 </thead>
                 <tbody id="table_data">
                 <?php
+					ob_start();
 					$query = 'SELECT p.id, p.title, p.startDate, p.endDate, c.name, p.amountFundingSought, p.email, b.sum
 							FROM Project p LEFT OUTER JOIN (SELECT t.projectId, SUM(t.amount) AS SUM 
 														FROM Trans t
@@ -256,38 +316,116 @@
 					$result = pg_query($query) or die('Query failed: ' . pg_last_error());
          
 					while($row=pg_fetch_assoc($result)) {
-							if ((!is_null($row['sum'])) && ($row['sum'] >= $row['amountfundingsought'])) { 
+						if ((!is_null($row['sum'])) && ($row['sum'] >= $row['amountfundingsought'])) { 
+							echo "<tr style=\"background-color:#c9ffc9;\">";
+						} else {
+							echo "<tr>";
+						}
+						
+						echo "<td>".$row['title']
+						."</td><td>".$row['startdate']
+						."</td><td>".$row['enddate']
+						."</td><td>".$row['name']
+						."</td><td><div class=\"progress\" style=\"margin-bottom:2px;\"><div class=\"progress-bar progress-bar-success\" role=\"progressbar\" aria-valuenow=\"70\"
+						aria-valuemin=\"0\" aria-valuemax=\"100\" style=\"width:"
+						.(($row['sum'] / $row['amountfundingsought'])*100)
+						."%;\">
+						</div></div>"; 
+						
+						if (is_null($row['sum'])) {
+							echo "$0 / $".$row['amountfundingsought'];
+						}else if ($row['sum'] >= $row['amountfundingsought']) {
+							echo " <strong style=\"color:#5cb85c;\">$".$row['sum']."</strong> / $".$row['amountfundingsought'];
+						} else {
+							echo "$".$row['sum']." / $".$row['amountfundingsought'];
+						} 
+	                    $proj_id = $row['id'];
+
+						echo "</td><td>".$row['email'].
+						"</td><td><button class=\"btn btn-primary btn-xs\" onClick=\"location.href='project.php?id=$proj_id'\"><span class=\"glyphicon glyphicon-info-sign\"></span></button></td>
+						<td><button class=\"btn btn-danger btn-xs delete_project\" project-id=\"$proj_id\" href=\"javascript:void(0)\"><span class=\"glyphicon glyphicon-trash\"></span></button></td></tr>";
+					}
+
+					pg_free_result($result);
+
+					if (isset(($_POST['search-submit']))) {
+						ob_end_clean();
+						ob_start();
+						$searchProjectName = $_POST['search-project-title'];
+						$searchProjectOwner = $_POST['search-owner-name'];
+						$searchCategoryId = $_POST['search-category'];
+
+						$searchAmountRaised = $_POST['search-amount-raised'];
+						$amountRaisedArray = explode(" ", $searchAmountRaised);
+						$amountRaisedMin = $amountRaisedArray[0] * 1000;
+						$amountRaisedMax = $amountRaisedArray[1] * 1000;
+
+						$searchAmountGoal = $_POST['search-amount-goal'];
+						$amountGoalArray = explode(" ", $searchAmountGoal);
+						$amountGoalMin = $amountGoalArray[0] * 1000;
+						$amountGoalMax = $amountGoalArray[1] * 1000;
+
+						$query = "SELECT p.id, p.title, p.startDate, p.endDate, c.name, p.amountFundingSought, p.email, COALESCE(b.transactSum, 0) AS amountRaised
+							FROM Project p INNER JOIN Category c ON p.categoryId = c.id 
+										   INNER JOIN Member m ON p.email = m.email
+										   LEFT OUTER JOIN (SELECT t.projectId, SUM(t.amount) AS transactSum 
+															FROM Trans t
+															GROUP BY t.projectId) b 
+										   					ON p.id = b.projectId
+							WHERE p.softDelete = FALSE 
+							AND p.title LIKE '%{$searchProjectName}%'
+							AND (m.firstName LIKE '%{$searchProjectOwner}%' OR m.lastName LIKE '%{$searchProjectOwner}%') ";
+
+						if (!empty($searchCategoryId)) {
+							$query .= "AND c.id = {$searchCategoryId} ";
+						}
+
+						if (!empty($amountRaisedMin) && !empty($amountRaisedMax)) {
+							$query .= "AND amountRaised <= {$amountRaisedMax} AND amountRaised >= {$amountRaisedMin} ";
+						}
+
+						if (!empty($amountGoalMin) && !empty($amountGoalMax)) {
+							$query .= "AND p.amountFundingSought <= {$amountGoalMax} AND p.amountFundingSought >= {$amountGoalMin} ";
+						}
+
+						$query .= "ORDER BY p.endDate DESC, p.startDate DESC";
+
+						$result = pg_query($query) or die('Query failed: ' . pg_last_error());
+	         
+						while($row=pg_fetch_assoc($result)) {
+							if ((!is_null($row['amountRaised'])) && ($row['amountRaised'] >= $row['amountfundingsought'])) { 
 								echo "<tr style=\"background-color:#c9ffc9;\">";
 							} else {
 								echo "<tr>";
 							}
-							
+						
 							echo "<td>".$row['title']
 							."</td><td>".$row['startdate']
 							."</td><td>".$row['enddate']
 							."</td><td>".$row['name']
 							."</td><td><div class=\"progress\" style=\"margin-bottom:2px;\"><div class=\"progress-bar progress-bar-success\" role=\"progressbar\" aria-valuenow=\"70\"
 							aria-valuemin=\"0\" aria-valuemax=\"100\" style=\"width:"
-							.(($row['sum'] / $row['amountfundingsought'])*100)
+							.(($row['amountRaised'] / $row['amountfundingsought'])*100)
 							."%;\">
 							</div></div>"; 
 							
-							if (is_null($row['sum'])) {
+							if (is_null($row['amountRaised'])) {
 								echo "$0 / $".$row['amountfundingsought'];
-							}else if ($row['sum'] >= $row['amountfundingsought']) {
-								echo " <strong style=\"color:#5cb85c;\">$".$row['sum']."</strong> / $".$row['amountfundingsought'];
+							} else if ($row['amountRaised'] >= $row['amountfundingsought']) {
+								echo " <strong style=\"color:#5cb85c;\">$".$row['amountRaised']."</strong> / $".$row['amountfundingsought'];
 							} else {
-								echo "$".$row['sum']." / $".$row['amountfundingsought'];
+								echo "$".$row['amountRaised']." / $".$row['amountfundingsought'];
 							} 
+
 		                    $proj_id = $row['id'];
 
 							echo "</td><td>".$row['email'].
 							"</td><td><button class=\"btn btn-primary btn-xs\" onClick=\"location.href='project.php?id=$proj_id'\"><span class=\"glyphicon glyphicon-info-sign\"></span></button></td>
 							<td><button class=\"btn btn-danger btn-xs delete_project\" project-id=\"$proj_id\" href=\"javascript:void(0)\"><span class=\"glyphicon glyphicon-trash\"></span></button></td></tr>";
-						}
-					
-					pg_free_result($result);
-					
+						}						
+						
+						pg_free_result($result);
+					}					
 				?>
                 </tbody>
               </table>
