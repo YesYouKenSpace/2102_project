@@ -277,7 +277,7 @@
 							$dateStr = $_POST['duration'];
 							$dateArr = (explode(" - ",$dateStr));
 							$startDate = date('Y-m-d', strtotime(str_replace('/', '-', $dateArr[0])));
-							$endDate = date('Y-m-d', strtotime(str_replace('/', '-', $dateArr[0])));
+							$endDate = date('Y-m-d', strtotime(str_replace('/', '-', $dateArr[1])));
 							
 							$query = "INSERT INTO Project (title, description, startDate, endDate, categoryId, amountFundingSought, email)
 									VALUES ('".$_POST['title']."','".$_POST['description']."','".$startDate."','".$endDate."','".$_POST['category']."',".$_POST['amount'].",'".$_POST['organiser']."')";
