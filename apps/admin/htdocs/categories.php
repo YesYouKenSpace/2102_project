@@ -45,11 +45,6 @@
 			<!--Sidebar Nav-->
 	  		<aside class="main-sidebar">
 				<section class="sidebar" style="height:auto;">
-	      			<div class="user-panel">
-	        			<div class="pull-left info">
-	          				<p>Admin</p>
-	        			</div>
-	      			</div>
 					<ul class="sidebar-menu">
 						<li class="header">NAVIGATION</li>
 						<li class="treeview">

@@ -101,7 +101,7 @@
             <i class="fa fa-gear"></i> <span>Category</span>
           </a>
         </li>
-    <li class="treeview">
+        <li class="treeview">
           <a href="analytics.php">
             <i class="fa fa-dollar"></i> <span>Analytics</span>
           </a>
