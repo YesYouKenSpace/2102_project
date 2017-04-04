@@ -22,7 +22,7 @@
   	<body>
 		<?php $dbconn = pg_connect("host=localhost port=5432 dbname=postgres user=postgres password=postgres")
 	    	or die('Could not connect: ' . pg_last_error());?>
-		
+
 		<div class="wrapper" style="height: auto;">
 			<!--Header Nav-->
 	    	<header class="main-header">
@@ -76,6 +76,11 @@
 					    		<i class="fa fa-gear"></i> <span>Category</span>
 					  		</a>
 						</li>
+						<li class="treeview">
+				          <a href="analytics.php">
+				            <i class="fa fa-dollar"></i> <span>Analytics</span>
+				          </a>
+				        </li>
 					</ul>
 				</section>
 	  		</aside>
@@ -87,7 +92,7 @@
 		    	</section>
 				<section class="content">
 					<div class="row">
-						<div class="col-md-8">		
+						<div class="col-md-8">
 						  	<div class="row category-row">
 						  		<div class="box category-box">
 									<div class="box-body">
@@ -127,17 +132,17 @@
 														$result = pg_query($query) or die('Query failed: ' . pg_last_error());
 														echo "<script type='text/javascript'>alert('".pg_affected_rows($result)."');</script>";
 													}
-												?>	
+												?>
 											</div>
 									  	</div>
 									</div>
 
 									<?php
-										$query = "SELECT * 
+										$query = "SELECT *
 													FROM Category c LEFT OUTER JOIN (SELECT p.categoryid, donors, total, COUNT(p.categoryid) AS pCount
 																						FROM Project p LEFT OUTER JOIN (SELECT p2.categoryid, COUNT(DISTINCT t.email)						AS donors, SUM(t.amount) AS total
 													                            									FROM Project p2 INNER JOIN Trans t ON p2.id = t.projectId
-													                            									GROUP BY p2.categoryid) pTrans 
+													                            									GROUP BY p2.categoryid) pTrans
 													                            						ON p.categoryid = pTrans.categoryId
 																						GROUP BY p.categoryid, total, donors) fundedCategories
 				                									ON c.id = fundedCategories.categoryid
@@ -147,13 +152,13 @@
 									?>
 										<h3 class="text-center"><strong><?php echo $category['name'];?></strong></h3>
 										<p class="text-center">
-											<?php 
+											<?php
 												if ($category['softdelete'] === 't') {
 										  			echo "<span class='label label-danger'>Inactive</span>";
 										  		} else {
 										  			echo "<span class='label label-success'>Active</span>";
 										  		}
-									  		?>	
+									  		?>
 										</p>
 										<div class="row">
 											<div class="col-md-6">
@@ -161,46 +166,46 @@
 													<li class="list-group-item">
 													  <b>Associated Projects</b>
 													  	<a class="pull-right">
-													  		<?php 
+													  		<?php
 														  		if ($category['pcount'] != 0) {
 														  			echo $category['pcount'];
 														  		} else {
 														  			echo "0";
-													  		}?>		
+													  		}?>
 												  		</a>
 													</li>
 													<li class="list-group-item">
-													  <b>Funding Achieved</b> 
+													  <b>Funding Achieved</b>
 													  	<a class="pull-right">$
-														  	<?php 
+														  	<?php
 														  		if ($category['total'] != 0) {
 														  			echo $category['total'];
 														  		} else {
 														  			echo "0";
 														  		}
-													  		?>			
+													  		?>
 														</a>
 													</li>
-												</ul>	
+												</ul>
 											</div>
 											<div class="col-md-6">
 												<ul class="list-group list-group-unbordered">
 													<li class="list-group-item">
-													  	<b>Donors</b> 
+													  	<b>Donors</b>
 													  	<a class="pull-right">
-														  	<?php 
+														  	<?php
 														  		if ($category['donors'] != 0) {
 														  			echo $category['donors'];
 														  		} else {
 														  			echo "0";
 														  		}
-													  		?>			
+													  		?>
 														</a>
 													</li>
 													<li class="list-group-item">
 													  <b>Amount Raised</b> <a class="pull-right">$<?php if (!is_null($project['sum'])){echo $project['sum'];} else {echo "0";}?></a>
 													</li>
-												</ul>	
+												</ul>
 											</div>
 										</div>
 									</div>
@@ -223,7 +228,7 @@
 												</thead>
 												<tbody id="table_data">
 													<?php
-														$query = "SELECT * FROM 
+														$query = "SELECT * FROM
 																	(SELECT p.title, m.firstname, m.lastname, m.email, COUNT(*) AS donors, SUM(t.amount) AS total, RANK() OVER (ORDER BY SUM(t.amount) DESC) AS ranking
 																		FROM Trans t, Project p, Member m
 																		WHERE p.id = t.projectid
@@ -233,7 +238,7 @@
 																	WHERE TopProj.ranking <= 5
 																	ORDER BY TopProj.ranking";
 														$result = pg_query($query) or die('Query failed: ' . pg_last_error());
-					         
+
 														if (pg_num_rows($result) > 0) {
 															while($row=pg_fetch_assoc($result)) {
 																echo "<tr>
@@ -243,7 +248,7 @@
 																	<td>".$row['donors']."</td>
 																	<td>$".$row['total']."</td>
 																	</tr>";
-															}	
+															}
 														} else {
 															echo "<td colspan=5 class\"text-center\">No donations have been made.</td>";
 														}
@@ -255,7 +260,7 @@
 					  			</div>
 						  	</div>
 						</div>
-						<div class="col-md-4">		
+						<div class="col-md-4">
 					  		<div class="box category-box">
 								<div class="box-body">
 						  			<h4 class="text-center">Top Donors</h4>
@@ -309,14 +314,14 @@
 										</thead>
 										<tbody id="table_data">
 											<?php
-												$query = "SELECT p.id, p.title, p.startdate, p.enddate, m.firstname, m.lastname, m.email, p.amountfundingsought, p.softdelete 
+												$query = "SELECT p.id, p.title, p.startdate, p.enddate, m.firstname, m.lastname, m.email, p.amountfundingsought, p.softdelete
 															FROM Project P, Category c, Member m
 															WHERE p.categoryId = c.id
 															AND p.email = m.email
 															AND c.id = ".$_GET['id']."
 															ORDER BY p.title";
 												$result = pg_query($query) or die('Query failed: ' . pg_last_error());
-			         
+
 												if (pg_num_rows($result) > 0) {
 													while($row=pg_fetch_assoc($result)) {
 														echo "<tr>
@@ -333,7 +338,7 @@
 															echo "<td><span class='label label-danger'>Past</span></td>";
 														}
 														echo "</tr>";
-													}	
+													}
 												} else {
 													echo "<td colspan=3 class\"text-center\">There are no projects in this category.</td>";
 												}
@@ -350,6 +355,6 @@
 	    <!-- jQuery 2.2.3 -->
 		<script src="plugins/jQuery/jquery-2.2.3.min.js"></script>
 		<!-- Bootstrap -->
-	    <script src="bootstrap/js/bootstrap.min.js"></script>			
+	    <script src="bootstrap/js/bootstrap.min.js"></script>
   	</body>
 </html>

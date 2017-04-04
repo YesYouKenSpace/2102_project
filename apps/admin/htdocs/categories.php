@@ -3,7 +3,7 @@
   	<head>
     	<meta charset="utf-8">
     	<meta name="viewport" content="width=device-width, initial-scale=1">
-	
+
     	<meta name="description" content="">
     	<meta name="author" content="">
     	<link rel="icon" href="../../favicon.ico">
@@ -17,13 +17,13 @@
   		<!-- Ionicons -->
   		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/ionicons/2.0.1/css/ionicons.min.css">
     	<!-- Custom styles for this template -->
-    	<link href="main.css" rel="stylesheet">	
+    	<link href="main.css" rel="stylesheet">
 	</head>
 
   	<body>
-		<?php $dbconn = pg_connect("host=localhost port=5432 dbname=postgres user=postgres password=postgres") 
+		<?php $dbconn = pg_connect("host=localhost port=5432 dbname=postgres user=postgres password=postgres")
 			or die('Could not connect: ' . pg_last_error());?>
-		
+
 		<div class="wrapper" style="height: auto;">
 			<!--Header Nav-->
 	    	<header class="main-header">
@@ -77,6 +77,11 @@
 					    		<i class="fa fa-gear"></i> <span>Category</span>
 					  		</a>
 						</li>
+            <li class="treeview">
+                  <a href="analytics.php">
+                    <i class="fa fa-dollar"></i> <span>Analytics</span>
+                  </a>
+                </li>
 						<li class="treeview">
 				          <a href="reactivation.php">
 				            <i class="fa fa-recycle"></i> <span>Reactivation</span>
@@ -85,7 +90,7 @@
 					</ul>
 				</section>
 	  		</aside>
-	     	
+
 	     	<!--Main Content-->
 	     	<div class="content-wrapper" style="min-height:916px;">
 	    		<section class="content-header">
@@ -127,12 +132,12 @@
 														$result = pg_query($query) or die('Query failed: ' . pg_last_error());
 														echo "<script type='text/javascript'>alert('".pg_affected_rows($result)."');</script>";
 													}
-												?>	
+												?>
 											</div>
 									  	</div>
 									</div>
 			            		</div><br/>
-			            
+
 			            		<div class="box-body">
 									<table id="usersTable" class="table table-bordered table-hover" >
 						                <thead>
@@ -148,17 +153,17 @@
 						                </thead>
 						                <tbody id="table_data">
 							                <?php
-												$query = 'SELECT * 
+												$query = 'SELECT *
 															FROM Category c LEFT OUTER JOIN (SELECT p.categoryid, donors, total, COUNT(p.categoryid) AS pcount
 																					FROM Project p LEFT OUTER JOIN (SELECT p2.categoryid, COUNT(DISTINCT t.email) AS donors, SUM(t.amount) AS total
 													                            FROM Project p2 INNER JOIN Trans t ON p2.id = t.projectId
-													                            GROUP BY p2.categoryid) pTrans 
+													                            GROUP BY p2.categoryid) pTrans
 													                            ON p.categoryid = pTrans.categoryId
 															GROUP BY p.categoryid, total, donors) fundedCategories
 				                							ON c.id = fundedCategories.categoryid
 				                							ORDER BY c.name';
 												$result = pg_query($query) or die('Query failed: ' . pg_last_error());
-						         
+
 												while($category=pg_fetch_assoc($result)) {
 								                    $categoryId = $category['id'];
 													echo "<td>".$category['name']."</td>";
@@ -225,7 +230,7 @@
 
 					var categoryId = $(this).attr('category-id');
 					var parent = $(this).parent("td").parent("tr");
-					
+
 					bootbox.dialog({
 						message: "Confirm delete? (Associated projects will still keep the category.)",
 						title: "<i class='glyphicon glyphicon-trash'></i> Delete Category",
@@ -241,7 +246,7 @@
 									})
 									.fail(function(){
 										bootbox.alert('Something Went Wrong ....');
-									})                            
+									})
 								}
 							},
 							success: {

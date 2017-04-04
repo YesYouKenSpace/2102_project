@@ -8,8 +8,10 @@
 
     <meta name="description" content="">
     <meta name="author" content="">
-
-    <title>CrowdFunder</title>
+    <link rel="icon" href="../../favicon.ico">
+    <script src="plugins/chart.js/dist/Chart.bundle.min.js"></script>
+    <script src="util/charts/projectChart.js"></script>
+    <title>Dashboard</title>
 
     <!-- Bootstrap core CSS -->
     <link href="bootstrap/css/bootstrap.min.css" rel="stylesheet">
@@ -20,19 +22,26 @@
   <!-- Ionicons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/ionicons/2.0.1/css/ionicons.min.css">
 
+    <!-- daterange picker -->
+  <link rel="stylesheet" href="plugins/daterangepicker/daterangepicker.css">
+  <!-- bootstrap datepicker -->
+  <link rel="stylesheet" href="plugins/datepicker/datepicker3.css">
+
+    <!-- DataTables -->
+  <link rel="stylesheet" href="plugins/datatables/dataTables.bootstrap.css">
+
     <!-- Custom styles for this template -->
     <link href="main.css" rel="stylesheet">
+
+
   </head>
 
   <body>
-  <?php
+	<?php
 	$dbconn = pg_connect("host=localhost port=5432 dbname=postgres user=postgres password=postgres")
     or die('Could not connect: ' . pg_last_error());
 	?>
 	<div class="wrapper" style="height: auto;">
-
-
-
     <header class="main-header">
 
     <!-- Logo -->
@@ -76,7 +85,7 @@
       <!-- sidebar menu: : style can be found in sidebar.less -->
       <ul class="sidebar-menu">
         <li class="header">NAVIGATION</li>
-        <li class="active treeview">
+        <li class="treeview">
           <a href="index.php">
             <i class="fa fa-dashboard"></i> <span>Dashboard</span>
           </a>
@@ -96,101 +105,30 @@
             <i class="fa fa-dollar"></i> <span>Funding</span>
           </a>
         </li>
-		<li class="treeview">
-          <a href="categories.php">
-            <i class="fa fa-gear"></i> <span>Category</span>
-          </a>
-        </li>
-    <li class="treeview">
+    <li class="active treeview">
           <a href="analytics.php">
             <i class="fa fa-dollar"></i> <span>Analytics</span>
           </a>
         </li>
-    <li class="treeview">
-          <a href="reactivation.php">
-            <i class="fa fa-recycle"></i> <span>Reactivation</span>
+		<li class="treeview">
+          <a href="index.php">
+            <i class="fa fa-gear"></i> <span>Settings</span>
           </a>
         </li>
       </ul>
     </section>
     <!-- /.sidebar -->
   </aside>
-    <div class="content-wrapper" style="min-height: 976px;">
-		<!-- Main component for a primary marketing message or call to action -->
-		<section class="content">
+     <div class="content-wrapper" style="min-height:916px;">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+      <h1>
+        Anayltics
+      </h1>
+    </section>
 
-			<div class="col-lg-3">
-				<div class="small-box bg-blue">
-					<div class="inner">
-						<?php
-							$query = 'SELECT COUNT(DISTINCT t.email) FROM trans t';
-							$result = pg_query($query) or die('Query failed: ' . pg_last_error());
-
-							$data=pg_fetch_assoc($result);
-							echo "<h3>".$data['count']."</h3>";
-						?>
-						<p>Investors</p>
-					</div>
-					<div class="icon">
-						<i class="ion ion-android-contacts"></i>
-					</div>
-					<a href="users.php" class="small-box-footer">View Details <i class="fa fa-arrow-circle-right"></i></a>
-				</div>
-			</div>
-			<div class="col-lg-3">
-				<div class="small-box bg-red">
-					<div class="inner">
-						<?php
-							$query = 'SELECT COUNT(DISTINCT m.email) FROM project p, member m WHERE p.email = m.email';
-							$result = pg_query($query) or die('Query failed: ' . pg_last_error());
-
-							$data=pg_fetch_assoc($result);
-							echo "<h3>".$data['count']."</h3>";
-						?>
-						<p>Entrepreneurs</p>
-					</div>
-					<div class="icon">
-						<i class="ion ion-briefcase"></i>
-					</div>
-					<a href="users.php" class="small-box-footer">View Details <i class="fa fa-arrow-circle-right"></i></a>
-				</div>
-			</div>
-			<div class="col-lg-3">
-				<div class="small-box bg-yellow">
-					<div class="inner">
-						<?php
-							$query = 'SELECT COUNT(*) FROM project p';
-							$result = pg_query($query) or die('Query failed: ' . pg_last_error());
-
-							$data=pg_fetch_assoc($result);
-							echo "<h3>".$data['count']."</h3>";
-						?>
-						<p>Projects</p>
-					</div>
-					<div class="icon">
-						<i class="ion ion-bulb"></i>
-					</div>
-					<a href="projects.php" class="small-box-footer">View Details <i class="fa fa-arrow-circle-right"></i></a>
-				</div>
-			</div>
-			<div class="col-lg-3">
-				<div class="small-box bg-green">
-					<div class="inner">
-						<?php
-							$query = 'SELECT SUM(t.amount) FROM trans t';
-							$result = pg_query($query) or die('Query failed: ' . pg_last_error());
-
-							$data=pg_fetch_assoc($result);
-							echo "<h3>$".$data['sum']."</h3>";
-						?>
-						<p>Funded</p>
-					</div>
-					<div class="icon">
-						<i class="ion ion-cash"></i>
-					</div>
-					<a href="funding.php" class="small-box-footer">View Details <i class="fa fa-arrow-circle-right"></i></a>
-				</div>
-			</div>
+    <!-- Main content -->
+    <section class="content">
       <div class="row">
         <div class="col-md-4">
          <div class="box project-box">
@@ -229,12 +167,12 @@
               <h3 class="text-center">New Projects of the Last 30 Days</h3>
               <table id="projectsTable" class="table table-bordered table-hover" >
                         <thead>
-        					<tr>
-        						<th>Title</th>
-        						<th>Start Date</th>
-        						<th>Amount Raised</th>
+                  <tr>
+                    <th>Title</th>
+                    <th>Start Date</th>
+                    <th>Amount Raised</th>
                     <th></th>
-        					</tr>
+                  </tr>
                         </thead>
                         <tbody id="table_data">
                           <?php
@@ -247,36 +185,36 @@
                           $result = pg_query($query) or die('Query failed: ' . pg_last_error());
 
 
-        					while($row=pg_fetch_assoc($result)) {
-        							if ((!is_null($row['sum'])) && ($row['sum'] >= $row['amountfundingsought'])) {
-        								echo "<tr style=\"background-color:#c9ffc9;\">";
-        							} else {
-        								echo "<tr>";
-        							}
+                  while($row=pg_fetch_assoc($result)) {
+                      if ((!is_null($row['sum'])) && ($row['sum'] >= $row['amountfundingsought'])) {
+                        echo "<tr style=\"background-color:#c9ffc9;\">";
+                      } else {
+                        echo "<tr>";
+                      }
 
-        							echo "<td>".$row['title']
-        							."</td><td>".$row['startdate']
-        							."</td><td><div class=\"progress\" style=\"margin-bottom:2px;\"><div class=\"progress-bar progress-bar-success\" role=\"progressbar\" aria-valuenow=\"70\"
-        							aria-valuemin=\"0\" aria-valuemax=\"100\" style=\"width:"
-        							.(($row['sum'] / $row['amountfundingsought'])*100)
-        							."%;\">
-        							</div></div>";
+                      echo "<td>".$row['title']
+                      ."</td><td>".$row['startdate']
+                      ."</td><td><div class=\"progress\" style=\"margin-bottom:2px;\"><div class=\"progress-bar progress-bar-success\" role=\"progressbar\" aria-valuenow=\"70\"
+                      aria-valuemin=\"0\" aria-valuemax=\"100\" style=\"width:"
+                      .(($row['sum'] / $row['amountfundingsought'])*100)
+                      ."%;\">
+                      </div></div>";
 
-        							if (is_null($row['sum'])) {
-        								echo "$0 / $".$row['amountfundingsought'];
-        							}else if ($row['sum'] >= $row['amountfundingsought']) {
-        								echo " <strong style=\"color:#5cb85c;\">$".$row['sum']."</strong> / $".$row['amountfundingsought'];
-        							} else {
-        								echo "$".$row['sum']." / $".$row['amountfundingsought'];
-        							}
-        		                    $proj_id = $row['id'];
+                      if (is_null($row['sum'])) {
+                        echo "$0 / $".$row['amountfundingsought'];
+                      }else if ($row['sum'] >= $row['amountfundingsought']) {
+                        echo " <strong style=\"color:#5cb85c;\">$".$row['sum']."</strong> / $".$row['amountfundingsought'];
+                      } else {
+                        echo "$".$row['sum']." / $".$row['amountfundingsought'];
+                      }
+                                $proj_id = $row['id'];
 
-        							echo "</td><td><button class=\"btn btn-primary btn-xs\" onClick=\"location.href='project.php?id=$proj_id'\"><span class=\"glyphicon glyphicon-info-sign\"></span></button></td></tr>";
-        						}
+                      echo "</td><td><button class=\"btn btn-primary btn-xs\" onClick=\"location.href='project.php?id=$proj_id'\"><span class=\"glyphicon glyphicon-info-sign\"></span></button></td></tr>";
+                    }
 
-        					pg_free_result($result);
+                  pg_free_result($result);
 
-        				?>
+                ?>
                         </tbody>
                       </table>
 
@@ -292,15 +230,15 @@
               <h3 class="text-center">Non-New Users Who Not Invested for More Than 30 Days</h3>
               <table id="usersTable" class="table table-bordered table-hover" >
                         <thead>
-        					<tr>
-        						<th>First Name</th>
-        						<th>Last Name</th>
-        						<th>Email</th>
-        						<th>Last Transaction Date</th>
+                  <tr>
+                    <th>First Name</th>
+                    <th>Last Name</th>
+                    <th>Email</th>
+                    <th>Last Transaction Date</th>
                     <th>Registration Date</th>
-        						<th>Total Funding</th>
-        						<th></th>
-        					</tr>
+                    <th>Total Funding</th>
+                    <th></th>
+                  </tr>
                         </thead>
                         <tbody>
                <?php
@@ -316,25 +254,25 @@
                $result = pg_query($query) or die('Query failed: ' . pg_last_error());
 
                while($row=pg_fetch_assoc($result)) {
-     							echo "<tr><td>".$row['firstname']
-     							."</td><td>".$row['lastname']
-     							."</td><td>".$row['email']
-     							."</td><td>".$row['latesttrans']
+                  echo "<tr><td>".$row['firstname']
+                  ."</td><td>".$row['lastname']
+                  ."</td><td>".$row['email']
+                  ."</td><td>".$row['latesttrans']
                   ."</td><td>".$row['registrationdate']."</td>";
 
 
-     							if($row['donation'] != 0) {
-     								echo "<td>$".$row['donation']."</td>";
-     							} else {
-     								echo "<td>$0</td>";
-     							}
-     							$user_email = $row['email'];
+                  if($row['donation'] != 0) {
+                    echo "<td>$".$row['donation']."</td>";
+                  } else {
+                    echo "<td>$0</td>";
+                  }
+                  $user_email = $row['email'];
 
-     							echo "<td><button class=\"btn btn-primary btn-xs\"><span class=\"glyphicon glyphicon-info-sign\"></span></button></td></tr>";
-     						}
+                  echo "<td><button class=\"btn btn-primary btn-xs\"><span class=\"glyphicon glyphicon-info-sign\"></span></button></td></tr>";
+                }
 
-     					pg_free_result($result);
-     				?>
+              pg_free_result($result);
+            ?>
                      </tbody>
                    </table>
                  </div>
@@ -344,16 +282,60 @@
         </div>
       </div>
     </section>
-    </div> <!-- /container -->
+    <!-- /.content -->
+  </div>
+  <!-- /.content-wrapper -->
+	</div>
+
 
 
     <!-- Bootstrap core JavaScript
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
-    <script>window.jQuery || document.write('<script src="../../assets/js/vendor/jquery.min.js"><\/script>')</script>
-    <script src="../../dist/js/bootstrap.min.js"></script>
-    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
-    <script src="../../assets/js/ie10-viewport-bug-workaround.js"></script>
+    <script src="bootstrap/js/bootstrap.min.js"></script>
+
+	<!-- jQuery 2.2.3 -->
+<script src="plugins/jQuery/jquery-2.2.3.min.js"></script>
+
+  <!-- date-range-picker -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.11.2/moment.min.js"></script>
+<script src="plugins/daterangepicker/daterangepicker.js"></script>
+
+  <!-- bootstrap datepicker -->
+<script src="plugins/datepicker/bootstrap-datepicker.js"></script>
+
+	<!-- DataTables -->
+<script src="plugins/datatables/jquery.dataTables.min.js"></script>
+<script src="plugins/datatables/dataTables.bootstrap.min.js"></script>
+	<script>
+    /*$(function () {
+		$('#usersTable').DataTable({
+			"paging": true,
+			"lengthChange": true,
+			"searching": true,
+			"ordering": true,
+			"info": true,
+			"autoWidth": false
+		});
+	});
+
+	function myFunction() {
+		var table_data = document.getElementById("table_data").innerHTML;
+	}*/
+
+    //Date range picker
+	$(function() {
+		var startDate;
+		var endDate;
+
+		$('#project-duration').daterangepicker({
+			"minDate": new Date(),
+			"locale": {
+				"format": "DD/MM/YYYY",
+			}
+		});
+	});
+</script>
   </body>
 </html>
