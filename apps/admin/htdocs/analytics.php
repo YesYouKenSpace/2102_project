@@ -110,6 +110,11 @@
             <i class="fa fa-dollar"></i> <span>Analytics</span>
           </a>
         </li>
+        <li class="treeview">
+              <a href="reactivation.php">
+                <i class="fa fa-recycle"></i> <span>Reactivation</span>
+              </a>
+            </li>
 		<li class="treeview">
           <a href="index.php">
             <i class="fa fa-gear"></i> <span>Settings</span>
