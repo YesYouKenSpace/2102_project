@@ -293,7 +293,7 @@
 							} 
 							$user_email = $row['email'];
 
-							echo "<td><button class=\"btn btn-primary btn-xs\"><span class=\"glyphicon glyphicon-info-sign\"></span></button></td>
+							echo "<td><button class=\"btn btn-primary btn-xs\" onClick=\"location.href='user_details.php?email=$user_email'\"><span class=\"glyphicon glyphicon-info-sign\"></span></button></td>
 							<td><button class=\"btn btn-danger btn-xs delete_user\" user-email=\"$user_email\" href=\"javascript:void(0)\"><span class=\"glyphicon glyphicon-trash\"></span></button></td></tr>";
 						}
 					

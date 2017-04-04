@@ -190,7 +190,7 @@
 						<div class="col-md-6">
 							<ul class="list-group list-group-unbordered">
 								<li class="list-group-item">
-								  <b>Amounf of Funding Sought</b> <a class="pull-right">$<?php echo $project['amountfundingsought'];?></a>
+								  <b>Amount of Funding Sought</b> <a class="pull-right">$<?php echo $project['amountfundingsought'];?></a>
 								</li>
 								<li class="list-group-item">
 								  <b>Amount Raised</b> <a class="pull-right">$<?php if (!is_null($project['sum'])){echo $project['sum'];} else {echo "0";}?></a>
