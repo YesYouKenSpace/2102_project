@@ -282,7 +282,8 @@
       <div class="col-md-6">
         <div class="box project-box">
           <div class="box-body">
-            <canvas id="progressChart" width="1328" height="664" style="display: block; height: 332px; width: 664px;"></canvas>
+            <div class="canvas-holder">
+            <canvas id="progressChart" width="848" height="424" style="display: block; height: 212px; width: 424px;"></canvas>
             <script>
             <?php
             $query = "SELECT sum(t.amount) AS sum
@@ -320,6 +321,7 @@
               drawLineGraph(<?php echo json_encode($graphData) ?>, "Aggregate $ raised", <?php echo json_encode($graphLabels) ?>, document.getElementById("progressChart"));
 
             </script>
+          </div>
           </div>
         </div>
       </div>

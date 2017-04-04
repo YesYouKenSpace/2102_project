@@ -143,7 +143,7 @@
                <?php
                $query = "SELECT SUM(t1.amount) AS sum, p1.title, RANK() OVER (ORDER BY SUM(t1.amount) DESC) as ranking
                           FROM Trans t1 INNER JOIN Project p1 ON t1.projectId = p1.id
-                          WHERE current_date - current_date < 30
+                          WHERE current_date - t1.date < 30
                           GROUP BY t1.projectId, p1.title
                           ORDER BY sum DESC";
 
@@ -166,7 +166,38 @@
             </div>
           </div>
         </div>
-        <div class="col-md-6">
+        <div class="col-md-4">
+         <div class="box project-box">
+           <div class="box-body">
+              <h3 class="text-center">Top 100 Investors of the Week</h3>
+              <ul class="list-group list-group-unbordered">
+               <?php
+               $query = "SELECT SUM(t1.amount) AS sum, m1.lastName, m1.firstName, RANK() OVER (ORDER BY SUM(t1.amount) DESC) as ranking
+                          FROM Trans t1 INNER JOIN Member m1 ON t1.email = m1.email
+                          WHERE current_date - t1.date < 30
+                          GROUP BY m1.email
+                          ORDER BY sum DESC";
+
+               $result = pg_query($query) or die('Query failed: ' . pg_last_error());
+
+               if (pg_num_rows($result) > 0) {
+                  $num_to_display = 10;
+                 while($num_to_display > 0 && $row=pg_fetch_assoc($result)) {
+                    $num_to_display--;
+                   echo "<li class=\"list-group-item\"><strong>#".$row['ranking']." ".$row['lastName']." ".$row['firstName']."</strong><a class=\"pull-right\">$".$row['sum']."</a>";
+                 }
+               } else {
+                 echo "<li class=\"list-group-item text-center\">No funding has been made this month.</li>";
+               }
+
+               pg_free_result($result);
+               ?>
+
+             </ul>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4">
          <div class="box project-box">
            <div class="box-body">
               <h3 class="text-center">New Projects of the Last 30 Days</h3>
@@ -227,6 +258,44 @@
           </div>
         </div>
 
+      </div>
+      <div class="row">
+        <div class="col-md-6">
+         <div class="box project-box">
+           <div class="box-body">
+              <div class="canvas-holder">
+              <canvas id="numberOfUsersChart" width="848" height="424" style="display: block; height: 212px; width: 424px;"></canvas>
+              <script>
+              <?php
+              $query = "SELECT registrationDate AS date, COUNT(*) AS count
+                        FROM Member m1
+                        GROUP BY registrationDate
+                        ORDER BY registrationDate ASC
+                        ";
+              $result = pg_query($query) or die('Query failed: '.pg_last_error());
+              $graphData = array();
+              $graphLabels = array();
+              $count =0;
+              while($buffer = pg_fetch_assoc($result)){
+                  if($count!=0){
+                    $graphData[$count] = (int) ($buffer['count'] + $graphData[$count - 1]);
+                    $graphLabels[$count] = $buffer['date'];
+                  }else{
+                    $graphData[$count] = (int) $buffer['count'];
+                    $graphLabels[$count] = $buffer['date'];
+                  }
+
+                    $count++;
+              }
+              pg_free_result($result);
+              ?>
+                console.log("DRAWING");
+                drawLineGraphWithTime(<?php echo json_encode($graphData) ?>, "Number of registered users",<?php echo json_encode($graphLabels) ?>, <?php echo $count ?>, document.getElementById("numberOfUsersChart"));
+                </script>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
       <div class='row'>
         <div class="col-md-12">
