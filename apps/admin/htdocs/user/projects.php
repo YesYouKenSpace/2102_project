@@ -112,76 +112,76 @@
 		            				<div class="box-header">
 		              					<h3 class="box-title">My Projects</h3>
 		              					<button type="button" class="btn btn-primary pull-right" data-toggle="modal" data-target="#projectForm" show="false"><span><i class="fa fa-plus"></i></span> New Project</button>
-		              					<!-- Modal -->
-										<div id="projectForm" class="modal fade" role="dialog">
-					  						<div class="modal-dialog">
-						
-												<div class="modal-content">
-													<form id="add-project-form" role="form" method="post">
-													  	<div class="modal-header">
-															<button type="button" class="close" data-dismiss="modal">&times;</button>
-															<h4 class="modal-title">New Project</h4>
-													  	</div>
-													  	<div class="modal-body">
-															<div class="input-group">
-																<span class="input-group-addon">Title</span>
-																<input name="title" type="text" class="form-control" placeholder="Enter Project Title">
-															</div><br/>
-															<div class="input-group">
-																<span class="input-group-addon">Description</span>
-																<textarea name="description" class="form-control custom-control" rows="3" style="resize:none" placeholder="Enter Project Description"></textarea>
-															</div><br/>
-															<div class="input-group">
-															  <div class="input-group-addon">
-																<i class="fa fa-calendar"></i>
-															  </div>
-															  <input name="duration" type="text" class="form-control pull-right" id="project-duration">
-															</div><br/>
-															<div class="input-group">
-																<span class="input-group-addon"><i class="fa fa-dollar"></i></span>
-																<input name="amount" type="number" min="100" max="1000000" class="form-control" placeholder="Goal Amount">
-																<span class="input-group-addon">.00</span>
-															</div><br/>
-															<div class="input-group">
-																<span class="input-group-addon"><i class="fa fa-hashtag"></i></span>
-																<select name="category" class="form-control">
-										 							<option value="" disabled selected>Select a category</option>
-																 	<?php
-																		$query = 'SELECT * FROM Category c';
-																		$result = pg_query($query) or die('Query failed: ' . pg_last_error());
-															 
-																		while($row=pg_fetch_assoc($result)) {
-																				echo "<option value='".$row['id']."'>".$row['name']."</option>";
-																			}
-																		
-																		pg_free_result($result);
-																	?>						
-																</select>
-															</div><br/>
-						  								</div>
-													  	<div class="modal-footer">
-															<button type="submit" name="projectForm" class="btn btn-primary">Add Project</button>
-															<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-												  		</div>
-													</form>			
-													<?php
-													if(isset($_POST['projectForm'])){
-														$dateStr = $_POST['duration'];
-														$dateArr = (explode(" - ",$dateStr));
-														$startDate = date('Y-m-d', strtotime(str_replace('/', '-', $dateArr[0])));
-														$endDate = date('Y-m-d', strtotime(str_replace('/', '-', $dateArr[1])));
-														
-														$query = "INSERT INTO Project (title, description, startDate, endDate, categoryId, amountFundingSought, email)
-																VALUES ('".$_POST['title']."','".$_POST['description']."','".$startDate."','".$endDate."','".$_POST['category']."',".$_POST['amount'].",'".$_SESSION['usr_id']."')";
-														
-														$result = pg_query($query) or die('Query failed: ' . pg_last_error());
-													}
-												?>	
-												</div>
-					  						</div>
-										</div>
+			        				</div>
+	              					<!-- Modal -->
+									<div id="projectForm" class="modal fade" role="dialog">
+				  						<div class="modal-dialog">
+					
+											<div class="modal-content">
+												<form id="add-project-form" role="form" method="post">
+												  	<div class="modal-header">
+														<button type="button" class="close" data-dismiss="modal">&times;</button>
+														<h4 class="modal-title">New Project</h4>
+												  	</div>
+												  	<div class="modal-body">
+														<div class="input-group">
+															<span class="input-group-addon">Title</span>
+															<input name="title" type="text" class="form-control" placeholder="Enter Project Title">
+														</div><br/>
+														<div class="input-group">
+															<span class="input-group-addon">Description</span>
+															<textarea name="description" class="form-control custom-control" rows="3" style="resize:none" placeholder="Enter Project Description"></textarea>
+														</div><br/>
+														<div class="input-group">
+														  <div class="input-group-addon">
+															<i class="fa fa-calendar"></i>
+														  </div>
+														  <input name="duration" type="text" class="form-control pull-right" id="project-duration">
+														</div><br/>
+														<div class="input-group">
+															<span class="input-group-addon"><i class="fa fa-dollar"></i></span>
+															<input name="amount" type="number" min="100" max="1000000" class="form-control" placeholder="Goal Amount">
+															<span class="input-group-addon">.00</span>
+														</div><br/>
+														<div class="input-group">
+															<span class="input-group-addon"><i class="fa fa-hashtag"></i></span>
+															<select name="category" class="form-control">
+									 							<option value="" disabled selected>Select a category</option>
+															 	<?php
+																	$query = 'SELECT * FROM Category c';
+																	$result = pg_query($query) or die('Query failed: ' . pg_last_error());
+														 
+																	while($row=pg_fetch_assoc($result)) {
+																			echo "<option value='".$row['id']."'>".$row['name']."</option>";
+																		}
+																	
+																	pg_free_result($result);
+																?>						
+															</select>
+														</div><br/>
+					  								</div>
+												  	<div class="modal-footer">
+														<button type="submit" name="projectForm" class="btn btn-primary">Add Project</button>
+														<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+											  		</div>
+												</form>			
+												<?php
+												if(isset($_POST['projectForm'])){
+													$dateStr = $_POST['duration'];
+													$dateArr = (explode(" - ",$dateStr));
+													$startDate = date('Y-m-d', strtotime(str_replace('/', '-', $dateArr[0])));
+													$endDate = date('Y-m-d', strtotime(str_replace('/', '-', $dateArr[1])));
+													
+													$query = "INSERT INTO Project (title, description, startDate, endDate, categoryId, amountFundingSought, email)
+															VALUES ('".$_POST['title']."','".$_POST['description']."','".$startDate."','".$endDate."','".$_POST['category']."',".$_POST['amount'].",'".$_SESSION['usr_id']."')";
+													
+													$result = pg_query($query) or die('Query failed: ' . pg_last_error());
+												}
+											?>	
+											</div>
+				  						</div>
+									</div>
 					  					<br/>
-		            				</div>
 		            				<div class="box-body">
 		            					<table id="myProjectsTable" class="table table-bordered table-hover table-striped" >
 			                          		<thead>
@@ -266,6 +266,59 @@
 		              					<h3 class="box-title">All Projects</h3>
 					  					<br/>
 		            				</div>
+		            				<!-- Search filter form -->
+						            <div class="box-body">
+						            <form id="search-project-form" method="post">
+						            <div class="row extra-bottom-padding">
+										<div class="col-md-5">
+											<div class="input-group">
+												<input name="search-project-title" type="text" class="form-control" placeholder="Project title"/>
+												<span class="input-group-addon">
+													<i class="fa fa-info-circle"></i>
+												</span>
+											</div>
+										</div>
+										<div class="col-md-2">
+											<select name="search-category" class="form-control">
+											<option disabled selected>Select a category</option>
+												<?php
+													$query = 'SELECT * FROM Category c';
+													$result = pg_query($query) or die('Query failed: ' . pg_last_error());
+										 
+													while($row=pg_fetch_assoc($result)) {
+														echo "<option value=".$row['id'].">".$row['name']."</option>";
+													}
+																
+													pg_free_result($result);
+												?>			
+											</select>	
+										</div>
+										<div class="col-md-2">
+											<select name="search-amount-raised" class="form-control">
+												<option disabled selected>Total Amount Raised</option>	
+												<option value="0 1">$0 to $1k Raised</option>
+												<option value="1 10">$1k to $10k Raised</option>
+												<option value="10 100">$10k to $100k Raised</option>
+												<option value="100 1000">$100k to $1M Raised</option>
+												<option value="1000 2147483647">>$1M Raised</option>
+											</select>	
+										</div>
+										<div class="col-md-2">
+											<select name="search-amount-goal" class="form-control">
+												<option disabled selected>Total Goal Amount</option>	
+												<option value="0 1">$0 to $1k goal</option>
+												<option value="1 10">$1k to $10k goal</option>
+												<option value="10 100">$10k to $100k goal</option>
+												<option value="100 1000">$100k to $1M goal</option>
+												<option value="1000 2147483647">>$1M goal</option>
+											</select>	
+										</div>
+										<div class="col-md-1" >
+											<button name="search-submit" type="submit" class="btn btn-primary">Search</button>
+										</div>
+									</div>
+									</form>
+									</div>
 		            				<div class="box-body">
 										<table id="projectsTable" class="table table-bordered table-hover" >
 							                <thead>
@@ -278,7 +331,7 @@
 													<th></th>
 												</tr>
 							                </thead>
-							                <tbody id="table_data">
+							                <tbody id="table_data_all">
 								                <?php
 													$query = 'SELECT p.id, p.title, p.startDate, p.endDate, c.name, p.amountFundingSought, p.email, b.sum
 															FROM Project p LEFT OUTER JOIN (SELECT t.projectId, SUM(t.amount) AS SUM 
@@ -290,34 +343,34 @@
 													$result = pg_query($query) or die('Query failed: ' . pg_last_error());
 								         
 													while($row=pg_fetch_assoc($result)) {
-															if ((!is_null($row['sum'])) && ($row['sum'] >= $row['amountfundingsought'])) { 
-																echo "<tr style=\"background-color:#c9ffc9;\">";
-															} else {
-																echo "<tr>";
-															}
-															
-															echo "<td>".$row['title']
-															."</td><td>".date('d/m/Y', strtotime(str_replace('-', '/', $row['startdate'])))
-															."</td><td>".date('d/m/Y', strtotime(str_replace('-', '/', $row['enddate'])))
-															."</td><td>".$row['name']
-															."</td><td><div class=\"progress\" style=\"margin-bottom:2px;\"><div class=\"progress-bar progress-bar-success\" role=\"progressbar\" aria-valuenow=\"70\"
-															aria-valuemin=\"0\" aria-valuemax=\"100\" style=\"width:"
-															.(($row['sum'] / $row['amountfundingsought'])*100)
-															."%;\">
-															</div></div>"; 
-															
-															if (is_null($row['sum'])) {
-																echo "$0 / $".$row['amountfundingsought'];
-															}else if ($row['sum'] >= $row['amountfundingsought']) {
-																echo " <strong style=\"color:#5cb85c;\">$".$row['sum']."</strong> / $".$row['amountfundingsought'];
-															} else {
-																echo "$".$row['sum']." / $".$row['amountfundingsought'];
-															} 
-										                    $proj_id = $row['id'];
-
-															echo "</td>
-																<td><button class=\"btn btn-primary btn-xs\" onClick=\"location.href='project.php?id=$proj_id'\"><span class=\"glyphicon glyphicon-info-sign\"></span></button></td></tr>";
+														if ((!is_null($row['sum'])) && ($row['sum'] >= $row['amountfundingsought'])) { 
+															echo "<tr style=\"background-color:#c9ffc9;\">";
+														} else {
+															echo "<tr>";
 														}
+														
+														echo "<td>".$row['title']
+														."</td><td>".date('d/m/Y', strtotime(str_replace('-', '/', $row['startdate'])))
+														."</td><td>".date('d/m/Y', strtotime(str_replace('-', '/', $row['enddate'])))
+														."</td><td>".$row['name']
+														."</td><td><div class=\"progress\" style=\"margin-bottom:2px;\"><div class=\"progress-bar progress-bar-success\" role=\"progressbar\" aria-valuenow=\"70\"
+														aria-valuemin=\"0\" aria-valuemax=\"100\" style=\"width:"
+														.(($row['sum'] / $row['amountfundingsought'])*100)
+														."%;\">
+														</div></div>"; 
+														
+														if (is_null($row['sum'])) {
+															echo "$0 / $".$row['amountfundingsought'];
+														}else if ($row['sum'] >= $row['amountfundingsought']) {
+															echo " <strong style=\"color:#5cb85c;\">$".$row['sum']."</strong> / $".$row['amountfundingsought'];
+														} else {
+															echo "$".$row['sum']." / $".$row['amountfundingsought'];
+														} 
+									                    $proj_id = $row['id'];
+
+														echo "</td>
+															<td><button class=\"btn btn-primary btn-xs\" onClick=\"location.href='project.php?id=$proj_id'\"><span class=\"glyphicon glyphicon-info-sign\"></span></button></td></tr>";
+													}
 													
 													pg_free_result($result);
 													
@@ -375,6 +428,16 @@
             		}
       			});
     		});
+
+			$('#search-project-form').submit(function(e){
+				e.preventDefault();
+
+				var queryString = $(this).serialize();
+				$.post( "../filter/filter_projects.php", queryString)
+				.done(function(response){
+					$("#table_data_all").html(response);
+				});
+			});
 		});
 	</script>
 	<script>
