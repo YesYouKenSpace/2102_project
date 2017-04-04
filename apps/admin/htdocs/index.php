@@ -65,14 +65,6 @@
   <aside class="main-sidebar">
     <!-- sidebar: style can be found in sidebar.less -->
     <section class="sidebar" style="height:auto;">
-      <!-- Sidebar user panel -->
-      <div class="user-panel">
-        <div class="pull-left image">
-        </div>
-        <div class="pull-left info">
-          <p>Admin</p>
-        </div>
-      </div>
       <!-- sidebar menu: : style can be found in sidebar.less -->
       <ul class="sidebar-menu">
         <li class="header">NAVIGATION</li>
@@ -81,27 +73,27 @@
             <i class="fa fa-dashboard"></i> <span>Dashboard</span>
           </a>
         </li>
-		<li class="treeview">
+      	<li class="treeview">
           <a href="users.php">
             <i class="fa fa-users"></i> <span>Users</span>
           </a>
         </li>
-		<li class="treeview">
+      	<li class="treeview">
           <a href="projects.php">
             <i class="fa fa-lightbulb-o"></i> <span>Projects</span>
           </a>
         </li>
-		<li class="treeview">
+      	<li class="treeview">
           <a href="funding.php">
             <i class="fa fa-dollar"></i> <span>Funding</span>
           </a>
         </li>
-		<li class="treeview">
+  	    <li class="treeview">
           <a href="categories.php">
             <i class="fa fa-gear"></i> <span>Category</span>
           </a>
         </li>
-    <li class="treeview">
+        <li class="treeview">
           <a href="reactivation.php">
             <i class="fa fa-recycle"></i> <span>Reactivation</span>
           </a>
