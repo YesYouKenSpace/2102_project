@@ -103,6 +103,11 @@
             <i class="fa fa-gear"></i> <span>Category</span>
           </a>
         </li>
+        <li class="treeview">
+              <a href="analytics.php">
+                <i class="fa fa-dollar"></i> <span>Analytics</span>
+              </a>
+            </li>
     <li class="treeview">
           <a href="reactivation.php">
             <i class="fa fa-recycle"></i> <span>Reactivation</span>
@@ -133,6 +138,40 @@
             </div>
             <!-- /.box-header -->
             <div class="box-body">
+            <div class="row">
+                <form id="search-funding-form" role="form" method="post">
+                <div class="col-md-4">
+                  <div class="input-group">
+                    <input name="search-project-title" type="text" class="form-control" placeholder="Project title"/>
+                    <span class="input-group-addon">
+                      <i class="fa fa-info-circle"></i>
+                    </span>
+                  </div>
+                </div>
+                <div class="col-md-4">
+                  <div class="input-group">
+                    <input name="search-donor-name" type="text" class="form-control" placeholder="Donor name"/>
+                    <span class="input-group-addon">
+                      <i class="fa fa-user"></i>
+                    </span>
+                  </div>
+                </div>
+                <div class="col-md-3">
+                  <select name="search-amount-donated" class="form-control" method="post">
+                    <option disabled selected>Total Amount Donated</option>
+                    <option value="0 1">$0 to $1k Donated</option>
+                    <option value="1 10">$1k to $10k Donated</option>
+                    <option value="10 100">$10k to $100k Donated</option>
+                    <option value="100 1000">$100k to $1M Donated</option>
+                    <option value="1000 2147483647">>$1M Donated</option>
+                  </select>
+                </div>
+                <div class="col-md-1">
+                  <button name="search-submit" type="submit" class="btn btn-primary">Search</button>
+                </div>
+                </form>
+              </div>
+
             <!-- Modal -->
               <div id="fundingForm" class="modal fade" role="dialog">
                 <div class="modal-dialog">
@@ -209,40 +248,84 @@
             </div>
             <br/>
             <table id="fundingTable" class="table table-bordered table-hover" >
-                      <thead>
-                <tr>
-                  <th>Amount</th>
-                  <th>Date</th>
-                  <th>Project Name</th>
-                  <th>Donor Email</th>
-                  <th></th>
-                  <th></th>
-                </tr>
-                      </thead>
-                      <tbody id="table_data">
-                      <?php
+                <thead>
+                    <tr>
+                      <th>Amount</th>
+                      <th>Date</th>
+                      <th>Project Name</th>
+                      <th>Donor Email</th>
+                      <th></th>
+                      <th></th>
+                    </tr>
+                </thead>
+                <tbody id="table_data">
+                <?php
+                    ob_start();
+                    $query = 'SELECT t.amount, t.date, p.title, t.email, t.transactionNo
+                                FROM Trans t, Project p
+                                WHERE t.projectId = p.id AND t.softDelete = FALSE
+                                ORDER BY t.date DESC';
+                    $result = pg_query($query) or die('Query failed: ' . pg_last_error());
 
-                $query = 'SELECT t.amount, t.date, p.title, t.email, t.transactionNo
-                            FROM Trans t, Project p
-                            WHERE t.projectId = p.id AND t.softDelete = FALSE
-                            ORDER BY t.date DESC';
-                $result = pg_query($query) or die('Query failed: ' . pg_last_error());
-               
-                while($row=pg_fetch_assoc($result)) {
-                    $trans_no = $row['transactionno'];
-                    echo "<tr><td>$".$row['amount'].
-                    "</td><td>".$row['date'].
-                    "</td><td>".$row['title'].
-                    "</td><td>".$row['email']."</td>";
+                    while($row=pg_fetch_assoc($result)) {
+                        $trans_no = $row['transactionno'];
+                        echo "<tr><td>$".$row['amount'].
+                        "</td><td>".$row['date'].
+                        "</td><td>".$row['title'].
+                        "</td><td>".$row['email']."</td>";
 
-                    echo "<td><button class=\"btn btn-primary btn-xs\"><span class=\"glyphicon glyphicon-info-sign\"></span></button></td>
-                    <td><button class=\"btn btn-danger btn-xs delete_funding\" funding-id=\"$trans_no\" href=\"javascript:void(0)\"><span class=\"glyphicon glyphicon-trash\"></span></button></td></tr>"; 
-                    
-                  }
-                
-                pg_free_result($result);
-              ?>
-                  </tbody>
+                        echo "<td><button class=\"btn btn-primary btn-xs\"><span class=\"glyphicon glyphicon-info-sign\"></span></button></td>
+                        <td><button class=\"btn btn-danger btn-xs delete_funding\" funding-id=\"$trans_no\" href=\"javascript:void(0)\"><span class=\"glyphicon glyphicon-trash\"></span></button></td></tr>";
+
+                    }
+
+                    pg_free_result($result);
+
+                    if (isset(($_POST['search-submit']))) {
+                        ob_end_clean();
+                        ob_start();
+                        $searchProjectTitle = $_POST['search-project-title'];
+                        $searchDonorName = $_POST['search-donor-name'];
+
+                        $searchAmountDonated= $_POST['search-amount-donated'];
+                        $amountDonatedArray = explode(" ", $searchAmountDonated);
+                        $amountDonatedMin = $amountDonatedArray[0] * 1000;
+                        $amountDonatedMax = $amountDonatedArray[1] * 1000;
+
+                        $baseQuery = "SELECT m.firstName, m.lastName, t.amount, t.date,
+                                             p.title, t.email, t.transactionNo
+                                FROM Trans t
+                                INNER JOIN Project p ON t.projectId = p.id
+                                INNER JOIN Member m ON t.email = m.email
+                                WHERE t.softDelete = FALSE";
+
+                        $query = "SELECT * FROM ({$baseQuery}) AS base
+                                WHERE title LIKE '%{$searchProjectTitle}%'
+                                AND (firstName LIKE '%{$searchDonorName}%' OR lastName LIKE '%{$searchDonorName}%') ";
+
+                        if (!empty($amountDonatedMin) || !empty($amountDonatedMax)) {
+                            $query .= "AND amount <= {$amountDonatedMax} AND amount >= {$amountDonatedMin} ";
+                        }
+
+                        $query .= "ORDER BY date DESC";
+
+                        $result = pg_query($query) or die('Query failed: ' . pg_last_error());
+
+                        while($row=pg_fetch_assoc($result)) {
+                            $trans_no = $row['transactionno'];
+                            echo "<tr><td>$".$row['amount'].
+                            "</td><td>".$row['date'].
+                            "</td><td>".$row['title'].
+                            "</td><td>".$row['email']."</td>";
+
+                            echo "<td><button class=\"btn btn-primary btn-xs\"><span class=\"glyphicon glyphicon-info-sign\"></span></button></td>
+                            <td><button class=\"btn btn-danger btn-xs delete_funding\" funding-id=\"$trans_no\" href=\"javascript:void(0)\"><span class=\"glyphicon glyphicon-trash\"></span></button></td></tr>";
+                        }
+
+                        pg_free_result($result);
+                    }
+                ?>
+                </tbody>
                 </table>
               </div>
             <!-- /.box-body -->

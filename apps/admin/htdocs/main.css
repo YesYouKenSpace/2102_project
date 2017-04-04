@@ -14,38 +14,18 @@ div {
 p {
 	margin: 0 0 10px;
 	display: block;
-    -webkit-margin-before: 1em;
-    -webkit-margin-after: 1em;
-    -webkit-margin-start: 0px;
-    -webkit-margin-end: 0px;
 }
 
 ul, menu, dir {
     display: block;
     list-style-type: disc;
-    -webkit-margin-before: 1em;
-    -webkit-margin-after: 1em;
-    -webkit-margin-start: 0px;
-    -webkit-margin-end: 0px;
-    -webkit-padding-start: 40px;
-}
-
-ul {
-    -webkit-margin-before: 0px;
-    -webkit-margin-after: 0px;	
 }
 
 li {
     display: list-item;
-    text-align: -webkit-match-parent;
 }
 
-a:-webkit-any-link {
-    color: -webkit-link;
-    cursor: auto;
-}
-
-a:hover {
+a:hover, a:focus {
 	text-decoration: none;
 }
 
@@ -75,8 +55,6 @@ a:hover {
     background-color: #367fa9;
     color: #fff;
     border-bottom: 0 solid transparent;
-	    -webkit-transition: width .3s ease-in-out;
-    -o-transition: width .3s ease-in-out;
     transition: width .3s ease-in-out;
     display: block;
     float: left;
@@ -91,10 +69,12 @@ a:hover {
     overflow: hidden;
 }
 
+.main-header .logo.logouser {
+    background-color: #B95E0D;
+}
+
 .main-header .navbar {
     background-color: #333;
-    -webkit-transition: margin-left .3s ease-in-out;
-    -o-transition: margin-left .3s ease-in-out;
     transition: margin-left .3s ease-in-out;
     margin-bottom: 0;
     margin-left: 230px;
@@ -102,6 +82,11 @@ a:hover {
     min-height: 50px;
     border-radius: 0;
 }
+
+.main-header .navbar.navbaruser {
+    background-color: #e67e22;
+} 
+
 .navbar-nav>.user-menu .user-image {
     float: left;
     width: 25px;
@@ -302,14 +287,16 @@ a:hover {
 .main-header .navbar-custom-menu, .main-header .navbar-right {
     float: right;
 }
+
 .content-wrapper {
--webkit-transition: -webkit-transform .3s ease-in-out,margin .3s ease-in-out;
-    -moz-transition: -moz-transform .3s ease-in-out,margin .3s ease-in-out;
-    -o-transition: -o-transform .3s ease-in-out,margin .3s ease-in-out;
     transition: transform .3s ease-in-out,margin .3s ease-in-out;
     margin-left: 230px;
     z-index: 800;
 	background-color:#ecf0f5;
+}
+
+.content-wrapper.content-wrapper-user {
+    margin-left: 0;
 }
 
 .sidebar a:hover {
@@ -420,8 +407,6 @@ a:hover {
 }
 
 .small-box .icon {
-    -webkit-transition: all .3s linear;
-    -o-transition: all .3s linear;
     transition: all .3s linear;
     position: absolute;
     top: -10px;
@@ -448,7 +433,7 @@ a:hover {
 }
 
 .ion {
-	    display: inline-block;
+    display: inline-block;
     font-family: "Ionicons";
     speak: none;
     font-style: normal;
@@ -457,7 +442,6 @@ a:hover {
     text-transform: none;
     text-rendering: auto;
     line-height: 1;
-    -webkit-font-smoothing: antialiased;
 }
 
 .ion:before {
@@ -470,7 +454,6 @@ a:hover {
     text-transform: none;
     text-rendering: auto;
     line-height: 1;
-    -webkit-font-smoothing: antialiased;
 }
 
 .ion-connection-bars:before {
@@ -518,9 +501,6 @@ a:hover {
     min-height: 100%;
     width: 230px;
     z-index: 810;
-    -webkit-transition: -webkit-transform .3s ease-in-out,width .3s ease-in-out;
-    -moz-transition: -moz-transform .3s ease-in-out,width .3s ease-in-out;
-    -o-transition: -o-transform .3s ease-in-out,width .3s ease-in-out;
     transition: transform .3s ease-in-out,width .3s ease-in-out;
 
 }
@@ -530,7 +510,7 @@ a:hover {
 }
 
 .sidebar-menu {
-	    list-style: none;
+    list-style: none;
     margin: 0;
     padding: 0;
 }
@@ -663,8 +643,6 @@ img {
     font: normal normal normal 14px/1 FontAwesome;
     font-size: inherit;
     text-rendering: auto;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
 }
 
 .list-group-unbordered>.list-group-item {
@@ -675,12 +653,31 @@ img {
     padding-right: 0;
 }
 
+.list-group-item-user {
+    text-align: center;
+}
+
+.list-group-item-user.active, .list-group-item-user.active:focus, .list-group-item-user.active:hover {
+    background-color: #FF9C3A;
+    color: #fff;
+    border-color: #fff;
+    text-decoration: none;
+}
+
+.list-group-item-user > a {
+    color: #000000;
+}
+
 .row .category-row {
     padding-left: 15px;
 }
 
 .row .category-row-box {
     padding: 0 15px;
+}
+
+.row .extra-bottom-padding{
+   margin-bottom: 10px;
 }
 
 .badge-1 {
@@ -693,4 +690,16 @@ img {
 
 .badge-4, .badge-5 {
     background-color: #d35400;
+}
+
+.user-projects-nav h4 {
+    margin-top: 0;
+}
+
+.badge-success {
+    background-color: #5cb85c;
+}
+
+.badge-primary {
+    background-color: #3a87ad;
 }

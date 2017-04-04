@@ -1,5 +1,5 @@
 Chart.defaults.global.hover.mode = 'nearest';
-Chart.defaults.global.defaultFontFamily = 'Arial';
+Chart.defaults.global.defaultFontFamily = 'verdana';
 Chart.defaults.global.defaultFontSize = 14;
 Chart.defaults.global.defaultFontStyle = 'normal';
 Chart.defaults.global.defaultFontColor = '#000000';
@@ -13,33 +13,18 @@ function imageSmoothingEnabled(ctx, state) {
     ctx.imageSmoothingEnabled = state;
 }
 
-function drawLineGraph(e,d,c,b,a, ctx){
-  console.log(isNaN(a));
-  if(isNaN(a)){
-    a=0;
-  }
-  if(isNaN(b)){
-    b=0;
-  }
-  if(isNaN(c)){
-    c=0;
-  }
-  if(isNaN(d)){
-    d=0;
-  }
-  if(isNaN(e)){
-    e=0;
-  }
+function drawLineGraph( arr, label, labels, canvas){
 
-  d+=e;
-  c+=d;
-  b+=c;
-  a+=b;
+  console.log(arr);
+  console.log(labels);
+  var ctx = canvas.getContext("2d", {alpha: false});
+  imageSmoothingEnabled(ctx, false);
+
   var data = {
-    labels: ["4 weeks ago", "2 weeks ago" , "2 weeks ago" , "1 week ago" , "This week"],
+    labels: labels,
     datasets: [
         {
-            label: "$ raised the last month",
+            label: label,
             fill: false,
             lineTension: 0.1,
             backgroundColor: "rgba(75,192,192,0.4)",
@@ -57,21 +42,25 @@ function drawLineGraph(e,d,c,b,a, ctx){
             pointHoverBorderWidth: 2,
             pointRadius: 2,
             pointHitRadius: 10,
-            data: [e,d,c,b,a],
+            data: arr,
             spanGaps: false,
         }
     ]
 };
 
 var option = {
+  responsive: true,
    hover: {
      mode: 'index'
    },
    scales: {
      yAxes:[{
+       display: true
+     }],
+     xAxes:[{
        display: true,
        ticks:{
-         suggestedMin: 1000
+         autoskip: true,
        }
      }]
    }
@@ -82,6 +71,6 @@ var option = {
     option: option
   });
 
-  imageSmoothingEnabled(ctx, false);
+
 
 }
