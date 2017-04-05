@@ -13,18 +13,18 @@
     <!-- Bootstrap -->
     <link href="../bootstrap/css/bootstrap.min.css" rel="stylesheet">
 
-  <!-- Font Awesome -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.5.0/css/font-awesome.min.css">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.5.0/css/font-awesome.min.css">
 
-  <!-- Ionicons -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/ionicons/2.0.1/css/ionicons.min.css">
+    <!-- Ionicons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/ionicons/2.0.1/css/ionicons.min.css">
 
     <!-- DataTables -->
-  <link rel="stylesheet" href="../plugins/datatables/dataTables.bootstrap.css">
+    <link rel="stylesheet" href="../plugins/datatables/dataTables.bootstrap.css">
+
 
     <!-- Custom styles for this template -->
     <link href="../main.css" rel="stylesheet">
-
 
   </head>
 
@@ -288,7 +288,7 @@
                         "</td><td>".$row['title'].
                         "</td><td>".$row['email']."</td>";
 
-                        echo "<td><button class=\"btn btn-primary btn-xs\"><span class=\"glyphicon glyphicon-info-sign\"></span></button></td>
+                        echo "<td><button class=\"btn btn-primary btn-xs\" onClick=\"location.href='funding_details.php?trans-no=$trans_no'\"><span class=\"glyphicon glyphicon-info-sign\"></span></button></td>
                         <td><button class=\"btn btn-danger btn-xs delete_funding\" funding-id=\"$trans_no\" href=\"javascript:void(0)\"><span class=\"glyphicon glyphicon-trash\"></span></button></td></tr>";
 
                     }
@@ -332,7 +332,7 @@
                             "</td><td>".$row['title'].
                             "</td><td>".$row['email']."</td>";
 
-                            echo "<td><button class=\"btn btn-primary btn-xs\"><span class=\"glyphicon glyphicon-info-sign\"></span></button></td>
+                            echo "<td><button class=\"btn btn-primary btn-xs\" onClick=\"location.href='funding_details.php?trans-no=$trans_no'\"><span class=\"glyphicon glyphicon-info-sign\"></span></button></td>
                             <td><button class=\"btn btn-danger btn-xs delete_funding\" funding-id=\"$trans_no\" href=\"javascript:void(0)\"><span class=\"glyphicon glyphicon-trash\"></span></button></td></tr>";
                         }
 

@@ -6,7 +6,7 @@
   <link rel="icon" href="../../favicon.ico">
   <script src="../plugins/chart.js/dist/Chart.bundle.min.js"></script>
   <script src="../util/charts/projectChart.js"></script>
-  <title>User Details</title>
+  <title>CrowdFunder</title>
 
   <!-- Bootstrap core CSS -->
   <link href="../bootstrap/css/bootstrap.min.css" rel="stylesheet">
@@ -223,6 +223,8 @@
                         $query = "UPDATE Member SET firstname = '".$_POST['firstname']."', lastname = '".$_POST['lastname']."', countryid = '".$_POST['countryid']."', roleid = ".$_POST['roleid']."
                         WHERE email = ".$_GET['email'];
                         $result = pg_query($query) or die('Query failed: ' . pg_last_error());
+
+                        echo "<meta http-equiv='refresh' content='0'>";
                       }
                     ?>  
                   </div>

@@ -8,7 +8,7 @@
 		<meta name="author" content="">
 		<link rel="icon" href="../../../favicon.ico">
 
-		<title>Dashboard</title>
+		<title>CrowdFunder</title>
 
 		<!-- Bootstrap core CSS -->
 		<link href="../bootstrap/css/bootstrap.min.css" rel="stylesheet">
@@ -151,7 +151,7 @@
 												  	<div class="modal-body">
 														<div class="input-group">
 															<span class="input-group-addon">Name</span>
-															<input name="catName" type="text" class="form-control" placeholder="Category Name">
+															<input name="catName" type="text" class="form-control" placeholder="Category Name" value=<?php echo "'".$category['name']."'";?>>
 														</div><br/>
 												  	</div>
 												  	<div class="modal-footer">
@@ -164,7 +164,7 @@
 														$query = "UPDATE Category SET name = '".$_POST['catName']."'
 																	WHERE id = ".$_GET['id'];
 														$result = pg_query($query) or die('Query failed: ' . pg_last_error());
-														echo "<script type='text/javascript'>alert('".pg_affected_rows($result)."');</script>";
+														echo "<meta http-equiv='refresh' content='0'>";
 													}
 												?>
 											</div>
