@@ -134,7 +134,7 @@
 			            		</div><br/>
 
 			            		<div class="box-body">
-									<table id="usersTable" class="table table-bordered table-hover" >
+									<table id="categoryTable" class="table table-bordered table-hover" >
 						                <thead>
 											<tr>
 												<th>Name</th>
@@ -154,8 +154,8 @@
 													                            FROM Project p2 INNER JOIN Trans t ON p2.id = t.projectId
 													                            GROUP BY p2.categoryid) pTrans
 													                            ON p.categoryid = pTrans.categoryId
-															GROUP BY p.categoryid, total, donors) fundedCategories
-				                							ON c.id = fundedCategories.categoryid
+																			GROUP BY p.categoryid, total, donors) fundedCategories
+				                											ON c.id = fundedCategories.categoryid
 				                							ORDER BY c.name';
 												$result = pg_query($query) or die('Query failed: ' . pg_last_error());
 
@@ -183,7 +183,7 @@
 											  			echo "<td><span class='label label-success'>Active</span></td>";
 											  		}
 											  		echo "<td>
-											  				<button class=\"btn btn-primary btn-xs\" onClick=\"location.href='category.php?id=$categoryId'\">
+											  				<button class=\"btn btn-primary btn-xs\" onClick=\"location.href='category_details.php?id=$categoryId'\">
 											  					<span class=\"glyphicon glyphicon-info-sign\"></span>
 										  					</button>
 										  				  </td>";

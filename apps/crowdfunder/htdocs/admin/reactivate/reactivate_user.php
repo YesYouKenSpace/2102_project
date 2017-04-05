@@ -12,7 +12,7 @@
 		$result = pg_query($query) or die('Query failed: ' . pg_last_error());
 		
 		if ($result) {
-			echo "User Deleted Successfully ...";
+			echo "User Reactivated Successfully ...";
 		}
 		
 	}
