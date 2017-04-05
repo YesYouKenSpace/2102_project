@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
     <link rel="icon" href="../../favicon.ico">
-    <title>Dashboard</title>
+    <title>CrowdFunder</title>
 
     <!-- Bootstrap core CSS -->
     <link href="../bootstrap/css/bootstrap.min.css" rel="stylesheet">
@@ -16,11 +16,7 @@
   	<body>
 		<?php    
 		session_start();
-	    if (isset($_SESSION['usr_id'])) {
-	      if ($_SESSION['usr_role'] == 1) {
-	        header("Location: ../admin/dashboard.php");
-	      }
-	    } else {
+	    if (!isset($_SESSION['usr_id'])) {
 	      header("Location: ../login.php");
 	    }
 
@@ -51,6 +47,11 @@
 		              		<li class="dropdown user user-menu">
 				                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><?php echo $user['firstname']." ".$user['lastname'];?><span class="caret"></span></a>
 				                <ul class="dropdown-menu">
+				                	<?php
+					                  	if (isset($_SESSION['usr_id']) && $_SESSION['usr_role'] == 1) {
+					                  		echo "<li><a href=\"../admin/index.php\">Switch to admin</a></li>";
+		      							}
+				                  	?>
 				                  <li><a href="../logout.php">Sign Out</a></li>
 				                </ul>
 				            </li>
@@ -147,6 +148,7 @@
 													$query = "UPDATE Project SET title = '".$_POST['title']."', description = '".$_POST['description']."', startdate = '".$startDate."', enddate = '".$endDate."', categoryid = '".$_POST['category']."', amountfundingsought = ".$_POST['amount']."
 															WHERE id = ".$_GET['id'];
 													$result = pg_query($query) or die('Query failed: ' . pg_last_error());
+													echo "<meta http-equiv='refresh' content='0'>";
 												}
 											?>	
 											</div>

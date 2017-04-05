@@ -13,23 +13,30 @@
     <!-- Bootstrap -->
     <link href="../bootstrap/css/bootstrap.min.css" rel="stylesheet">
 
-  <!-- Font Awesome -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.5.0/css/font-awesome.min.css">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.5.0/css/font-awesome.min.css">
 
-  <!-- Ionicons -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/ionicons/2.0.1/css/ionicons.min.css">
+    <!-- Ionicons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/ionicons/2.0.1/css/ionicons.min.css">
 
     <!-- DataTables -->
-  <link rel="stylesheet" href="../plugins/datatables/dataTables.bootstrap.css">
+    <link rel="stylesheet" href="../plugins/datatables/dataTables.bootstrap.css">
+
 
     <!-- Custom styles for this template -->
     <link href="../main.css" rel="stylesheet">
-
 
   </head>
 
   <body>
     <?php
+    session_start();
+    if (!isset($_SESSION['usr_id'])) {
+      header("Location: ../login.php");
+    } else if ($_SESSION['usr_role'] == 2) {
+      header("Location: ../user/index.php");
+    }
+
   	$dbconn = pg_connect("host=localhost port=5432 dbname=postgres user=postgres password=postgres")
       or die('Could not connect: ' . pg_last_error());
 
@@ -48,7 +55,7 @@
       <header class="main-header">
 
       <!-- Logo -->
-      <a href="dashboard.php" class="logo">
+      <a href="index.php" class="logo">
         <!-- logo for regular state and mobile devices -->
         <span class="logo-lg"><b>CrowdFunder</b>Admin</span>
       </a>
@@ -68,6 +75,7 @@
             <li class="dropdown user user-menu">
               <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><?php echo $user['firstname']." ".$user['lastname'];?><span class="caret"></span></a>
               <ul class="dropdown-menu">
+                <li><a href="../user/index.php">Switch to user</a></li>
                 <li><a href="../logout.php">Sign Out</a></li>
               </ul>
           </li>
@@ -85,7 +93,7 @@
       <ul class="sidebar-menu">
         <li class="header">NAVIGATION</li>
         <li class="treeview">
-          <a href="dashboard.php">
+          <a href="index.php">
             <i class="fa fa-dashboard"></i> <span>Dashboard</span>
           </a>
         </li>
@@ -246,7 +254,7 @@
                           VALUES ('".$_POST['amount']."','".$date."','".$_POST['email']."','".$_POST['organiser_id']."')";
 
                       $result = pg_query($query) or die('Query failed: ' . pg_last_error());
-                      echo "<script type='text/javascript'>alert('".pg_affected_rows($result)."');</script>";
+                      echo "<meta http-equiv='refresh' content='0'>";                    
                     }
                   ?>
                 </div>
@@ -280,7 +288,7 @@
                         "</td><td>".$row['title'].
                         "</td><td>".$row['email']."</td>";
 
-                        echo "<td><button class=\"btn btn-primary btn-xs\"><span class=\"glyphicon glyphicon-info-sign\"></span></button></td>
+                        echo "<td><button class=\"btn btn-primary btn-xs\" onClick=\"location.href='funding_details.php?trans-no=$trans_no'\"><span class=\"glyphicon glyphicon-info-sign\"></span></button></td>
                         <td><button class=\"btn btn-danger btn-xs delete_funding\" funding-id=\"$trans_no\" href=\"javascript:void(0)\"><span class=\"glyphicon glyphicon-trash\"></span></button></td></tr>";
 
                     }
@@ -324,7 +332,7 @@
                             "</td><td>".$row['title'].
                             "</td><td>".$row['email']."</td>";
 
-                            echo "<td><button class=\"btn btn-primary btn-xs\"><span class=\"glyphicon glyphicon-info-sign\"></span></button></td>
+                            echo "<td><button class=\"btn btn-primary btn-xs\" onClick=\"location.href='funding_details.php?trans-no=$trans_no'\"><span class=\"glyphicon glyphicon-info-sign\"></span></button></td>
                             <td><button class=\"btn btn-danger btn-xs delete_funding\" funding-id=\"$trans_no\" href=\"javascript:void(0)\"><span class=\"glyphicon glyphicon-trash\"></span></button></td></tr>";
                         }
 

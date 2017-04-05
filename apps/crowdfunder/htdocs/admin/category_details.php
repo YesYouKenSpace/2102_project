@@ -8,7 +8,7 @@
 		<meta name="author" content="">
 		<link rel="icon" href="../../../favicon.ico">
 
-		<title>Dashboard</title>
+		<title>CrowdFunder</title>
 
 		<!-- Bootstrap core CSS -->
 		<link href="../bootstrap/css/bootstrap.min.css" rel="stylesheet">
@@ -21,6 +21,13 @@
 	</head>
   	<body>
 			<?php
+			session_start();
+    		if (!isset($_SESSION['usr_id'])) {
+      			header("Location: ../login.php");
+		    } else if ($_SESSION['usr_role'] == 2) {
+		      header("Location: ../user/index.php");
+		    }
+
 			$dbconn = pg_connect("host=localhost port=5432 dbname=postgres user=postgres password=postgres")
 		    or die('Could not connect: ' . pg_last_error());
 
@@ -39,7 +46,7 @@
 		    <header class="main-header">
 
 		    <!-- Logo -->
-		    <a href="dashboard.php" class="logo">
+		    <a href="index.php" class="logo">
 		      <!-- logo for regular state and mobile devices -->
 		      <span class="logo-lg"><b>CrowdFunder</b>Admin</span>
 		    </a>
@@ -59,6 +66,7 @@
 		          <li class="dropdown user user-menu">
 		            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><?php echo $user['firstname']." ".$user['lastname'];?><span class="caret"></span></a>
 		            <ul class="dropdown-menu">
+	                  <li><a href="../user/index.php">Switch to user</a></li>
 		              <li><a href="../logout.php">Sign Out</a></li>
 		            </ul>
 		        </li>
@@ -73,7 +81,7 @@
 					<ul class="sidebar-menu">
 						<li class="header">NAVIGATION</li>
 						<li class="treeview">
-					  		<a href="dashboard.php">
+					  		<a href="index.php">
 					    		<i class="fa fa-dashboard"></i> <span>Dashboard</span>
 					  		</a>
 						</li>
@@ -143,7 +151,7 @@
 												  	<div class="modal-body">
 														<div class="input-group">
 															<span class="input-group-addon">Name</span>
-															<input name="catName" type="text" class="form-control" placeholder="Category Name">
+															<input name="catName" type="text" class="form-control" placeholder="Category Name" value=<?php echo "'".$category['name']."'";?>>
 														</div><br/>
 												  	</div>
 												  	<div class="modal-footer">
@@ -156,7 +164,7 @@
 														$query = "UPDATE Category SET name = '".$_POST['catName']."'
 																	WHERE id = ".$_GET['id'];
 														$result = pg_query($query) or die('Query failed: ' . pg_last_error());
-														echo "<script type='text/javascript'>alert('".pg_affected_rows($result)."');</script>";
+														echo "<meta http-equiv='refresh' content='0'>";
 													}
 												?>
 											</div>

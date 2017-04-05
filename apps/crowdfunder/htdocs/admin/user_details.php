@@ -6,7 +6,7 @@
   <link rel="icon" href="../../favicon.ico">
   <script src="../plugins/chart.js/dist/Chart.bundle.min.js"></script>
   <script src="../util/charts/projectChart.js"></script>
-  <title>User Details</title>
+  <title>CrowdFunder</title>
 
   <!-- Bootstrap core CSS -->
   <link href="../bootstrap/css/bootstrap.min.css" rel="stylesheet">
@@ -20,6 +20,13 @@
 
   <body>
     <?php
+    session_start();
+    if (!isset($_SESSION['usr_id'])) {
+      header("Location: ../login.php");
+    } else if ($_SESSION['usr_role'] == 2) {
+      header("Location: ../user/index.php");
+    }
+
   	$dbconn = pg_connect("host=localhost port=5432 dbname=postgres user=postgres password=postgres")
       or die('Could not connect: ' . pg_last_error());
 
@@ -38,7 +45,7 @@
       <header class="main-header">
 
       <!-- Logo -->
-      <a href="dashboard.php" class="logo">
+      <a href="index.php" class="logo">
         <!-- logo for regular state and mobile devices -->
         <span class="logo-lg"><b>CrowdFunder</b>Admin</span>
       </a>
@@ -58,6 +65,7 @@
             <li class="dropdown user user-menu">
               <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><?php echo $user['firstname']." ".$user['lastname'];?><span class="caret"></span></a>
               <ul class="dropdown-menu">
+                <li><a href="../user/index.php">Switch to user</a></li>
                 <li><a href="../logout.php">Sign Out</a></li>
               </ul>
           </li>
@@ -75,7 +83,7 @@
       <ul class="sidebar-menu">
             <li class="header">NAVIGATION</li>
             <li class="treeview">
-                <a href="dashboard.php">
+                <a href="index.php">
                   <i class="fa fa-dashboard"></i> <span>Dashboard</span>
                 </a>
             </li>
@@ -213,8 +221,10 @@
                     <?php
                       if(isset($_POST['editUserForm'])){
                         $query = "UPDATE Member SET firstname = '".$_POST['firstname']."', lastname = '".$_POST['lastname']."', countryid = '".$_POST['countryid']."', roleid = ".$_POST['roleid']."
-                        WHERE email = ".$_GET['email'];
+                        WHERE email = '".$_GET['email']."'";
                         $result = pg_query($query) or die('Query failed: ' . pg_last_error());
+
+                        echo "<meta http-equiv='refresh' content='0'>";
                       }
                     ?>  
                   </div>
