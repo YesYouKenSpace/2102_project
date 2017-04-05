@@ -221,7 +221,7 @@
                     <?php
                       if(isset($_POST['editUserForm'])){
                         $query = "UPDATE Member SET firstname = '".$_POST['firstname']."', lastname = '".$_POST['lastname']."', countryid = '".$_POST['countryid']."', roleid = ".$_POST['roleid']."
-                        WHERE email = ".$_GET['email'];
+                        WHERE email = '".$_GET['email']."'";
                         $result = pg_query($query) or die('Query failed: ' . pg_last_error());
 
                         echo "<meta http-equiv='refresh' content='0'>";
