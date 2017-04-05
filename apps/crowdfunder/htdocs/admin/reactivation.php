@@ -37,7 +37,7 @@
       $query = "SELECT m.firstname, m.lastname, m.email, m.registrationdate, COUNT(p.id) AS pCount, COUNT(DISTINCT t.projectid) AS     tCount, SUM(t.amount) AS tSum
               FROM member m LEFT OUTER JOIN project p ON m.email = p.email
                             LEFT OUTER JOIN trans t ON t.email = m.email
-              WHERE m.email = ''".$_SESSION['usr_id']."'
+              WHERE m.email = '".$_SESSION['usr_id']."'
               GROUP BY m.firstname, m.lastname, m.email, m.registrationdate";
       $result = pg_query($query) or die('Query failed: ' . pg_last_error());
       $user=pg_fetch_assoc($result);
@@ -200,8 +200,8 @@
 							}
 							$user_email = $row['email'];
 
-							echo "<td><button class=\"btn btn-primary btn-xs\"><span class=\"glyphicon glyphicon-info-sign\"></span></button></td>
-							<td><button class=\"btn btn-success btn-xs reactivate_user\" user-email=\"$user_email\" href=\"javascript:void(0)\"><span class=\"glyphicon glyphicon-share-alt\"></span></button></td></tr>";
+							echo "<td><button class=\"btn btn-primary btn-xs\" onClick=\"location.href='user_details.php?email=$user_email'\"><span class=\"glyphicon glyphicon-info-sign\"></span></button></td>
+							<td><button class=\"btn btn-danger btn-xs delete_user\" user-email=\"$user_email\" href=\"javascript:void(0)\"><span class=\"glyphicon glyphicon-trash\"></span></button></td></tr>";
 						}
 
 					pg_free_result($result);
@@ -260,8 +260,8 @@
 		                    $proj_id = $row['id'];
 
 							echo "</td><td>".$row['email'].
-							"</td><td><button class=\"btn btn-primary btn-xs\" onClick=\"location.href='project.php?id=$proj_id'\"><span class=\"glyphicon glyphicon-info-sign\"></span></button></td>
-							<td><button class=\"btn btn-success btn-xs reactivate_project\" project-id=\"$proj_id\" href=\"javascript:void(0)\"><span class=\"glyphicon glyphicon-share-alt\"></span></button></td></tr>";
+							"</td><td><button class=\"btn btn-primary btn-xs\" onClick=\"location.href='project_details.php?id=$proj_id'\"><span class=\"glyphicon glyphicon-info-sign\"></span></button></td>
+							<td><button class=\"btn btn-danger btn-xs delete_project\" project-id=\"$proj_id\" href=\"javascript:void(0)\"><span class=\"glyphicon glyphicon-trash\"></span></button></td></tr>";
 						}
 
 					pg_free_result($result);
@@ -297,8 +297,8 @@
                     "</td><td>".$row['title'].
                     "</td><td>".$row['email']."</td>";
 
-                    echo "<td><button class=\"btn btn-primary btn-xs\"><span class=\"glyphicon glyphicon-info-sign\"></span></button></td>
-                    <td><button class=\"btn btn-success btn-xs reactivate_funding\" funding-id=\"$trans_no\" href=\"javascript:void(0)\"><span class=\"glyphicon glyphicon-share-alt\"></span></button></td></tr>";
+                    echo "<td><button class=\"btn btn-primary btn-xs\" onClick=\"location.href='funding_details.php?trans-no=$trans_no'\"><span class=\"glyphicon glyphicon-info-sign\"></span></button></td>
+                    <td><button class=\"btn btn-danger btn-xs delete_funding\" funding-id=\"$trans_no\" href=\"javascript:void(0)\"><span class=\"glyphicon glyphicon-trash\"></span></button></td></tr>";
 
                   }
 

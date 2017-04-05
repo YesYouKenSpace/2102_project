@@ -246,7 +246,7 @@
                           VALUES ('".$_POST['amount']."','".$date."','".$_POST['email']."','".$_POST['organiser_id']."')";
 
                       $result = pg_query($query) or die('Query failed: ' . pg_last_error());
-                      echo "<script type='text/javascript'>alert('".pg_affected_rows($result)."');</script>";
+                      echo "<meta http-equiv='refresh' content='0'>";                    
                     }
                   ?>
                 </div>

@@ -290,7 +290,7 @@
 									VALUES ('".$_POST['title']."','".$_POST['description']."','".$startDate."','".$endDate."','".$_POST['category']."',".$_POST['amount'].",'".$_POST['organiser']."')";
 
 							$result = pg_query($query) or die('Query failed: ' . pg_last_error());
-							//echo "<script type='text/javascript'>alert($query);</script>";
+							echo "<meta http-equiv='refresh' content='0'>";
 						}
 					?>
 				</div>
