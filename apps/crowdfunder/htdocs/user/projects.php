@@ -2,7 +2,7 @@
 <html lang="en">
 	<head>
     	<meta charset="utf-8">
-    	<title>Dashboard</title>
+    	<title>CrowdFunder</title>
 
 	    <!-- Bootstrap core CSS -->
 	    <link href="../bootstrap/css/bootstrap.min.css" rel="stylesheet">
@@ -56,7 +56,7 @@
 			                <ul class="dropdown-menu">
 			                	<?php
 				                  	if (isset($_SESSION['usr_id']) && $_SESSION['usr_role'] == 1) {
-				                  		echo "<li><a href=\"../admin/dashboard.php\">Switch to admin</a></li>";
+				                  		echo "<li><a href=\"../admin/index.php\">Switch to admin</a></li>";
 	      							}
 			                  	?>
 			                  <li><a href="../logout.php">Sign Out</a></li>

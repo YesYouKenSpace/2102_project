@@ -3,9 +3,9 @@ session_start();
 
 if(isset($_SESSION['usr_id'])!="") {
     if ($_SESSION['usr_role'] === 1) {
-      header("Location: admin/dashboard.php");
+      header("Location: admin/");
     } else {
-      header("Location: user/index.php");
+      header("Location: user/");
     }
 }
 
@@ -24,9 +24,9 @@ if (isset($_POST['login'])) {
         $_SESSION['usr_id'] = $row['email'];
         $_SESSION['usr_role'] = $row['roleid'];
         if ($_SESSION['usr_role'] == 1) {
-          header("Location: admin/dashboard.php");
+          header("Location: admin/");
         } else {
-          header("Location: user/index.php");
+          header("Location: user/");
         }
     } else {
         $errormsg = "Incorrect Email or Password!!!";

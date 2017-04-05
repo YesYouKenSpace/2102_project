@@ -50,7 +50,7 @@
     <header class="main-header">
 
     <!-- Logo -->
-    <a href="dashboard.php" class="logo">
+    <a href="index.php" class="logo">
       <!-- logo for regular state and mobile devices -->
       <span class="logo-lg"><b>CrowdFunder</b>Admin</span>
     </a>
@@ -88,7 +88,7 @@
       <ul class="sidebar-menu">
         <li class="header">NAVIGATION</li>
         <li class="active treeview">
-          <a href="dashboard.php">
+          <a href="index.php">
             <i class="fa fa-dashboard"></i> <span>Dashboard</span>
           </a>
         </li>
