@@ -3,7 +3,7 @@ session_start();
 
 if(isset($_SESSION['usr_id'])!="") {
     if ($_SESSION['usr_role'] === 1) {
-      header("Location: index.php");
+      header("Location: admin/dashboard.php");
     } else {
       header("Location: user/index.php");
     }
