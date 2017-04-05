@@ -5,7 +5,7 @@
   <link rel="icon" href="../../favicon.ico">
   <script src="../plugins/chart.js/dist/Chart.bundle.min.js"></script>
   <script src="../util/charts/projectChart.js"></script>
-  <title>Dashboard</title>
+  <title>CrowdFunder</title>
 
   <!-- Bootstrap core CSS -->
   <link href="../bootstrap/css/bootstrap.min.css" rel="stylesheet">
@@ -175,6 +175,8 @@
                         $query = "UPDATE Project SET title = '".$_POST['title']."', description = '".$_POST['description']."', categoryid = '".$_POST['category']."', amountfundingsought = ".$_POST['amount']."
                         WHERE id = ".$_GET['id'];
                         $result = pg_query($query) or die('Query failed: ' . pg_last_error());
+
+                        echo "<meta http-equiv='refresh' content='0'>";
                       }
                     ?>  
                   </div>
