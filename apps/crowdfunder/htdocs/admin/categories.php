@@ -22,6 +22,13 @@
 
   	<body>
       <?php
+		session_start();
+		if (!isset($_SESSION['usr_id'])) {
+		  header("Location: ../login.php");
+		} else if ($_SESSION['usr_role'] == 2) {
+		  header("Location: ../user/index.php");
+		}
+
     	$dbconn = pg_connect("host=localhost port=5432 dbname=postgres user=postgres password=postgres")
         or die('Could not connect: ' . pg_last_error());
 
@@ -60,6 +67,7 @@
               <li class="dropdown user user-menu">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><?php echo $user['firstname']." ".$user['lastname'];?><span class="caret"></span></a>
                 <ul class="dropdown-menu">
+                  <li><a href="../user/index.php">Switch to user</a></li>
                   <li><a href="../logout.php">Sign Out</a></li>
                 </ul>
             </li>
@@ -186,7 +194,8 @@
 
 												while($category=pg_fetch_assoc($result)) {
 								                    $categoryId = $category['id'];
-													echo "<td>".$category['name']."</td>";
+													echo "<tr><td>".$category['name']."</td>";
+
 													if ($category['pcount'] != 0) {
 											  			echo "<td>".$category['pcount']."</td>";
 											  		} else {
@@ -221,6 +230,8 @@
 													  			</button>
 													  	  	</td></tr>";
 													}
+
+													echo "</td>";
 												}
 												pg_free_result($result);
 											?>
@@ -245,7 +256,7 @@
 		<script>
 			$(document).ready(function(){
 
-				$('.delete_category').click(function(e){
+				$('.delete_category').click(function listener(e){
 					e.preventDefault();
 
 					var categoryId = $(this).attr('category-id');
@@ -261,8 +272,11 @@
 								callback: function() {
 
 									$.post('../commons/deletion/delete_category.php', { 'categoryId':categoryId })
-										.done(function(response){
-										bootbox.alert(response);
+									.done(function(response){
+										var values = response.split("/~/");
+										bootbox.alert(values[0]);
+										$("#table_data").html(values[1]);
+										$('.delete_category').click(listener);
 									})
 									.fail(function(){
 										bootbox.alert('Something Went Wrong ....');
