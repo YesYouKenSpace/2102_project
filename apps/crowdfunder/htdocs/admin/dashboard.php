@@ -232,7 +232,7 @@
                         </thead>
                         <tbody id="table_data">
                           <?php
-                          $query = "SELECT SUM(t1.amount) AS sum, p1.title, RANK() OVER (ORDER BY p1.startdate DESC) as ranking, p1.amountFundingSought, p1.startDate
+                          $query = "SELECT SUM(t1.amount) AS sum, t1.projectId AS pid, p1.title, RANK() OVER (ORDER BY p1.startdate DESC) as ranking, p1.amountFundingSought, p1.startDate
                                      FROM Trans t1 INNER JOIN Project p1 ON t1.projectId = p1.id
                                      WHERE current_date- p1.startDate  < 30
                                      GROUP BY t1.projectId, p1.title, p1.amountFundingSought, p1.startDate
@@ -263,9 +263,9 @@
         							} else {
         								echo "$".$row['sum']." / $".$row['amountfundingsought'];
         							}
-        		                    $proj_id = $row['id'];
+        		                    $proj_id = $row['pid'];
 
-        							echo "</td><td><button class=\"btn btn-primary btn-xs\" onClick=\"location.href='project.php?id=$proj_id'\"><span class=\"glyphicon glyphicon-info-sign\"></span></button></td></tr>";
+        							echo "</td><td><button class=\"btn btn-primary btn-xs\" onClick=\"location.href='project_details.php?id=$proj_id'\"><span class=\"glyphicon glyphicon-info-sign\"></span></button></td></tr>";
         						}
 
         					pg_free_result($result);

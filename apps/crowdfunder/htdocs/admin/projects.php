@@ -484,7 +484,7 @@
               className: "btn-danger",
               callback: function() {
 
-                $.post('deletion/delete_project.php', { 'delete':pid })
+                $.post('../commons/deletion/delete_project.php', { 'delete':pid })
                 .done(function(response){
                   bootbox.alert(response);
                   parent.fadeOut('slow');
