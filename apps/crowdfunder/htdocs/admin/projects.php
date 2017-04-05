@@ -194,9 +194,6 @@
 					<button name="search-submit" type="submit" class="btn btn-primary">Search</button>
 				</div>
 			</div>
-			<div class="row">
-
-			</div>
 			</form>
 			</div>
 
