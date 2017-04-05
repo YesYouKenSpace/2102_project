@@ -204,9 +204,6 @@
 					<button name="search-submit" type="submit" class="btn btn-primary">Search</button>
 				</div>
 			</div>
-			<div class="row">
-
-			</div>
 			</form>
 			</div>
 
@@ -494,7 +491,7 @@
               className: "btn-danger",
               callback: function() {
 
-                $.post('deletion/delete_project.php', { 'delete':pid })
+                $.post('../commons/deletion/delete_project.php', { 'delete':pid })
                 .done(function(response){
                   bootbox.alert(response);
                   parent.fadeOut('slow');

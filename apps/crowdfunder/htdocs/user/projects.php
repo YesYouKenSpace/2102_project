@@ -247,7 +247,7 @@
 						                                $proj_id = $row['id'];
 
 														echo "</td>
-															<td><button class=\"btn btn-primary btn-xs\" onClick=\"location.href='project.php?id=$proj_id'\"><span class=\"glyphicon glyphicon-info-sign\"></span></button></td>
+															<td><button class=\"btn btn-primary btn-xs\" onClick=\"location.href='project_details.php?id=$proj_id'\"><span class=\"glyphicon glyphicon-info-sign\"></span></button></td>
 															<td><button class=\"btn btn-danger btn-xs delete_project\" project-id=\"$proj_id\" href=\"javascript:void(0)\"><span class=\"glyphicon glyphicon-trash\"></span></button></td>
 															</tr>";
 						                              }
@@ -369,7 +369,7 @@
 									                    $proj_id = $row['id'];
 
 														echo "</td>
-															<td><button class=\"btn btn-primary btn-xs\" onClick=\"location.href='project.php?id=$proj_id'\"><span class=\"glyphicon glyphicon-info-sign\"></span></button></td></tr>";
+															<td><button class=\"btn btn-primary btn-xs\" onClick=\"location.href='project_details.php?id=$proj_id'\"><span class=\"glyphicon glyphicon-info-sign\"></span></button></td></tr>";
 													}
 													
 													pg_free_result($result);
@@ -408,7 +408,7 @@
 			              	className: "btn-danger",
 			              	callback: function() {
 
-		                		$.post('../deletion/delete_project.php', { 'delete':pid })
+		                		$.post('../commons/deletion/delete_project.php', { 'delete':pid })
 				                .done(function(response){
 				                  bootbox.alert(response);
 				                  parent.fadeOut('slow');
@@ -433,7 +433,7 @@
 				e.preventDefault();
 
 				var queryString = $(this).serialize();
-				$.post( "../filter/filter_projects.php", queryString)
+				$.post( "filter/filter_projects.php", queryString)
 				.done(function(response){
 					$("#table_data_all").html(response);
 				});

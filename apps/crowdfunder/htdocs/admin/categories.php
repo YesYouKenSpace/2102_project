@@ -260,7 +260,7 @@
 								className: "btn-danger",
 								callback: function() {
 
-									$.post('deletion/delete_category.php', { 'categoryId':categoryId })
+									$.post('../commons/deletion/delete_category.php', { 'categoryId':categoryId })
 										.done(function(response){
 										bootbox.alert(response);
 									})
