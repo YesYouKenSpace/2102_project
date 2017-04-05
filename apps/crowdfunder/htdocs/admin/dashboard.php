@@ -230,7 +230,7 @@
         <div class="col-md-6">
          <div class="box project-box">
            <div class="box-body">
-              <h3 class="text-center">New Projects of the Last 30 Days</h3>
+              <h3 class="text-center">10 Newest Projects</h3>
               <table id="projectsTable" class="table table-bordered table-hover" >
                         <thead>
         					<tr>
@@ -244,14 +244,13 @@
                           <?php
                           $query = "SELECT SUM(t1.amount) AS sum, p1.title, RANK() OVER (ORDER BY p1.startdate DESC) as ranking, p1.amountFundingSought, p1.startDate
                                      FROM Trans t1 INNER JOIN Project p1 ON t1.projectId = p1.id
-                                     WHERE current_date- p1.startDate  < 30
                                      GROUP BY t1.projectId, p1.title, p1.amountFundingSought, p1.startDate
                                      ORDER BY p1.startDate DESC";
 
                           $result = pg_query($query) or die('Query failed: ' . pg_last_error());
 
-
-        					while($row=pg_fetch_assoc($result)) {
+                          $count = 0;
+        					while($row=pg_fetch_assoc($result) || $count<10) {
         							if ((!is_null($row['sum'])) && ($row['sum'] >= $row['amountfundingsought'])) {
         								echo "<tr style=\"background-color:#c9ffc9;\">";
         							} else {
@@ -276,7 +275,8 @@
         		                    $proj_id = $row['id'];
 
         							echo "</td><td><button class=\"btn btn-primary btn-xs\" onClick=\"location.href='project.php?id=$proj_id'\"><span class=\"glyphicon glyphicon-info-sign\"></span></button></td></tr>";
-        						}
+                      $count++;
+                    }
 
         					pg_free_result($result);
 
