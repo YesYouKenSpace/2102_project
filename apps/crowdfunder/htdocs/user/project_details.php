@@ -16,11 +16,7 @@
   	<body>
 		<?php    
 		session_start();
-	    if (isset($_SESSION['usr_id'])) {
-	      if ($_SESSION['usr_role'] == 1) {
-	        header("Location: ../admin/dashboard.php");
-	      }
-	    } else {
+	    if (!isset($_SESSION['usr_id'])) {
 	      header("Location: ../login.php");
 	    }
 
@@ -51,6 +47,11 @@
 		              		<li class="dropdown user user-menu">
 				                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><?php echo $user['firstname']." ".$user['lastname'];?><span class="caret"></span></a>
 				                <ul class="dropdown-menu">
+				                	<?php
+					                  	if (isset($_SESSION['usr_id']) && $_SESSION['usr_role'] == 1) {
+					                  		echo "<li><a href=\"../admin/dashboard.php\">Switch to admin</a></li>";
+		      							}
+				                  	?>
 				                  <li><a href="../logout.php">Sign Out</a></li>
 				                </ul>
 				            </li>
