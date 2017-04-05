@@ -2569,7 +2569,7 @@ INSERT INTO Trans (amount, date, email, projectid) VALUES (3000, '14-Mar-2017', 
 
 
 -- NEWEST INSERTIONS --
-INSERT INTO Member (password, firstName, lastName, email, roleId, registrationDate, countryId) VALUES ('superuser', 'superuser', 'superuser', 'superuser@superuser.com', 1, '14-May-2016', 87);
+INSERT INTO Member (password, firstName, lastName, email, roleId, registrationDate, countryId) VALUES (crypt('superuser', gen_salt('bf', 8)), 'superuser', 'superuser', 'su@su.com', 1, '14-May-2016', 87);
 
 insert into  Member (email, password, countryid, firstname, lastname, registrationdate, roleid) values ('sstanley0@pinterest.com', crypt('password', gen_salt('bf', 8)), 105, 'Susan', 'Stanley', '04-Apr-2017', 2);
 insert into  Member (email, password, countryid, firstname, lastname, registrationdate, roleid) values ('alarson1@acquirethisname.com', crypt('password', gen_salt('bf', 8)), 103, 'Ann', 'Larson', '01-Apr-2017', 2);
