@@ -250,7 +250,7 @@
                         <tbody id="table_data">
                           <?php
                           ob_start();
-                          $query = "SELECT SUM(t1.amount) AS sum, t1.projectId AS pid, p1.title AS title, RANK() OVER (ORDER BY p1.startdate DESC) as ranking, p1.amountFundingSought, p1.startDate
+                          $query = "SELECT SUM(t1.amount) AS amountraised, t1.projectId AS id, p1.title AS title, RANK() OVER (ORDER BY p1.startdate DESC) as ranking, p1.amountFundingSought, p1.startDate
                                      FROM Trans t1 INNER JOIN Project p1 ON t1.projectId = p1.id
                                      WHERE p1.softDelete = FALSE
                                      GROUP BY t1.projectId, p1.title, p1.amountFundingSought, p1.startDate
@@ -258,31 +258,30 @@
                           $count = 0;
                           $result = pg_query($query) or die('Query failed: ' . pg_last_error());
 
-                					while($row=pg_fetch_assoc($result) && $count<10) {
-                						if ((!is_null($row['sum'])) && ($row['sum'] >= $row['amountfundingsought'])) {
-                							echo "<tr style=\"background-color:#c9ffc9;\">";
-                						} else {
-                							echo "<tr>";
-                						}
+                					while(($row=pg_fetch_assoc($result) )&& $count<10) {
+                            if ((!is_null($row['amountraised'])) && ($row['amountraised'] >= $row['amountfundingsought'])) {
+              								echo "<tr style=\"background-color:#c9ffc9;\">";
+              							} else {
+              								echo "<tr>";
+              							}
 
-                						echo "<td>".$row['title']
-                						."</td><td>".$row['startdate']
-                						."</td><td><div class=\"progress\" style=\"margin-bottom:2px;\"><div class=\"progress-bar progress-bar-success\" role=\"progressbar\" aria-valuenow=\"70\"
-                						aria-valuemin=\"0\" aria-valuemax=\"100\" style=\"width:"
-                						.(($row['sum'] / $row['amountfundingsought'])*100)
-                						."%;\">
-                						</div></div>";
+              							echo "<td>".$row['title']
+              							."</td><td>".$row['startdate']
+              							."</td><td><div class=\"progress\" style=\"margin-bottom:2px;\"><div class=\"progress-bar progress-bar-success\" role=\"progressbar\" aria-valuenow=\"70\"
+              							aria-valuemin=\"0\" aria-valuemax=\"100\" style=\"width:"
+              							.(($row['amountraised'] * 100 / $row['amountfundingsought']))
+              							."%;\">
+              							</div></div>";
 
-                						if (is_null($row['sum'])) {
-                							echo "$0 / $".$row['amountfundingsought'];
-                						}else if ($row['sum'] >= $row['amountfundingsought']) {
-                							echo " <strong style=\"color:#5cb85c;\">$".$row['sum']."</strong> / $".$row['amountfundingsought'];
-                						} else {
-                							echo "$".$row['sum']." / $".$row['amountfundingsought'];
-                						}
-                	                    $proj_id = $row['id'];
+              							if ($row['amountraised'] >= $row['amountfundingsought']) {
+              								echo " <strong style=\"color:#5cb85c;\">$".$row['amountraised']."</strong> / $".$row['amountfundingsought'];
+              							} else {
+              								echo "$".$row['amountraised']." / $".$row['amountfundingsought'];
+              							}
 
-                						echo "</td><td><button class=\"btn btn-primary btn-xs\" onClick=\"location.href='project_details.php?id=$proj_id'\"><span class=\"glyphicon glyphicon-info-sign\"></span></button></td></tr>";
+              		                    $proj_id = $row['id'];
+
+              							echo "</td><td><button class=\"btn btn-primary btn-xs\" onClick=\"location.href='project_details.php?id=$proj_id'\"><span class=\"glyphicon glyphicon-info-sign\"></span></button></td></tr>";
                             $count++;
                           }
 

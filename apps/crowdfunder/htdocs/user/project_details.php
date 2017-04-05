@@ -14,7 +14,7 @@
     <link href="../main.css" rel="stylesheet">
   	</head>
   	<body>
-		<?php    
+		<?php
 		session_start();
 	    if (!isset($_SESSION['usr_id'])) {
 	      header("Location: ../login.php");
@@ -62,14 +62,14 @@
      		<div class="content-wrapper content-wrapper-user" style="min-height:916px;">
 				<section class="content">
 					<?php
-						$query = "SELECT p.title, p.description, p.startdate, p.enddate, p.amountfundingsought, c.name, c.id AS cId, p.email, m.firstname, m.lastname, b.sum, b.donations, b.donors
+						$query1 = "SELECT p.title, p.description, p.startdate, p.enddate, p.amountfundingsought, c.name, c.id AS cId, p.email, m.firstname, m.lastname, b.sum, b.donations, b.donors
 								  FROM Project p INNER JOIN Member m ON p.email = m.email
 												 LEFT OUTER JOIN (SELECT t.projectId, COUNT(t.email) AS Donations, COUNT(DISTINCT t.email) AS Donors, SUM(t.amount) AS SUM
 																  FROM Trans t
 																  GROUP BY t.projectId) b ON b.projectId = p.id
 												 INNER JOIN category c ON c.id = p.categoryId
 								  WHERE p.id =".$_GET['id'];
-						$result = pg_query($query) or die('Query failed: ' . pg_last_error());
+						$result = pg_query($query1) or die('Query failed: ' . pg_last_error());
 						$project = pg_fetch_assoc($result);
 					?>
 					<div class="row">
@@ -84,7 +84,7 @@
 									<!-- Modal -->
 									<div id="editProjectForm" class="modal fade" role="dialog">
 				  						<div class="modal-dialog">
-					
+
 											<div class="modal-content">
 												<form id="edit-project-form" role="form" method="post">
 												  	<div class="modal-header">
@@ -98,7 +98,7 @@
 														</div><br/>
 														<div class="input-group">
 															<span class="input-group-addon">Description</span>
-															<textarea name="description" class="form-control custom-control" rows="3" style="resize:none" placeholder="Enter Project Description"><?php echo 
+															<textarea name="description" class="form-control custom-control" rows="3" style="resize:none" placeholder="Enter Project Description"><?php echo
 																$project['description'];?></textarea>
 														</div><br/>
 														<div class="input-group">
@@ -119,7 +119,7 @@
 															 	<?php
 																	$query = 'SELECT * FROM Category c';
 																	$result = pg_query($query) or die('Query failed: ' . pg_last_error());
-														 
+
 																	while($row=pg_fetch_assoc($result)) {
 																			if ($project['cid'] === $row['id']) {
 																			echo "<option value='".$row['id']."' selected='selected'>".$row['name']."</option>";
@@ -127,9 +127,9 @@
 																			echo "<option value='".$row['id']."'>".$row['name']."</option>";
 																		}
 																	}
-																	
+
 																	pg_free_result($result);
-																?>						
+																?>
 															</select>
 														</div><br/>
 					  								</div>
@@ -137,20 +137,20 @@
 														<button type="submit" name="editProjectForm" class="btn btn-primary">Save</button>
 														<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
 											  		</div>
-												</form>			
+												</form>
 												<?php
 												if(isset($_POST['editProjectForm'])){
 													$dateStr = $_POST['duration'];
 													$dateArr = (explode(" - ",$dateStr));
 													$startDate = date('Y-m-d', strtotime(str_replace('/', '-', $dateArr[0])));
 													$endDate = date('Y-m-d', strtotime(str_replace('/', '-', $dateArr[1])));
-													
+
 													$query = "UPDATE Project SET title = '".$_POST['title']."', description = '".$_POST['description']."', startdate = '".$startDate."', enddate = '".$endDate."', categoryid = '".$_POST['category']."', amountfundingsought = ".$_POST['amount']."
 															WHERE id = ".$_GET['id'];
 													$result = pg_query($query) or die('Query failed: ' . pg_last_error());
 													echo "<meta http-equiv='refresh' content='0'>";
 												}
-											?>	
+											?>
 											</div>
 				  						</div>
 									</div>
@@ -179,6 +179,43 @@
 											}
 										?>
 									</p>
+                  <!-- Modal -->
+                  <div id="donationForm" class="modal fade" role="dialog">
+                      <div class="modal-dialog">
+
+                      <div class="modal-content">
+                        <form id="donate-form" role="form" method="post">
+                            <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                            <h4 class="modal-title">Make a Donation</h4>
+                            </div>
+                            <div class="modal-body">
+                            <div class="input-group">
+                              <span class="input-group-addon"><i class="fa fa-dollar"></i></span>
+                              <input name="amount" type="number" min="10" class="form-control" placeholder="Amount">
+                              <span class="input-group-addon">.00</span>
+                            </div><br/>
+                            </div>
+                            <div class="modal-footer">
+                            <button type="submit" name="donationForm" class="btn btn-success">Donate</button>
+                            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                            </div>
+                        </form>
+                        <?php
+                        if(isset($_POST['donationForm'])){
+                          $query = "INSERT INTO Trans (amount, date, email, projectid)
+                              VALUES (".$_POST['amount'].", current_date, '".$_SESSION['usr_id']."',".$_GET['id'].")";
+
+                          $result = pg_query($query) or die('Query failed: ' . pg_last_error());
+                          pg_free_result($result);
+                          unset($_POST['donationForm']);
+                          $result = pg_query($query1) or die('Query failed: ' . pg_last_error());
+                          $project = pg_fetch_assoc($result);
+                        }
+                      ?>
+                      </div>
+                      </div>
+                  </div>
 									<div class="row">
 										<div class="col-md-6">
 											<ul class="list-group list-group-unbordered">
@@ -225,39 +262,7 @@
 											<div><span>You have donated <strong>$<?php if (is_null($donation['tsum'])) { echo "0"; } else { echo $donation['tsum'];}?></strong> to this project.</span></div>
 											<button type="button" class="btn btn-success" data-toggle="modal" data-target="#donationForm" show="false" style="width: inherit;"><span><i class="fa fa-dollar"></i> Donate</span></button>
 										</div>
-										<!-- Modal -->
-										<div id="donationForm" class="modal fade" role="dialog">
-					  						<div class="modal-dialog">
-						
-												<div class="modal-content">
-													<form id="donate-form" role="form" method="post">
-													  	<div class="modal-header">
-															<button type="button" class="close" data-dismiss="modal">&times;</button>
-															<h4 class="modal-title">Make a Donation</h4>
-													  	</div>
-													  	<div class="modal-body">
-															<div class="input-group">
-																<span class="input-group-addon"><i class="fa fa-dollar"></i></span>
-																<input name="amount" type="number" min="10" class="form-control" placeholder="Amount">
-																<span class="input-group-addon">.00</span>
-															</div><br/>
-						  								</div>
-													  	<div class="modal-footer">
-															<button type="submit" name="donationForm" class="btn btn-success">Donate</button>
-															<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-												  		</div>
-													</form>			
-													<?php
-													if(isset($_POST['donationForm'])){
-														$query = "INSERT INTO Trans (amount, date, email, projectid)
-																VALUES (".$_POST['amount'].", current_date, '".$_SESSION['usr_id']."',".$_GET['id'].")";
-														
-														$result = pg_query($query) or die('Query failed: ' . pg_last_error());
-													}
-												?>	
-												</div>
-					  						</div>
-										</div>
+
 									</div>
 								</div>
 			  				</div>
