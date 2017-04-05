@@ -16,21 +16,15 @@
     <!-- Bootstrap core CSS -->
     <link href="bootstrap/css/bootstrap.min.css" rel="stylesheet">
 
-	<!-- Font Awesome -->
-	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.5.0/css/font-awesome.min.css">
+  	<!-- Font Awesome -->
+  	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.5.0/css/font-awesome.min.css">
 
-  <!-- Ionicons -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/ionicons/2.0.1/css/ionicons.min.css">
+    <!-- Ionicons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/ionicons/2.0.1/css/ionicons.min.css">
+      <!-- DataTables -->
+    <link rel="stylesheet" href="plugins/datatables/dataTables.bootstrap.css">
 
-    <!-- daterange picker -->
-  <link rel="stylesheet" href="plugins/daterangepicker/daterangepicker.css">
-  <!-- bootstrap datepicker -->
-  <link rel="stylesheet" href="plugins/datepicker/datepicker3.css">
-
-    <!-- DataTables -->
-  <link rel="stylesheet" href="plugins/datatables/dataTables.bootstrap.css">
-
-    <!-- Custom styles for this template -->
+      <!-- Custom styles for this template -->
     <link href="main.css" rel="stylesheet">
 
 
@@ -90,22 +84,22 @@
             <i class="fa fa-dashboard"></i> <span>Dashboard</span>
           </a>
         </li>
-		<li class="active treeview">
+		    <li class="active treeview">
           <a href="users.php">
             <i class="fa fa-users"></i> <span>Users</span>
           </a>
         </li>
-		<li class="treeview">
+		    <li class="treeview">
           <a href="projects.php">
             <i class="fa fa-lightbulb-o"></i> <span>Projects</span>
           </a>
         </li>
-		<li class="treeview">
+		    <li class="treeview">
           <a href="funding.php">
             <i class="fa fa-dollar"></i> <span>Funding</span>
           </a>
         </li>
-		<li class="treeview">
+		    <li class="treeview">
           <a href="index.php">
             <i class="fa fa-gear"></i> <span>Settings</span>
           </a>
@@ -114,23 +108,26 @@
     </section>
     <!-- /.sidebar -->
   </aside>
-     <div class="content-wrapper" style="min-height:916px;">
+  <div class="content-wrapper" style="min-height:916px;">
     <!-- Content Header (Page header) -->
     <section class="content-header">
       <h1>
-        Project Management
+        User Details
       </h1>
     </section>
 
     <!-- Main content -->
 	<section class="content">
 		<?php
-			$query = "SELECT m.email, m.firstname, m.lastname, m.registrationdate, c.name, b.total_num_donations, b.total_amt_dontaions
-					  FROM Member m INNER JOIN Country c ON m.countryId = c.id
-					  	LEFT OUTER JOIN (SELECT t.email, COUNT(t.email) AS total_num_donations, SUM(t.amount) AS total_amt_dontaions
-					  				FROM Trans t
-					  				GROUP BY t.email) b ON b.email = m.email
-					  WHERE m.email ='".$_GET['email']."'";
+			$query = "SELECT m.email, m.firstname, m.lastname, m.registrationdate, c.name, b.total_num_donations, b.total_amt_dontaions, b1.total_projects_owned
+    					  FROM Member m INNER JOIN Country c ON m.countryId = c.id
+    					  	LEFT OUTER JOIN (SELECT t.email, COUNT(t.email) AS total_num_donations, SUM(t.amount) AS total_amt_dontaions
+    					  				FROM Trans t
+    					  				GROUP BY t.email) b ON b.email = m.email
+                  LEFT OUTER JOIN (SELECT p.email, COUNT(*) AS total_projects_owned
+                                    FROM Project p
+                                    GROUP BY p.email) b1 ON b1.email = m.email
+					        WHERE m.email ='".$_GET['email']."'";
 
 			$result = pg_query($query) or die('Query failed: ' . pg_last_error());
 			$user = pg_fetch_assoc($result);
@@ -139,50 +136,139 @@
 		<div class="row">
 			<div class="col-md-8">
 			  <div class="box project-box">
-				<div class="box-body">
-					<button type="button" class="btn btn-primary pull-right" data-toggle="modal" data-target="#projectForm" show="false"><span><i class="fa fa-pencil"></i></span></button>
-					<h3 class="text-center"><?php echo $user['email'];?></h3>
-					<div class="row">
-						<div class="col-md-6">
-							<ul class="list-group list-group-unbordered">
-								<li class="list-group-item">
-								  <b>Name</b> <a class="pull-right"><?php echo $user['firstname']." ".$user['lastname'];?></a>
-								</li>
-								<li class="list-group-item">
-								  <b>Registration Date</b> <a class="pull-right"><?php echo $user['registrationdate'];?></a>
-								</li>
-								<li class="list-group-item">
-								  <b>Country</b> <a class="pull-right"><?php echo $user['name'];?></a>
-								</li>
-							</ul>
-						</div>
-						<div class="col-md-6">
-							<ul class="list-group list-group-unbordered">
-								<li class="list-group-item">
-								  <b>Total Number of Donations</b> <a class="pull-right">$<?php if (!is_null($user['total_num_donations'])){echo $user['total_num_donations'];} else {echo "0";}?></a>
-								</li>
-								<li class="list-group-item">
-								  <b>Total Donation Amount</b> <a class="pull-right">$<?php if (!is_null($user['total_amt_dontaions'])){echo $user['total_amt_dontaions'];} else {echo "0";}?></a>
-<!-- 								</li>
-								<li class="list-group-item">
-								  <b>Donors</b> <a class="pull-right"><?php if (!is_null($project['donors'])){echo $project['donors'];} else {echo "0";}?></a>
-								</li>
-								<li class="list-group-item">
-								  <b>Donations</b> <a class="pull-right"><?php if (!is_null($project['donations'])){echo $project['donations'];} else {echo "0";}?></a>
-								</li> -->
-							</ul>
-						</div>
-					</div>
-				</div>
-				<!-- /.box-body -->
+  				<div class="box-body">
+  					<button type="button" class="btn btn-primary pull-right" data-toggle="modal" data-target="#projectForm" show="false"><span><i class="fa fa-pencil"></i></span></button>
+  					<h3 class="text-center"><?php echo $user['email'];?></h3>
+  					<div class="row">
+  						<div class="col-md-6">
+  							<ul class="list-group list-group-unbordered">
+  								<li class="list-group-item">
+  								  <b>Name</b> <a class="pull-right"><?php echo $user['firstname']." ".$user['lastname'];?></a>
+  								</li>
+  								<li class="list-group-item">
+  								  <b>Registration Date</b> <a class="pull-right"><?php echo $user['registrationdate'];?></a>
+  								</li>
+  								<li class="list-group-item">
+  								  <b>Country</b> <a class="pull-right"><?php echo $user['name'];?></a>
+  								</li>
+  							</ul>
+  						</div>
+  						<div class="col-md-6">
+  							<ul class="list-group list-group-unbordered">
+  								<li class="list-group-item">
+  								  <b>Total Number of Donations</b> <a class="pull-right">$<?php if (!is_null($user['total_num_donations'])){echo $user['total_num_donations'];} else {echo "0";}?></a>
+  								</li>
+  								<li class="list-group-item">
+  								  <b>Total Donation Amount</b> <a class="pull-right">$<?php if (!is_null($user['total_amt_dontaions'])){echo $user['total_amt_dontaions'];} else {echo "0";}?></a>
+                  </li>
+                  <li class="list-group-item">
+                    <b>Total Projects Owned</b><a class="pull-right"><?php if (!is_null($user['total_projects_owned'])){echo $user['total_projects_owned'];} else {echo "0";}?></a>
+                  </li>
+  							</ul>
+  						</div>
+  					</div>
+  				</div>
 			  </div>
 			</div>
+      <div class="col-md-4">
+        <div class="box project-box">
+          <div class="box-body">
+            <button type="button" class="btn btn-primary pull-right" data-toggle="modal" data-target="#projectForm" show="false"><span><i class="fa fa-pencil"></i></span></button>
+            <h3 class="text-center">Donation Details</h3>
+            <table id="donationTable" class="table table-bordered table-hover" >
+              <thead>
+                  <tr>
+                    <th>Date</th>
+                    <th>Amount</th>
+                    <th>Project Name</th>
+                  </tr>
+              </thead>
+              <tbody>
+              <?php
+              $query = "SELECT t.amount, t.date, p.title
+                        FROM Trans t, Project p
+                        WHERE p.id = t.projectId AND t.email ='".$_GET['email']."'
+                        ORDER BY t.date";
 
-    </section>
-    <!-- /.content -->
+              $result = pg_query($query) or die('Query failed: ' . pg_last_error());
+
+              while($row=pg_fetch_assoc($result)) {
+                echo "<tr><td>".$row['date'].
+                "</td><td>".$row['amount'].
+                "</td><td>".$row['title']."</td></tr>";
+              }
+              pg_free_result($result);
+
+              ?>
+              </tbody>
+            </table>
+          </div>
+        </div>
+    </div>
   </div>
-  <!-- /.content-wrapper -->
-	</div>
+  <div class="row">
+    <div class="col-md-12">
+      <div class="box project-box">
+        <div class="box-body">
+          <button type="button" class="btn btn-primary pull-right" data-toggle="modal" data-target="#projectForm" show="false"><span><i class="fa fa-pencil"></i></span></button>
+          <h3 class="text-center">Project(s) Owned By User</h3>
+          <table id="projectsTable" class="table table-bordered table-hover" >
+            <thead>
+                <tr>
+                  <th>Title</th>
+                  <th>Description</th>
+                  <th>Start Date</th>
+                  <th>End Date</th>
+                  <th>Category</th>
+                  <th>Amount Raised</th>
+                </tr>
+            </thead>
+            <tbody>
+            <?php
+          $query = "SELECT p.title, p.description, p.startdate, p.enddate, c.name, p.amountfundingsought, p.email, b.total_amount
+                    FROM Project p LEFT OUTER JOIN (
+                                  SELECT t.projectId, SUM(t.amount) AS total_amount 
+                                  FROM Trans t
+                                  GROUP BY t.projectId) b ON b.projectId = p.id,
+                                  Category c
+                    WHERE c.id = p.categoryId AND p.softDelete = FALSE AND p.email='".$_GET['email']."'
+                    ORDER BY p.endDate DESC, p.startDate DESC";
+
+            $result = pg_query($query) or die('Query failed: ' . pg_last_error());
+
+            while($row=pg_fetch_assoc($result)) {
+              echo "<tr><td>".$row['title'].
+              "</td><td>".$row['description'].
+              "</td><td>".$row['startdate'].
+              "</td><td>".$row['enddate'].
+              "</td><td>".$row['name'].
+              "</td><td><div class=\"progress\" style=\"margin-bottom:2px;\"><div class=\"progress-bar progress-bar-success\" role=\"progressbar\" aria-valuenow=\"70\"
+              aria-valuemin=\"0\" aria-valuemax=\"100\" style=\"width:"
+              .(($row['total_amount'] / $row['amountfundingsought'])*100).
+              "%;\"></div></div>";
+              if (is_null($row['sum'])) {
+                echo "$0 / $".$row['amountfundingsought'];
+              }else if ($row['sum'] >= $row['amountfundingsought']) {
+                echo " <strong style=\"color:#5cb85c;\">$".$row['sum']."</strong> / $".$row['amountfundingsought'];
+              } else {
+                echo "$".$row['sum']." / $".$row['amountfundingsought'];
+              } 
+              echo "</td></tr>";
+            }
+            pg_free_result($result);
+
+            ?>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+  </section>
+  </div>
+
+
+
 
 
 
@@ -192,20 +278,16 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
     <script src="bootstrap/js/bootstrap.min.js"></script>
 
-	<!-- jQuery 2.2.3 -->
-<script src="plugins/jQuery/jquery-2.2.3.min.js"></script>
+    <!-- jQuery 2.2.3 -->
+    <script src="plugins/jQuery/jquery-2.2.3.min.js"></script>
 
-  <!-- date-range-picker -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.11.2/moment.min.js"></script>
-<script src="plugins/daterangepicker/daterangepicker.js"></script>
+    <!-- date-range-picker -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.11.2/moment.min.js"></script>
 
-  <!-- bootstrap datepicker -->
-<script src="plugins/datepicker/bootstrap-datepicker.js"></script>
-
-	<!-- DataTables -->
-<script src="plugins/datatables/jquery.dataTables.min.js"></script>
-<script src="plugins/datatables/dataTables.bootstrap.min.js"></script>
-	<script>
+    <!-- DataTables -->
+    <script src="plugins/datatables/jquery.dataTables.min.js"></script>
+    <script src="plugins/datatables/dataTables.bootstrap.min.js"></script>
+    <script>
 
 	$(function() {
 		var startDate;
@@ -218,6 +300,6 @@
 			}
 		});
 	});
-</script>
+  </script>
   </body>
 </html>
