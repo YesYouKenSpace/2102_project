@@ -28,6 +28,14 @@
   <?php
 	$dbconn = pg_connect("host=localhost port=5432 dbname=postgres user=postgres password=postgres")
     or die('Could not connect: ' . pg_last_error());
+
+    $query = "SELECT m.firstname, m.lastname, m.email, m.registrationdate, COUNT(p.id) AS pCount, COUNT(DISTINCT t.projectid) AS     tCount, SUM(t.amount) AS tSum
+            FROM member m LEFT OUTER JOIN project p ON m.email = p.email
+                          LEFT OUTER JOIN trans t ON t.email = m.email
+            WHERE m.email = '".$_SESSION['usr_id']."'
+            GROUP BY m.firstname, m.lastname, m.email, m.registrationdate";
+    $result = pg_query($query) or die('Query failed: ' . pg_last_error());
+    $user=pg_fetch_assoc($result);
 	?>
 	<div class="wrapper" style="height: auto;">
 
@@ -43,22 +51,24 @@
 
     <!-- Header Navbar: style can be found in header.less -->
     <nav class="navbar navbar-static-top">
-      <!-- Sidebar toggle button-->
       <a href="#" class="sidebar-toggle" data-toggle="offcanvas" role="button">
         <span class="sr-only">Toggle navigation</span>
       </a>
-      <!-- Navbar Right Menu -->
       <div class="navbar-custom-menu">
         <ul class="nav navbar-nav">
-          <!-- User Account: style can be found in dropdown.less -->
-          <li class="dropdown user user-menu">
-            <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-              <span class="hidden-xs">Admin</span>
+          <li class="user user-menu">
+            <a href="#index.php">
+              <span class="hidden-xs">Profile</span>
             </a>
           </li>
+          <li class="dropdown user user-menu">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><?php echo $user['firstname']." ".$user['lastname'];?><span class="caret"></span></a>
+            <ul class="dropdown-menu">
+              <li><a href="../logout.php">Sign Out</a></li>
+            </ul>
+        </li>
         </ul>
       </div>
-
     </nav>
   </header>
 <!-- Left side column. contains the logo and sidebar -->
@@ -220,7 +230,7 @@
         <div class="col-md-6">
          <div class="box project-box">
            <div class="box-body">
-              <h3 class="text-center">New Projects of the Last 30 Days</h3>
+              <h3 class="text-center">10 Newest Projects</h3>
               <table id="projectsTable" class="table table-bordered table-hover" >
                         <thead>
         					<tr>
@@ -234,14 +244,13 @@
                           <?php
                           $query = "SELECT SUM(t1.amount) AS sum, t1.projectId AS pid, p1.title, RANK() OVER (ORDER BY p1.startdate DESC) as ranking, p1.amountFundingSought, p1.startDate
                                      FROM Trans t1 INNER JOIN Project p1 ON t1.projectId = p1.id
-                                     WHERE current_date- p1.startDate  < 30
                                      GROUP BY t1.projectId, p1.title, p1.amountFundingSought, p1.startDate
                                      ORDER BY p1.startDate DESC";
 
                           $result = pg_query($query) or die('Query failed: ' . pg_last_error());
 
-
-        					while($row=pg_fetch_assoc($result)) {
+                          $count = 0;
+        					while($row=pg_fetch_assoc($result) || $count<10) {
         							if ((!is_null($row['sum'])) && ($row['sum'] >= $row['amountfundingsought'])) {
         								echo "<tr style=\"background-color:#c9ffc9;\">";
         							} else {
@@ -264,9 +273,10 @@
         								echo "$".$row['sum']." / $".$row['amountfundingsought'];
         							}
         		                    $proj_id = $row['pid'];
+        							echo "</td><td><button class=\"btn btn-primary btn-xs\" onClick=\"location.href='project.php?id=$proj_id'\"><span class=\"glyphicon glyphicon-info-sign\"></span></button></td></tr>";
+                      $count++;
+                    }
 
-        							echo "</td><td><button class=\"btn btn-primary btn-xs\" onClick=\"location.href='project_details.php?id=$proj_id'\"><span class=\"glyphicon glyphicon-info-sign\"></span></button></td></tr>";
-        						}
 
         					pg_free_result($result);
 
@@ -288,8 +298,8 @@
     <!-- Placed at the end of the document so the pages load faster -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
     <script>window.jQuery || document.write('<script src="../../assets/js/vendor/jquery.min.js"><\/script>')</script>
-    <script src="../../../dist/js/bootstrap.min.js"></script>
+    <script src="../bootstrap/js/bootstrap.min.js"></script>
     <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
-    <script src="../../../assets/js/ie10-viewport-bug-workaround.js"></script>
+    <script src="../js/ie10-viewport-bug-workaround.js"></script>
   </body>
 </html>
