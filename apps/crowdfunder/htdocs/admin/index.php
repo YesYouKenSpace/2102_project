@@ -203,7 +203,7 @@
 				</div>
 			</div>
       <div class="row">
-        <div class="col-md-4">
+        <div class="col-md-6">
          <div class="box project-box">
            <div class="box-body">
               <h3 class="text-center">Popular Project of the Month</h3>
