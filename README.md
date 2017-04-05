@@ -6,3 +6,9 @@ Instructions to run:
  2. Access bitnami-apps-prefix.conf file
  3. Add in this line: 
     Include "../apps/crowdfunder/conf/httpd-prefix.conf"    
+
+Preloaded accounts for testing
+ 1. admin@admin.com
+ 2. user@user.com
+
+ password = 'password'

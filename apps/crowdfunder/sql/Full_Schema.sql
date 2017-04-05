@@ -360,6 +360,8 @@ INSERT INTO country VALUES (DEFAULT, 'Zaire');
 INSERT INTO country VALUES (DEFAULT, 'Zambia');
 INSERT INTO country VALUES (DEFAULT, 'Zimbabwe');
 
+INSERT INTO Member (password, firstName, lastName, email, roleId, registrationDate, countryId) VALUES (crypt('password', gen_salt('bf', 8)), 'admin', 'admin', 'admin@admin.com', 1, '15-Mar-2016', 98);
+INSERT INTO Member (password, firstName, lastName, email, roleId, registrationDate, countryId) VALUES (crypt('password', gen_salt('bf', 8)), 'user', 'user', 'user@user.com', 2, '15-Mar-2016', 98);
 
 INSERT INTO Member (password, firstName, lastName, email, roleId, registrationDate, countryId) VALUES (crypt('password', gen_salt('bf', 8)), 'Sharon', 'Hunt', 'shunt0@mozilla.com', 2, '15-Mar-2016', 98);
 INSERT INTO Member (password, firstName, lastName, email, roleId, registrationDate, countryId) VALUES (crypt('password', gen_salt('bf', 8)), 'Chris', 'Chapman', 'cchapman1@t-online.de', 1, '20-Aug-2016', 193);
