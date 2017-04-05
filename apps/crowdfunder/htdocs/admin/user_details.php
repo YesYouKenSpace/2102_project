@@ -1,34 +1,22 @@
 
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+<head>
+  <meta charset="utf-8">
+  <link rel="icon" href="../../favicon.ico">
+  <script src="../plugins/chart.js/dist/Chart.bundle.min.js"></script>
+  <script src="../util/charts/projectChart.js"></script>
+  <title>User Details</title>
 
-    <meta name="description" content="">
-    <meta name="author" content="">
-    <link rel="icon" href="../../favicon.ico">
-    <script src="plugins/chart.js/dist/Chart.bundle.min.js"></script>
-    <script src="util/charts/projectChart.js"></script>
-    <title>Dashboard</title>
-
-    <!-- Bootstrap core CSS -->
-    <link href="../bootstrap/css/bootstrap.min.css" rel="stylesheet">
-
-  	<!-- Font Awesome -->
-  	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.5.0/css/font-awesome.min.css">
-
-    <!-- Ionicons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/ionicons/2.0.1/css/ionicons.min.css">
-      <!-- DataTables -->
-    <link rel="stylesheet" href="../plugins/datatables/dataTables.bootstrap.css">
-
-      <!-- Custom styles for this template -->
-    <link href="../main.css" rel="stylesheet">
-
-
-  </head>
+  <!-- Bootstrap core CSS -->
+  <link href="../bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.5.0/css/font-awesome.min.css">
+  <!-- Ionicons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/ionicons/2.0.1/css/ionicons.min.css">
+  <!-- Custom styles for this template -->
+  <link href="../main.css" rel="stylesheet">
+</head>
 
   <body>
 	<?php
@@ -122,26 +110,104 @@
 
     <!-- Main content -->
 	<section class="content">
-		<?php
-			$query = "SELECT m.email, m.firstname, m.lastname, m.registrationdate, c.name, b.total_num_donations, b.total_amt_dontaions, b1.total_projects_owned
-    					  FROM Member m INNER JOIN Country c ON m.countryId = c.id
-    					  	LEFT OUTER JOIN (SELECT t.email, COUNT(t.email) AS total_num_donations, SUM(t.amount) AS total_amt_dontaions
-    					  				FROM Trans t
-    					  				GROUP BY t.email) b ON b.email = m.email
-                  LEFT OUTER JOIN (SELECT p.email, COUNT(*) AS total_projects_owned
-                                    FROM Project p
-                                    GROUP BY p.email) b1 ON b1.email = m.email
-					        WHERE m.email ='".$_GET['email']."'";
-
-			$result = pg_query($query) or die('Query failed: ' . pg_last_error());
-			$user = pg_fetch_assoc($result);
-
-		?>
 		<div class="row">
 			<div class="col-md-8">
 			  <div class="box project-box">
   				<div class="box-body">
-  					<button type="button" class="btn btn-primary pull-right" data-toggle="modal" data-target="#projectForm" show="false"><span><i class="fa fa-pencil"></i></span></button>
+  					<button type="button" class="btn btn-primary pull-right" data-toggle="modal" data-target="#editUserForm" show="false"><span><i class="fa fa-pencil"></i></span></button>
+            <?php
+              $query = "SELECT m.email, m.firstname, m.lastname, m.registrationdate, c.id AS countryid, c.name AS countryname, b.total_num_donations, b.total_amt_dontaions, b1.total_projects_owned, r.type AS roletype, r.id AS roleid
+                        FROM Member m INNER JOIN Country c ON m.countryId = c.id
+                          LEFT OUTER JOIN (SELECT t.email, COUNT(t.email) AS total_num_donations, SUM(t.amount) AS total_amt_dontaions
+                                FROM Trans t
+                                GROUP BY t.email) b ON b.email = m.email
+                          LEFT OUTER JOIN (SELECT p.email, COUNT(*) AS total_projects_owned
+                                            FROM Project p
+                                            GROUP BY p.email) b1 ON b1.email = m.email,
+                          Role r
+                          WHERE m.roleid=r.id AND m.email ='".$_GET['email']."'";
+
+              $result = pg_query($query) or die('Query failed: ' . pg_last_error());
+              $user = pg_fetch_assoc($result);
+            ?>
+             <!-- Modal -->
+             <div id="editUserForm" class="modal fade" role="dialog">
+              <div class="modal-dialog">
+                <div class="modal-content">
+                  <form id="edit-user-form" role="form" method="post">
+                    <div class="modal-header">
+                      <button type="button" class="close" data-dismiss="modal">&times;</button>
+                      <h4 class="modal-title">Edit User</h4>
+                    </div>
+                    <div class="modal-body">
+                      <div class="input-group">
+                        <span class="input-group-addon">First Name</span>
+                        <input name="firstname" type="text" class="form-control" placeholder="Enter First Name" value=<?php echo "'".$user['firstname']."'";?>>
+                      </div><br/>
+                      <div class="input-group">
+                        <span class="input-group-addon">Last Name</span>
+                        <input name="lastname" type="text" class="form-control" placeholder="Enter Last Name" value=<?php echo "'".$user['lastname']."'";?>>
+                      </div><br/>
+
+                      <div class="input-group">
+                          <span class="input-group-addon">Country</span>
+                          <select name="countryid" class="form-control">
+                            <option value="" disabled selected>Select a Country</option>
+                            <?php
+                              $query = 'SELECT * FROM Country
+                                        ORDER BY name';
+                              $result = pg_query($query) or die('Query failed: ' . pg_last_error());
+
+                              while($row=pg_fetch_assoc($result)) {
+                                if ($user['countryid'] === $row['id']) {
+                                  echo "<option value='".$row['id']."' selected='selected'>".$row['name']."</option>";
+                                } else {
+                                  echo "<option value='".$row['id']."'>".$row['name']."</option>";
+                                }
+                              }
+
+                              pg_free_result($result);
+                            ?>            
+                          </select>
+                        </div><br/>
+                        <div class="input-group">
+                            <span class="input-group-addon">Role Type</span>
+                            <select name="roleid" class="form-control">
+                              <option value="" disabled selected>Select a Role Type</option>
+                              <?php
+                                $query = 'SELECT * FROM Role
+                                          ORDER BY id';
+                                $result = pg_query($query) or die('Query failed: ' . pg_last_error());
+
+                                while($row=pg_fetch_assoc($result)) {
+                                  if ($user['roleid'] === $row['id']) {
+                                    echo "<option value='".$row['id']."' selected='selected'>".$row['type']."</option>";
+                                  } else {
+                                    echo "<option value='".$row['id']."'>".$row['type']."</option>";
+                                  }
+                                }
+
+                                pg_free_result($result);
+                              ?>            
+                            </select>
+                          </div><br/>
+                        </div>
+                      <div class="modal-footer">
+                        <button type="submit" name="editUserForm" class="btn btn-primary">Save</button>
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                      </div>
+                    </form>     
+                    <?php
+                      if(isset($_POST['editUserForm'])){
+                        $query = "UPDATE Member SET firstname = '".$_POST['firstname']."', lastname = '".$_POST['lastname']."', countryid = '".$_POST['countryid']."', roleid = ".$_POST['roleid']."
+                        WHERE email = ".$_GET['email'];
+                        $result = pg_query($query) or die('Query failed: ' . pg_last_error());
+                      }
+                    ?>  
+                  </div>
+                </div>
+              </div>
+
   					<h3 class="text-center"><?php echo $user['email'];?></h3>
   					<div class="row">
   						<div class="col-md-6">
@@ -153,8 +219,11 @@
   								  <b>Registration Date</b> <a class="pull-right"><?php echo $user['registrationdate'];?></a>
   								</li>
   								<li class="list-group-item">
-  								  <b>Country</b> <a class="pull-right"><?php echo $user['name'];?></a>
+  								  <b>Country</b> <a class="pull-right"><?php echo $user['countryname'];?></a>
   								</li>
+                  <li class="list-group-item">
+                    <b>Role Type</b><a class="pull-right"><?php echo $user['roletype'];?></a>
+                  </li>
   							</ul>
   						</div>
   						<div class="col-md-6">
@@ -177,7 +246,6 @@
       <div class="col-md-4">
         <div class="box project-box">
           <div class="box-body">
-            <button type="button" class="btn btn-primary pull-right" data-toggle="modal" data-target="#projectForm" show="false"><span><i class="fa fa-pencil"></i></span></button>
             <h3 class="text-center">Donation Details</h3>
             <table id="donationTable" class="table table-bordered table-hover" >
               <thead>
@@ -214,7 +282,6 @@
     <div class="col-md-12">
       <div class="box project-box">
         <div class="box-body">
-          <button type="button" class="btn btn-primary pull-right" data-toggle="modal" data-target="#projectForm" show="false"><span><i class="fa fa-pencil"></i></span></button>
           <h3 class="text-center">Project(s) Owned By User</h3>
           <table id="projectsTable" class="table table-bordered table-hover" >
             <thead>
@@ -275,8 +342,8 @@
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
-    <script src="bootstrap/js/bootstrap.min.js"></script>
-
+    <script src="../plugins/jQuery/jquery-2.2.3.min.js"></script>
+    <script src="../bootstrap/js/bootstrap.min.js"></script>
     <!-- jQuery 2.2.3 -->
     <script src="../plugins/jQuery/jquery-2.2.3.min.js"></script>
 
