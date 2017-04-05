@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-	
+
     <meta name="description" content="">
     <meta name="author" content="">
     <link rel="icon" href="../../favicon.ico">
@@ -17,22 +17,22 @@
 
 	<!-- Font Awesome -->
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.5.0/css/font-awesome.min.css">
-	
+
   	<!-- Ionicons -->
   	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/ionicons/2.0.1/css/ionicons.min.css">
-  
+
    	<!-- Include Date Range Picker -->
 	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.4.1/js/bootstrap-datepicker.min.js"></script>
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.4.1/css/bootstrap-datepicker3.css"/>
 
-  
+
     <!-- DataTables -->
   	<link rel="stylesheet" href="plugins/datatables/dataTables.bootstrap.css">
-  
+
     <!-- Custom styles for this template -->
     <link href="main.css" rel="stylesheet">
-	
-	
+
+
   </head>
 
   <body>
@@ -41,9 +41,9 @@
     or die('Could not connect: ' . pg_last_error());
 	?>
 	<div class="wrapper" style="height: auto;">
-	
-	
-	
+
+
+
     <header class="main-header">
 
     <!-- Logo -->
@@ -104,6 +104,11 @@
             <i class="fa fa-gear"></i> <span>Category</span>
           </a>
         </li>
+    <li class="active treeview">
+          <a href="analytics.php">
+            <i class="fa fa-dollar"></i> <span>Analytics</span>
+          </a>
+        </li>
 		<li class="treeview">
           <a href="reactivation.php">
             <i class="fa fa-recycle"></i> <span>Reactivation</span>
@@ -156,41 +161,41 @@
 						<?php
 							$query = 'SELECT * FROM Category c';
 							$result = pg_query($query) or die('Query failed: ' . pg_last_error());
-				 
+
 							while($row=pg_fetch_assoc($result)) {
 								echo "<option value=".$row['id'].">".$row['name']."</option>";
 							}
-										
+
 							pg_free_result($result);
-						?>			
-					</select>	
+						?>
+					</select>
 				</div>
 				<div class="col-md-2">
 					<select name="search-amount-raised" class="form-control" method="post">
-						<option disabled selected>Total Amount Raised</option>	
+						<option disabled selected>Total Amount Raised</option>
 						<option value="0 1">$0 to $1k Raised</option>
 						<option value="1 10">$1k to $10k Raised</option>
 						<option value="10 100">$10k to $100k Raised</option>
 						<option value="100 1000">$100k to $1M Raised</option>
 						<option value="1000 2147483647">>$1M Raised</option>
-					</select>	
+					</select>
 				</div>
 				<div class="col-md-2">
 					<select name="search-amount-goal" class="form-control" method="post">
-						<option disabled selected>Total Goal Amount</option>	
+						<option disabled selected>Total Goal Amount</option>
 						<option value="0 1">$0 to $1k goal</option>
 						<option value="1 10">$1k to $10k goal</option>
 						<option value="10 100">$10k to $100k goal</option>
 						<option value="100 1000">$100k to $1M goal</option>
 						<option value="1000 2147483647">>$1M goal</option>
-					</select>	
+					</select>
 				</div>
 				<div class="col-md-1" >
 					<button name="search-submit" type="submit" class="btn btn-primary">Search</button>
 				</div>
 			</div>
 			<div class="row">
-				
+
 			</div>
 			</form>
 			</div>
@@ -198,8 +203,8 @@
 			<!-- Modal -->
 			<div id="projectForm" class="modal fade" role="dialog">
 			  <div class="modal-dialog">
-				
-			  
+
+
 				<!-- Modal content-->
 				<div class="modal-content">
 				<form id="add-project-form" role="form" method="post">
@@ -234,13 +239,13 @@
 								 <?php
 									$query = 'SELECT * FROM Category c';
 									$result = pg_query($query) or die('Query failed: ' . pg_last_error());
-						 
+
 									while($row=pg_fetch_assoc($result)) {
 											echo "<option value='".$row['id']."'>".$row['name']."</option>";
 										}
-									
+
 									pg_free_result($result);
-								?>						
+								?>
 							</select>
 						</div><br/>
 						<div class="input-group">
@@ -248,17 +253,17 @@
 							<select name="organiser" class="form-control">
 								<option value="" disabled selected>Select an Organiser</option>
 								<?php
-										$query = 'SELECT m.firstname, m.lastname, m.email 
+										$query = 'SELECT m.firstname, m.lastname, m.email
 													FROM Member m
 													ORDER BY m.firstname';
 										$result = pg_query($query) or die('Query failed: ' . pg_last_error());
-							 
+
 										while($row=pg_fetch_assoc($result)) {
 												echo "<option value='".$row['email']."'>".$row['firstname']." ".$row['lastname']." (".$row['email'].")</option>";
 											}
-										
+
 										pg_free_result($result);
-									?>		
+									?>
 							</select>
 						</div>
 				  </div>
@@ -266,21 +271,21 @@
 					<button type="submit" name="projectForm" class="btn btn-primary">Add Project</button>
 					<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
 				  </div>
-				</form>			
+				</form>
 					<?php
 						if(isset($_POST['projectForm'])){
 							$dateStr = $_POST['duration'];
 							$dateArr = (explode(" - ",$dateStr));
 							$startDate = date('Y-m-d', strtotime(str_replace('/', '-', $dateArr[0])));
 							$endDate = date('Y-m-d', strtotime(str_replace('/', '-', $dateArr[1])));
-							
+
 							$query = "INSERT INTO Project (title, description, startDate, endDate, categoryId, amountFundingSought, email)
 									VALUES ('".$_POST['title']."','".$_POST['description']."','".$startDate."','".$endDate."','".$_POST['category']."',".$_POST['amount'].",'".$_POST['organiser']."')";
-							
+
 							$result = pg_query($query) or die('Query failed: ' . pg_last_error());
 							//echo "<script type='text/javascript'>alert($query);</script>";
 						}
-					?>	
+					?>
 				</div>
 			  </div>
 			</div>
@@ -302,21 +307,21 @@
                 <?php
 					ob_start();
 					$query = 'SELECT p.id, p.title, p.startDate, p.endDate, c.name, p.amountFundingSought, p.email, b.sum
-							FROM Project p LEFT OUTER JOIN (SELECT t.projectId, SUM(t.amount) AS SUM 
+							FROM Project p LEFT OUTER JOIN (SELECT t.projectId, SUM(t.amount) AS SUM
 														FROM Trans t
-														GROUP BY t.projectId) b ON b.projectId = p.id 
+														GROUP BY t.projectId) b ON b.projectId = p.id
 														, Category c
 							WHERE c.id = p.categoryId AND p.softDelete = FALSE
 							ORDER BY p.endDate DESC, p.startDate DESC';
 					$result = pg_query($query) or die('Query failed: ' . pg_last_error());
-         
+
 					while($row=pg_fetch_assoc($result)) {
-						if ((!is_null($row['sum'])) && ($row['sum'] >= $row['amountfundingsought'])) { 
+						if ((!is_null($row['sum'])) && ($row['sum'] >= $row['amountfundingsought'])) {
 							echo "<tr style=\"background-color:#c9ffc9;\">";
 						} else {
 							echo "<tr>";
 						}
-						
+
 						echo "<td>".$row['title']
 						."</td><td>".$row['startdate']
 						."</td><td>".$row['enddate']
@@ -325,15 +330,15 @@
 						aria-valuemin=\"0\" aria-valuemax=\"100\" style=\"width:"
 						.(($row['sum'] / $row['amountfundingsought'])*100)
 						."%;\">
-						</div></div>"; 
-						
+						</div></div>";
+
 						if (is_null($row['sum'])) {
 							echo "$0 / $".$row['amountfundingsought'];
 						}else if ($row['sum'] >= $row['amountfundingsought']) {
 							echo " <strong style=\"color:#5cb85c;\">$".$row['sum']."</strong> / $".$row['amountfundingsought'];
 						} else {
 							echo "$".$row['sum']." / $".$row['amountfundingsought'];
-						} 
+						}
 	                    $proj_id = $row['id'];
 
 						echo "</td><td>".$row['email'].
@@ -360,15 +365,15 @@
 						$amountGoalMin = $amountGoalArray[0] * 1000;
 						$amountGoalMax = $amountGoalArray[1] * 1000;
 
-						$baseQuery = "SELECT p.id, p.title, p.startDate, p.endDate, c.id AS catId, 
+						$baseQuery = "SELECT p.id, p.title, p.startDate, p.endDate, c.id AS catId,
 											 m.firstName, m.lastName,
-											 c.name, p.amountFundingSought, p.email, 
+											 c.name, p.amountFundingSought, p.email,
 											 COALESCE(b.transactSum, 0) AS amountRaised
-							FROM Project p INNER JOIN Category c ON p.categoryId = c.id 
+							FROM Project p INNER JOIN Category c ON p.categoryId = c.id
 										   INNER JOIN Member m ON p.email = m.email
-										   LEFT OUTER JOIN (SELECT t.projectId, SUM(t.amount) AS transactSum 
+										   LEFT OUTER JOIN (SELECT t.projectId, SUM(t.amount) AS transactSum
 															FROM Trans t
-															GROUP BY t.projectId) b 
+															GROUP BY t.projectId) b
 										   					ON p.id = b.projectId
 							WHERE p.softDelete = FALSE";
 
@@ -391,9 +396,9 @@
 						$query .= "ORDER BY endDate DESC, startDate DESC";
 
 						$result = pg_query($query) or die('Query failed: ' . pg_last_error());
-	         
+
 						while($row=pg_fetch_assoc($result)) {
-							if ((!is_null($row['amountraised'])) && ($row['amountraised'] >= $row['amountfundingsought'])) { 
+							if ((!is_null($row['amountraised'])) && ($row['amountraised'] >= $row['amountfundingsought'])) {
 								echo "<tr style=\"background-color:#c9ffc9;\">";
 							} else {
 								echo "<tr>";
@@ -407,23 +412,23 @@
 							aria-valuemin=\"0\" aria-valuemax=\"100\" style=\"width:"
 							.(($row['amountraised'] * 100 / $row['amountfundingsought']))
 							."%;\">
-							</div></div>"; 
-							
+							</div></div>";
+
 							if ($row['amountraised'] >= $row['amountfundingsought']) {
 								echo " <strong style=\"color:#5cb85c;\">$".$row['amountraised']."</strong> / $".$row['amountfundingsought'];
 							} else {
 								echo "$".$row['amountraised']." / $".$row['amountfundingsought'];
-							} 
+							}
 
 		                    $proj_id = $row['id'];
 
 							echo "</td><td>".$row['email'].
 							"</td><td><button class=\"btn btn-primary btn-xs\" onClick=\"location.href='project.php?id=$proj_id'\"><span class=\"glyphicon glyphicon-info-sign\"></span></button></td>
 							<td><button class=\"btn btn-danger btn-xs delete_project\" project-id=\"$proj_id\" href=\"javascript:void(0)\"><span class=\"glyphicon glyphicon-trash\"></span></button></td></tr>";
-						}						
-						
+						}
+
 						pg_free_result($result);
-					}					
+					}
 				?>
                 </tbody>
               </table>
@@ -444,14 +449,14 @@
     <!-- Bootstrap core JavaScript
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>	
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
 	<!-- jQuery 2.2.3 -->
 <script src="plugins/jQuery/jquery-2.2.3.min.js"></script>
 
   <!-- date-range-picker -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.11.2/moment.min.js"></script>
 <script src="plugins/daterangepicker/daterangepicker.js"></script>
-  
+
   <!-- bootstrap datepicker -->
 <script src="plugins/datepicker/bootstrap-datepicker.js"></script>
 
@@ -463,11 +468,11 @@
 
   <script>
     $(document).ready(function(){
-        
+
         $('.delete_project').click(function(e){
-          
+
           e.preventDefault();
-          
+
           var pid = $(this).attr('project-id');
           var parent = $(this).parent("td").parent("tr");
           bootbox.dialog({
@@ -486,7 +491,7 @@
                 })
                 .fail(function(){
                   bootbox.alert('Something Went Wrong ....');
-                  })                            
+                  })
                 }
               },
             success: {
@@ -496,20 +501,20 @@
                $('.bootbox').modal('hide');
                 }
              }
-              
+
             }
           });
-          
-          
+
+
         });
-        
+
       });
 </script>
 <script>
 	$(function() {
 		var startDate;
 		var endDate;
-		
+
 		$('#project-duration').daterangepicker({
 			"minDate": new Date(),
 			"locale": {
