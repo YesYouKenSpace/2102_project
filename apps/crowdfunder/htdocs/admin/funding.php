@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-  
+
     <meta name="description" content="">
     <meta name="author" content="">
 
@@ -22,47 +22,59 @@
     <!-- DataTables -->
     <link rel="stylesheet" href="../plugins/datatables/dataTables.bootstrap.css">
 
+
     <!-- Custom styles for this template -->
     <link href="../main.css" rel="stylesheet">
 
-  
   </head>
 
   <body>
     <?php
-    $dbconn = pg_connect("host=localhost port=5432 dbname=postgres user=postgres password=postgres")
+  	$dbconn = pg_connect("host=localhost port=5432 dbname=postgres user=postgres password=postgres")
       or die('Could not connect: ' . pg_last_error());
-    ?>
-  <div class="wrapper" style="height: auto;">
-  
-    <header class="main-header">
 
-    <!-- Logo -->
-    <a href="dashboard.php" class="logo">
-      <!-- logo for regular state and mobile devices -->
-      <span class="logo-lg"><b>CrowdFunder</b>Admin</span>
-    </a>
+      $query = "SELECT m.firstname, m.lastname, m.email, m.registrationdate, COUNT(p.id) AS pCount, COUNT(DISTINCT t.projectid) AS     tCount, SUM(t.amount) AS tSum
+              FROM member m LEFT OUTER JOIN project p ON m.email = p.email
+                            LEFT OUTER JOIN trans t ON t.email = m.email
+              WHERE m.email = '".$_SESSION['usr_id']."'
+              GROUP BY m.firstname, m.lastname, m.email, m.registrationdate";
+      $result = pg_query($query) or die('Query failed: ' . pg_last_error());
+      $user=pg_fetch_assoc($result);
+  	?>
+  	<div class="wrapper" style="height: auto;">
 
-    <!-- Header Navbar: style can be found in header.less -->
-    <nav class="navbar navbar-static-top">
-      <!-- Sidebar toggle button-->
-      <a href="#" class="sidebar-toggle" data-toggle="offcanvas" role="button">
-        <span class="sr-only">Toggle navigation</span>
+
+
+      <header class="main-header">
+
+      <!-- Logo -->
+      <a href="dashboard.php" class="logo">
+        <!-- logo for regular state and mobile devices -->
+        <span class="logo-lg"><b>CrowdFunder</b>Admin</span>
       </a>
-      <!-- Navbar Right Menu -->
-      <div class="navbar-custom-menu">
-        <ul class="nav navbar-nav">
-          <!-- User Account: style can be found in dropdown.less -->
-          <li class="dropdown user user-menu">
-            <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-              <span class="hidden-xs">Admin</span>
-            </a>
-          </li>
-        </ul>
-      </div>
 
-    </nav>
-  </header>
+      <!-- Header Navbar: style can be found in header.less -->
+      <nav class="navbar navbar-static-top">
+        <a href="#" class="sidebar-toggle" data-toggle="offcanvas" role="button">
+          <span class="sr-only">Toggle navigation</span>
+        </a>
+        <div class="navbar-custom-menu">
+          <ul class="nav navbar-nav">
+            <li class="user user-menu">
+              <a href="#index.php">
+                <span class="hidden-xs">Profile</span>
+              </a>
+            </li>
+            <li class="dropdown user user-menu">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><?php echo $user['firstname']." ".$user['lastname'];?><span class="caret"></span></a>
+              <ul class="dropdown-menu">
+                <li><a href="../logout.php">Sign Out</a></li>
+              </ul>
+          </li>
+          </ul>
+        </div>
+      </nav>
+    </header>
 <!-- Left side column. contains the logo and sidebar -->
   <aside class="main-sidebar">
     <!-- sidebar: style can be found in sidebar.less -->
@@ -118,7 +130,7 @@
         Funding Management
       </h1>
     </section>
-    
+
 
       <!-- Main content -->
     <section class="content">
@@ -128,7 +140,7 @@
             <div class="box-header">
               <h3 class="box-title">All Fundings</h3>
               <button type="button" class="btn btn-primary pull-right" data-toggle="modal" data-target="#fundingForm" show="false"><span><i class="fa fa-plus"></i></span> New Funding</button><br/>
-      
+
             </div>
             <!-- /.box-header -->
             <div class="box-body">
@@ -169,8 +181,8 @@
             <!-- Modal -->
               <div id="fundingForm" class="modal fade" role="dialog">
                 <div class="modal-dialog">
-                
-                
+
+
                 <!-- Modal content-->
                 <div class="modal-content">
                 <form id="add-project-form" role="form" method="post">
@@ -192,15 +204,15 @@
                                   FROM Member m
                                   ORDER BY m.firstName';
                             $result = pg_query($query) or die('Query failed: ' . pg_last_error());
-                       
+
                             while($row=pg_fetch_assoc($result)) {
                                 echo "<option value='".$row['email']."'>".$row['firstname']." ".$row['lastname']." (".$row['email'].")</option>";
                               }
-                            
+
                             pg_free_result($result);
-                          ?>    
+                          ?>
                       </select>
-                    </div><br/>   
+                    </div><br/>
                     <div class="input-group">
                       <span class="input-group-addon"><i class="fa fa-user"></i></span>
                       <select name="organiser_id" class="form-control">
@@ -210,33 +222,33 @@
                                   FROM Project p
                                   ORDER BY p.title';
                             $result = pg_query($query) or die('Query failed: ' . pg_last_error());
-                       
+
                             while($row=pg_fetch_assoc($result)) {
                                 echo "<option value='".$row['id']."'>".$row['title']." (".$row['email'].")</option>";
                               }
-                            
+
                             pg_free_result($result);
-                          ?>    
+                          ?>
                       </select>
-                    </div><br/>            
-                    
+                    </div><br/>
+
                   </div>
                   <div class="modal-footer">
                   <button type="submit" name="fundingForm" class="btn btn-primary">Add Funding</button>
                   <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
                   </div>
-                </form>     
+                </form>
                   <?php
                     date_default_timezone_set('Singapore');
-                    if(isset($_POST['fundingForm'])){      
-                      $date = date('Y-m-d', time());              
+                    if(isset($_POST['fundingForm'])){
+                      $date = date('Y-m-d', time());
                       $query = "INSERT INTO Trans (amount, date, email, projectId)
                           VALUES ('".$_POST['amount']."','".$date."','".$_POST['email']."','".$_POST['organiser_id']."')";
-                      
+
                       $result = pg_query($query) or die('Query failed: ' . pg_last_error());
                       echo "<script type='text/javascript'>alert('".pg_affected_rows($result)."');</script>";
                     }
-                  ?>  
+                  ?>
                 </div>
               </div>
             </div>
@@ -337,7 +349,7 @@
    <!-- Bootstrap core JavaScript
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
-    
+
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
   <script src="../bootstrap/js/bootstrap.min.js"></script>
   <script src="../plugins/datatables/jquery.dataTables.min.js"></script>
@@ -346,11 +358,11 @@
 
   <script>
     $(document).ready(function(){
-        
+
         $('.delete_funding').click(function(e){
-          
+
           e.preventDefault();
-          
+
           var pid = $(this).attr('funding-id');
           var parent = $(this).parent("td").parent("tr");
           bootbox.dialog({
@@ -369,7 +381,7 @@
                 })
                 .fail(function(){
                   bootbox.alert('Something Went Wrong ....');
-                  })                            
+                  })
                 }
               },
             success: {
@@ -379,13 +391,13 @@
                $('.bootbox').modal('hide');
                 }
              }
-              
+
             }
           });
-          
-          
+
+
         });
-        
+
       });
 
     </script>
