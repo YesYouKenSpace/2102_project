@@ -19,6 +19,11 @@
 
 		$dbconn = pg_connect("host=localhost port=5432 dbname=postgres user=postgres password=postgres")
 					or die('Could not connect: ' . pg_last_error());
+
+		$query = "SELECT m.firstname, m.lastname FROM Member m
+            		WHERE m.email = '".$_SESSION['usr_id']."'";
+    	$result = pg_query($query) or die('Query failed: ' . pg_last_error());
+    	$user=pg_fetch_assoc($result);
 		?>
 		<div class="wrapper" style="height: auto;">
     		<header class="main-header">
@@ -42,16 +47,16 @@
 	                			</a>
 		              		</li>
 		              		<li class="dropdown user user-menu">
-				                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><?php echo $user['firstname']." ".$user['lastname'];?><span class="caret"></span></a>
-				                <ul class="dropdown-menu">
+			                	<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><?php echo $user['firstname']." ".$user['lastname'];?><span class="caret"></span></a>
+			                	<ul class="dropdown-menu">
 				                	<?php
 					                  	if (isset($_SESSION['usr_id']) && $_SESSION['usr_role'] == 1) {
 					                  		echo "<li><a href=\"../admin/index.php\">Switch to admin</a></li>";
 		      							}
 				                  	?>
-				                  <li><a href="../logout.php">Sign Out</a></li>
-				                </ul>
-				            </li>
+			                  		<li><a href="../logout.php">Sign Out</a></li>
+			                	</ul>
+			            	</li>
 	            		</ul>
 	          		</div>
 	        	</nav>
@@ -176,43 +181,44 @@
 											}
 										?>
 									</p>
-                  <!-- Modal -->
-                  <div id="donationForm" class="modal fade" role="dialog">
-                      <div class="modal-dialog">
+				                  	<!-- Modal -->
+				                  	<div id="donationForm" class="modal fade" role="dialog">
+				                      	<div class="modal-dialog">
+				                      		<div class="modal-content">
+				                        		<form id="donate-form" role="form" method="post">
+				                            		<div class="modal-header">
+				                            			<button type="button" class="close" data-dismiss="modal">&times;</button>
+				                            			<h4 class="modal-title">Make a Donation</h4>
+				                            		</div>
+				                            		<div class="modal-body">
+				                            			<div class="input-group">
+				                              				<span class="input-group-addon"><i class="fa fa-dollar"></i></span>
+				                              				<input name="amount" type="number" min="10" class="form-control" placeholder="Amount">
+				                             	 			<span class="input-group-addon">.00</span>
+				                            			</div><br/>
+				                            		</div>
+				                            		<div class="modal-footer">
+							                            <button type="submit" name="donationForm" class="btn btn-success">Donate</button>
+							                            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+				                            		</div>
+				                        		</form>
+					                        	<?php
+						                        if(isset($_POST['donationForm'])){
+						                          $query = "INSERT INTO Trans (amount, date, email, projectid)
+						                              VALUES (".$_POST['amount'].", current_date, '".$_SESSION['usr_id']."',".$_GET['id'].")";
 
-                      <div class="modal-content">
-                        <form id="donate-form" role="form" method="post">
-                            <div class="modal-header">
-                            <button type="button" class="close" data-dismiss="modal">&times;</button>
-                            <h4 class="modal-title">Make a Donation</h4>
-                            </div>
-                            <div class="modal-body">
-                            <div class="input-group">
-                              <span class="input-group-addon"><i class="fa fa-dollar"></i></span>
-                              <input name="amount" type="number" min="10" class="form-control" placeholder="Amount">
-                              <span class="input-group-addon">.00</span>
-                            </div><br/>
-                            </div>
-                            <div class="modal-footer">
-                            <button type="submit" name="donationForm" class="btn btn-success">Donate</button>
-                            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                            </div>
-                        </form>
-                        <?php
-                        if(isset($_POST['donationForm'])){
-                          $query = "INSERT INTO Trans (amount, date, email, projectid)
-                              VALUES (".$_POST['amount'].", current_date, '".$_SESSION['usr_id']."',".$_GET['id'].")";
+						                          $result = pg_query($query) or die('Query failed: ' . pg_last_error());
+						                          pg_free_result($result);
+						                          unset($_POST['donationForm']);
+						                          $result = pg_query($query1) or die('Query failed: ' . pg_last_error());
+						                          $project = pg_fetch_assoc($result);
 
-                          $result = pg_query($query) or die('Query failed: ' . pg_last_error());
-                          pg_free_result($result);
-                          unset($_POST['donationForm']);
-                          $result = pg_query($query1) or die('Query failed: ' . pg_last_error());
-                          $project = pg_fetch_assoc($result);
-                        }
-                      ?>
-                      </div>
-                      </div>
-                  </div>
+													echo "<meta http-equiv='refresh' content='0'>";
+						                        }
+						                      	?>
+				                      		</div>
+			                      		</div>
+				                  	</div>
 									<div class="row">
 										<div class="col-md-6">
 											<ul class="list-group list-group-unbordered">
