@@ -194,7 +194,8 @@
 													
 														$result = pg_query($query) or die('Query failed: ' . pg_last_error());
 												    } else {
-														echo "<script type='text/javascript'>alert('Invalid characters detected in title or description.');</script>";												    }
+														echo "<script type='text/javascript'>alert('Invalid characters detected in title or description.');</script>";												    
+													}
 												}
 											?>	
 											</div>

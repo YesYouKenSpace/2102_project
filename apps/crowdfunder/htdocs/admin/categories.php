@@ -154,10 +154,20 @@
 												  	</div>
 											  	</form>
 												<?php
+													$error = false;
 													if(isset($_POST['categoryForm'])){
-														$query = "INSERT INTO Category (name) VALUES ('".$_POST['catName']."')";
-														$result = pg_query($query) or die('Query failed: ' . pg_last_error());
-														echo "<meta http-equiv='refresh' content='0'>";
+														$catName = $_POST['catName'];
+														if (!preg_match("/^[a-zA-Z0-9 .,\- \/ _]+$/", $catName)) {
+												        	$error = true;
+												        	$title_error = "Project title must contain only alphanumerics, dashes, underscores, forward slashes and spaces";
+												    	}
+												    	if(!$error) {
+															$query = "INSERT INTO Category (name) VALUES ('".$_POST['catName']."')";
+															$result = pg_query($query) or die('Query failed: ' . pg_last_error());
+															echo "<meta http-equiv='refresh' content='0'>";
+														} else {
+														echo "<script type='text/javascript'>alert('Invalid characters detected in category name.');</script>";												    
+													}
 													}
 												?>
 											</div>

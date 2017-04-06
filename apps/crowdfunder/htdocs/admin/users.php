@@ -272,21 +272,53 @@
 				  </div>
 				  </form>
 				  <?php
+						$error = false;
+
 						if(isset($_POST['userForm'])){
+						    $fname = $_POST['firstname'];
+							$lname = $_POST['lastname'];
+							$country = $_POST['country'];
+							$email = $_POST['email'];
+							$password = $_POST['password'];
 
-							$query = "INSERT INTO Member (email, password, countryId, firstName, lastName, registrationDate, roleId)
-									VALUES (
-									'".$_POST['email']."',
-									crypt('".$_POST['password']."', gen_salt('bf', 8)),
-									'".$_POST['country']."',
-									'".$_POST['firstname']."',
-									'".$_POST['lastname']."',
-									'".date("Y-m-d")."',
-									'".$_POST['role']."'
-									)";
+						    //name can contain only alpha characters and space
+						    if (!preg_match("/^[a-zA-Z ]+$/",$fname)) {
+						        $error = true;
+						        $name_error = "Name must contain only alphabets and space";
+						    }
 
-							$result = pg_query($query) or die('Query failed: ' . pg_last_error());
-							echo "<meta http-equiv='refresh' content='0'>";
+						    if (!preg_match("/^[a-zA-Z ]+$/",$lname)) {
+						        $error = true;
+						        $name_error = "Name must contain only alphabets and space";
+						    }
+						    
+						    if(!filter_var($email,FILTER_VALIDATE_EMAIL)) {
+						        $error = true;
+						        $email_error = "Please Enter Valid Email ID";
+						    }
+
+						    if(strlen($password) < 6) {
+						        $error = true;
+						        $password_error = "Password must be minimum of 6 characters";
+						    }
+
+						    if (!$error) {
+								$query = "INSERT INTO Member (password, firstName, lastName, email, roleId, registrationDate, countryId)
+							        VALUES (
+							        crypt('".$_POST['password']."', gen_salt('bf', 8)),
+							        '".$_POST['fname']."',
+							        '".$_POST['lname']."',
+							        '".$_POST['email']."',
+							        '".$_POST['role']."',
+							        '".date("Y-m-d")."',    
+							        '".$_POST['country']."'
+							        )";
+
+								$result = pg_query($query) or die('Query failed: ' . pg_last_error());
+								echo "<meta http-equiv='refresh' content='0'>";
+							} else {
+								echo "<script type='text/javascript'>alert('Invalid characters detected in name, invalid email or password length less than 6.');</script>";
+							}
 						}
 					?>
 				</div>

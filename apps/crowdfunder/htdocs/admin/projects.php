@@ -252,17 +252,35 @@
 											  	</div>
 											</form>
 											<?php
+												$error = false;
+
 												if(isset($_POST['projectForm'])){
+													
+													$title = $_POST['title'];
+													$description = $_POST['description'];
 													$dateStr = $_POST['duration'];
 													$dateArr = (explode(" - ",$dateStr));
 													$startDate = date('Y-m-d', strtotime(str_replace('/', '-', $dateArr[0])));
 													$endDate = date('Y-m-d', strtotime(str_replace('/', '-', $dateArr[1])));
+													
+												    if (!preg_match("/^[a-zA-Z0-9 .,\- \/ _]+$/", $title)) {
+												        $error = true;
+												        $title_error = "Project title must contain only alphanumerics, dashes, underscores, forward slashes and spaces";
+												    }
 
-													$query = "INSERT INTO Project (title, description, startDate, endDate, categoryId, amountFundingSought, email)
-															VALUES ('".$_POST['title']."','".$_POST['description']."','".$startDate."','".$endDate."','".$_POST['category']."',".$_POST['amount'].",'".$_POST['organiser']."')";
+												    if (!preg_match("/^[a-zA-Z0-9 .,\- \/ _]+$/", $description)) {
+												        $error = true;
+												        $description_error = "Description must contain only alphanumerics, dashes, underscores, forward slashes and spaces";
+												    }
 
-													$result = pg_query($query) or die('Query failed: ' . pg_last_error());
-													echo "<meta http-equiv='refresh' content='0'>";
+												    if(!$error) {
+												    	$query = "INSERT INTO Project (title, description, startDate, endDate, categoryId, amountFundingSought, email)
+															VALUES ('".$title."','".$description."','".$startDate."','".$endDate."','".$_POST['category']."',".$_POST['amount'].",'".$_SESSION['usr_id']."')";
+													
+														$result = pg_query($query) or die('Query failed: ' . pg_last_error());
+												    } else {
+														echo "<script type='text/javascript'>alert('Invalid characters detected in title or description.');</script>";												    
+													}
 												}
 											?>
 										</div>
