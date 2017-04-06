@@ -127,10 +127,12 @@
 														<div class="input-group">
 															<span class="input-group-addon">Title</span>
 															<input name="title" type="text" class="form-control" placeholder="Enter Project Title">
+															<span class="text-danger"><?php if (isset($title_error)) echo $title_error; ?></span>
 														</div><br/>
 														<div class="input-group">
 															<span class="input-group-addon">Description</span>
 															<textarea name="description" class="form-control custom-control" rows="3" style="resize:none" placeholder="Enter Project Description"></textarea>
+															<span class="text-danger"><?php if (isset($description_error)) echo $description_error; ?></span>
 														</div><br/>
 														<div class="input-group">
 														  <div class="input-group-addon">
@@ -166,16 +168,34 @@
 											  		</div>
 												</form>			
 												<?php
+												//set validation error flag as false
+												$error = false;
+
 												if(isset($_POST['projectForm'])){
+													
+													$title = $_POST['title'];
+													$description = $_POST['description'];
 													$dateStr = $_POST['duration'];
 													$dateArr = (explode(" - ",$dateStr));
 													$startDate = date('Y-m-d', strtotime(str_replace('/', '-', $dateArr[0])));
 													$endDate = date('Y-m-d', strtotime(str_replace('/', '-', $dateArr[1])));
 													
-													$query = "INSERT INTO Project (title, description, startDate, endDate, categoryId, amountFundingSought, email)
-															VALUES ('".$_POST['title']."','".$_POST['description']."','".$startDate."','".$endDate."','".$_POST['category']."',".$_POST['amount'].",'".$_SESSION['usr_id']."')";
+												    if (!preg_match("/^[a-zA-Z0-9 .\- \/ _]+$/", $title)) {
+												        $error = true;
+												        $title_error = "Project title must contain only alphanumerics, dashes, underscores, forward slashes and spaces";
+												    }
+
+												    if (!preg_match("/^[a-zA-Z0-9 .\- \/ _]+$/", $description)) {
+												        $error = true;
+												        $description_error = "Description must contain only alphanumerics, dashes, underscores, forward slashes and spaces";
+												    }
+
+												    if(!error) {
+												    	$query = "INSERT INTO Project (title, description, startDate, endDate, categoryId, amountFundingSought, email)
+															VALUES ('".$title."','".$description."','".$startDate."','".$endDate."','".$_POST['category']."',".$_POST['amount'].",'".$_SESSION['usr_id']."')";
 													
-													$result = pg_query($query) or die('Query failed: ' . pg_last_error());
+														$result = pg_query($query) or die('Query failed: ' . pg_last_error());
+												    }
 												}
 											?>	
 											</div>
