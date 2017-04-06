@@ -75,9 +75,7 @@ if (isset($_POST['signup'])) {
         <meta charset="utf-8">
         <title>Register</title>
 
-        <!-- Bootstrap -->
         <link href="bootstrap/css/bootstrap.min.css" rel="stylesheet">
-        <!-- Custom styles for this template -->
         <link href="main.css" rel="stylesheet">
     </head>
     <body>

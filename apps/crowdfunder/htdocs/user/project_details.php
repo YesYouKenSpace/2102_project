@@ -7,10 +7,7 @@
 
     <!-- Bootstrap core CSS -->
     <link href="../bootstrap/css/bootstrap.min.css" rel="stylesheet">
-	<!-- Font Awesome -->
-	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.5.0/css/font-awesome.min.css">
-  	<!-- Ionicons -->
-	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/ionicons/2.0.1/css/ionicons.min.css">
+    <link rel="stylesheet" href="../plugins/font-awesome.min.css">
     <link href="../main.css" rel="stylesheet">
   	</head>
   	<body>
@@ -344,8 +341,6 @@
   			</div>
 		</div>
     	<script src="../plugins/jQuery/jquery-2.2.3.min.js"></script>
-		<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.11.2/moment.min.js"></script>
-		<script src="../plugins/daterangepicker/daterangepicker.js"></script>
 		<script src="../bootstrap/js/bootstrap.min.js"></script>
 		<script src="../plugins/bootbox.min.js"></script>
 	</body>

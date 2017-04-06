@@ -8,13 +8,8 @@
   <script src="../util/charts/projectChart.js"></script>
   <title>CrowdFunder</title>
 
-  <!-- Bootstrap core CSS -->
   <link href="../bootstrap/css/bootstrap.min.css" rel="stylesheet">
-  <!-- Font Awesome -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.5.0/css/font-awesome.min.css">
-  <!-- Ionicons -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/ionicons/2.0.1/css/ionicons.min.css">
-  <!-- Custom styles for this template -->
+  <link rel="stylesheet" href="../plugins/font-awesome.min.css">
   <link href="../main.css" rel="stylesheet">
 </head>
 
@@ -52,13 +47,8 @@
 
     </nav>
   </header>
-<!-- Left side column. contains the logo and sidebar -->
   <aside class="main-sidebar">
-    <!-- sidebar: style can be found in sidebar.less -->
     <section class="sidebar" style="height:auto;">
-      <!-- Sidebar user panel -->
-
-      <!-- sidebar menu: : style can be found in sidebar.less -->
       <ul class="sidebar-menu">
             <li class="header">NAVIGATION</li>
             <li class="treeview">
@@ -98,17 +88,14 @@
                 </li>
           </ul>
     </section>
-    <!-- /.sidebar -->
   </aside>
   <div class="content-wrapper" style="min-height:916px;">
-    <!-- Content Header (Page header) -->
     <section class="content-header">
       <h1>
         Transaction Details
       </h1>
     </section>
 
-    <!-- Main content -->
 	<section class="content">
     <div class="row">
       <div class="col-md-10">
@@ -238,34 +225,7 @@
   </section>
   </div>
 
-    <!-- Bootstrap core JavaScript
-    ================================================== -->
-    <!-- Placed at the end of the document so the pages load faster -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
     <script src="../plugins/jQuery/jquery-2.2.3.min.js"></script>
     <script src="../bootstrap/js/bootstrap.min.js"></script>
-    <!-- jQuery 2.2.3 -->
-    <script src="../plugins/jQuery/jquery-2.2.3.min.js"></script>
-
-    <!-- date-range-picker -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.11.2/moment.min.js"></script>
-
-    <!-- DataTables -->
-    <script src="../plugins/datatables/jquery.dataTables.min.js"></script>
-    <script src="../plugins/datatables/dataTables.bootstrap.min.js"></script>
-    <script>
-
-	$(function() {
-		var startDate;
-		var endDate;
-
-		$('#project-duration').daterangepicker({
-			"minDate": new Date(),
-			"locale": {
-				"format": "DD/MM/YYYY",
-			}
-		});
-	});
-  </script>
   </body>
 </html>

@@ -2,12 +2,8 @@
 <html lang="en">
 	<head>
 		<title>Crowdfunder</title>
-		<!-- Bootstrap core CSS -->
-    <link href="bootstrap/css/bootstrap.min.css" rel="stylesheet">
-		<!-- Font Awesome -->
-		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.5.0/css/font-awesome.min.css">
-    <!-- Custom styles for this template -->
-    <link href="main.css" rel="stylesheet">
+    	<link href="bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    	<link href="main.css" rel="stylesheet">
 	</head>
 	<body>
 		<?php

@@ -3,32 +3,12 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-
-    <meta name="description" content="">
-    <meta name="author" content="">
 
     <title>CrowdFunder</title>
 
-    <!-- Bootstrap -->
     <link href="../bootstrap/css/bootstrap.min.css" rel="stylesheet">
-
-	<!-- Font Awesome -->
-	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.5.0/css/font-awesome.min.css">
-
-	<!-- Ionicons -->
-	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/ionicons/2.0.1/css/ionicons.min.css">
-
-    <!-- DataTables -->
-	<link rel="stylesheet" href="../plugins/datatables/dataTables.bootstrap.css">
-
-    <!-- Custom styles for this template -->
+    <link rel="stylesheet" href="../plugins/font-awesome.min.css">
     <link href="../main.css" rel="stylesheet">
-
-    <!-- Include Date Range Picker -->
-	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.4.1/js/bootstrap-datepicker.min.js"></script>
-	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.4.1/css/bootstrap-datepicker3.css"/>
   </head>
 
   <!-- <body> -->
@@ -57,13 +37,10 @@
 
     <header class="main-header">
 
-    <!-- Logo -->
     <a href="index.php" class="logo">
-      <!-- logo for regular state and mobile devices -->
       <span class="logo-lg"><b>CrowdFunder</b>Admin</span>
     </a>
 
-    <!-- Header Navbar: style can be found in header.less -->
     <nav class="navbar navbar-static-top">
       <a href="#" class="sidebar-toggle" data-toggle="offcanvas" role="button">
         <span class="sr-only">Toggle navigation</span>
@@ -86,11 +63,8 @@
       </div>
     </nav>
   </header>
-<!-- Left side column. contains the logo and sidebar -->
   <aside class="main-sidebar">
-    <!-- sidebar: style can be found in sidebar.less -->
     <section class="sidebar" style="height:auto;">
-      <!-- sidebar menu: : style can be found in sidebar.less -->
       <ul class="sidebar-menu">
         <li class="header">NAVIGATION</li>
         <li class="treeview">
@@ -130,10 +104,8 @@
         </li>
       </ul>
     </section>
-    <!-- /.sidebar -->
   </aside>
      <div class="content-wrapper" style="min-height:916px;">
-    <!-- Content Header (Page header) -->
     <section class="content-header">
       <h1>
         User Management
@@ -457,28 +429,15 @@
                 </tbody>
               </table>
             </div>
-            <!-- /.box-body -->
           </div>
-          <!-- /.box -->
         </div>
-        <!-- /.col -->
       </div>
-      <!-- /.row -->
     </section>
-    <!-- /.content -->
   </div>
-  <!-- /.content-wrapper -->
 	</div>
 
-    <!-- Bootstrap core JavaScript
-    ================================================== -->
-    <!-- Placed at the end of the document so the pages load faster -->
-
-	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+	<script src="../plugins/jQuery/jquery-2.2.3.min.js"></script>
     <script src="../bootstrap/js/bootstrap.min.js"></script>
-	<!-- DataTables -->
-	<script src="../plugins/datatables/jquery.dataTables.min.js"></script>
-	<script src="../plugins/datatables/dataTables.bootstrap.min.js"></script>
 	<script src="../plugins/bootbox.min.js"></script>
 
 	<script>
@@ -521,19 +480,6 @@
 	          });
 	        });
 	      });
-	</script>
-	<script>
-		$(function() {
-			var startDate;
-			var endDate;
-
-			$('#search-reg-date').daterangepicker({
-				"minDate": new Date(),
-				"locale": {
-					"format": "DD/MM/YYYY",
-				}
-			});
-		});
 	</script>
   </body>
 </html>

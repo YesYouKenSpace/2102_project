@@ -3,27 +3,10 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-
-    <meta name="description" content="">
-    <meta name="author" content="">
-
     <title>CrowdFunder</title>
 
-    <!-- Bootstrap -->
     <link href="../bootstrap/css/bootstrap.min.css" rel="stylesheet">
-
-	<!-- Font Awesome -->
-	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.5.0/css/font-awesome.min.css">
-
-	<!-- Ionicons -->
-	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/ionicons/2.0.1/css/ionicons.min.css">
-
-    <!-- DataTables -->
-	<link rel="stylesheet" href="../plugins/datatables/dataTables.bootstrap.css">
-
-    <!-- Custom styles for this template -->
+    <link rel="stylesheet" href="../plugins/font-awesome.min.css">
     <link href="../main.css" rel="stylesheet">
 
 
@@ -378,28 +361,14 @@
     			</tbody>
   			</table>
             </div>
-            <!-- /.box-body -->
           </div>
-          <!-- /.box -->
         </div>
-        <!-- /.col -->
       </div>
-      <!-- /.row -->
     </section>
-    <!-- /.content -->
   </div>
-  <!-- /.content-wrapper -->
 	</div>
-
-    <!-- Bootstrap core JavaScript
-    ================================================== -->
-    <!-- Placed at the end of the document so the pages load faster -->
-
-	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+	<script src="../plugins/jQuery/jquery-2.2.3.min.js"></script>
     <script src="../bootstrap/js/bootstrap.min.js"></script>
-	<!-- DataTables -->
-	<script src="../plugins/datatables/jquery.dataTables.min.js"></script>
-	<script src="../plugins/datatables/dataTables.bootstrap.min.js"></script>
 	<script src="../plugins/bootbox.min.js"></script>
 
   	<script>
