@@ -18,8 +18,9 @@ if (isset($_POST['login'])) {
     $email = $_POST['email'];
     $password = $_POST['password'];
     $query = "SELECT * FROM member WHERE email = '".$_POST['email']."' AND password = crypt('".$_POST['password']."', password)";
-    $result = pg_query($query) or die('Query failed: ' . pg_last_error()); 
-
+    //$result = pg_query($query) or die('Query failed: ' . pg_last_error()); 
+    $result = pg_prepare($dbconn, "query", "SELECT * FROM member WHERE email = $1 AND password = crypt($2, password)");
+    $result = pg_execute($dbconn, "query", array($_POST['email'], $_POST['password']));
     if ($row = pg_fetch_array($result)) {
         $_SESSION['usr_id'] = $row['email'];
         $_SESSION['usr_role'] = $row['roleid'];
