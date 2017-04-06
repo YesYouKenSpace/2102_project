@@ -112,6 +112,11 @@
                       <i class="fa fa-recycle"></i> <span>Reactivation</span>
                     </a>
                 </li>
+                <li clas="treeview">
+                  <a href="history.php">
+                    <i class="fa fa-history"></i><span>History</span>
+                  </a>
+                </li>
           </ul>
     </section>
     <!-- /.sidebar -->

@@ -8,6 +8,16 @@ DROP TABLE Role;
 DROP TABLE Privilege;
 DROP TABLE Country;
 
+DROP TABLE Member_log;
+DROP TABLE Project_log;
+DROP TABLE Trans_log;
+DROP TABLE Category_log;
+
+DROP FUNCTION process_member_log();
+DROP FUNCTION process_category_log();
+DROP FUNCTION process_project_log();
+DROP FUNCTION process_trans_log();
+
 CREATE TABLE Privilege(
 	privilegeLevel INTEGER PRIMARY KEY,
 	canDeleteAll boolean NOT NULL,
@@ -60,18 +70,148 @@ CREATE TABLE Project (
 	CONSTRAINT amountFundingSought CHECK (amountFundingSought>0)
 );
 
-CREATE TABLE Trans(
+CREATE TABLE Trans (
 	amount INTEGER NOT NULL,
 	transactionNo SERIAL PRIMARY KEY,
 	date DATE NOT NULL,
-	email VARCHAR(64),
-	projectId INTEGER,
+	email VARCHAR(64) NOT NULL,
+	projectId INTEGER NOT NULL,
 	softDelete boolean DEFAULT FALSE,
 	FOREIGN KEY (email) REFERENCES Member(email),
 	FOREIGN KEY (projectId) REFERENCES Project(id),
 	CONSTRAINT amount CHECK (amount>0)
 );
 
+CREATE TABLE Member_log (
+	operation varchar(12) NOT NULL,
+	stamp timestamp NOT NULL,
+	userid text NOT NULL,
+	email VARCHAR(64) NOT NULL,
+	password VARCHAR(64) NOT NULL,
+	registrationDate DATE NOT NULL,
+	firstNameBefore VARCHAR(64),
+	lastNameBefore VARCHAR(64),
+	countryIdBefore INTEGER,
+	roleIdBefore INTEGER,
+	softDeleteBefore boolean,
+	firstNameAfter VARCHAR(64) NOT NULL,
+	lastNameAfter VARCHAR(64) NOT NULL,
+	countryIdAfter INTEGER NOT NULL,
+	roleIdAfter INTEGER NOT NULL,
+	softDeleteAfter boolean NOT NULL
+);
+
+CREATE TABLE Category_log (
+	operation varchar(12) NOT NULL,
+	stamp timestamp NOT NULL,
+	userid text NOT NULL,
+	id INTEGER NOT NULL,
+	nameBefore VARCHAR(64),
+	softDeleteBefore boolean,
+	nameAfter VARCHAR(64) NOT NULL,
+	softDeleteAfter boolean NOT NULL
+);
+
+CREATE TABLE Project_log (
+	operation varchar(12) NOT NULL,
+	stamp timestamp NOT NULL,
+	userid text NOT NULL,
+	id INTEGER NOT NULL,
+	email VARCHAR(64) NOT NULL,
+	titleBefore VARCHAR(64),
+	descriptionBefore VARCHAR(64),
+	amountFundingSoughtBefore INTEGER,
+	categoryIdBefore INTEGER,
+	softDeleteBefore boolean,
+	titleAfter VARCHAR(64) NOT NULL,
+	descriptionAfter VARCHAR(64) NOT NULL,
+	amountFundingSoughtAfter INTEGER NOT NULL,
+	categoryIdAfter INTEGER NOT NULL,
+	softDeleteAfter boolean NOT NULL
+);
+
+CREATE TABLE Trans_log (
+	operation varchar(12) NOT NULL,
+	stamp timestamp NOT NULL,
+	userid text NOT NULL,
+	transactionNo INTEGER NOT NULL,
+	date DATE NOT NULL,
+	email VARCHAR(64) NOT NULL,
+	amountBefore INTEGER,
+	projectidBefore INTEGER,
+	softDeleteBefore boolean,
+	amountAfter INTEGER NOT NULL,
+	projectidAfter INTEGER NOT NULL,
+	softDeleteAfter boolean NOT NULL
+);
+
+CREATE OR REPLACE FUNCTION process_member_log() RETURNS TRIGGER AS $Member_log$
+	BEGIN
+		IF(TG_OP = 'UPDATE') THEN
+			INSERT INTO Member_log VALUES ('Update', now(), user, NEW.email, NEW.password, NEW.registrationDate, OLD.firstname, OLD.lastname, OLD.countryid, OLD.roleid, OLD.softDelete, NEW.firstname, NEW.lastname, NEW.countryid, NEW.roleid, NEW.softDelete);
+			RETURN NEW;
+		ELSIF(TG_OP = 'INSERT') THEN
+			INSERT INTO Member_log VALUES ('Insert', now(), user, NEW.email, NEW.password, NEW.registrationDate, null, null, null, null, null, NEW.firstname, NEW.lastname, NEW.countryid, NEW.roleid, NEW.softDelete);
+			RETURN NEW;
+		END IF;
+		RETURN NULL;
+	END;
+$Member_log$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION process_category_log() RETURNS TRIGGER AS $Category_log$
+	BEGIN
+		IF(TG_OP = 'UPDATE') THEN
+			INSERT INTO Category_log VALUES ('Update', now(), user, NEW.id, OLD.name, OLD.softDelete, NEW.name, NEW.softDelete);
+			RETURN NEW;
+		ELSIF(TG_OP = 'INSERT') THEN
+			INSERT INTO Category_log VALUES ('Insert', now(), user, NEW.id, null, null, NEW.name, NEW.softDelete);
+			RETURN NEW;
+		END IF;
+		RETURN NULL;
+	END;
+$Category_log$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION process_project_log() RETURNS TRIGGER AS $Project_log$
+	BEGIN
+		IF(TG_OP = 'UPDATE') THEN
+			INSERT INTO Project_log VALUES ('Update', now(), user, NEW.id, NEW.email, OLD.title, OLD.description, OLD.amountFundingSought, OLD.categoryId, OLD.softDelete, NEW.title, NEW.description, NEW.amountFundingSought, NEW.categoryId, NEW.softDelete);
+			RETURN NEW;
+		ELSIF(TG_OP = 'INSERT') THEN
+			INSERT INTO Project_log VALUES ('Insert', now(), user, NEW.id, NEW.email, null, null, null, null, null, NEW.title, NEW.description, NEW.amountFundingSought, NEW.categoryId, NEW.softDelete);
+			RETURN NEW;
+		END IF;
+		RETURN NULL;
+	END;
+$Project_log$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION process_trans_log() RETURNS TRIGGER AS $Trans_log$
+	BEGIN
+		IF(TG_OP = 'UPDATE') THEN
+			INSERT INTO Trans_log VALUES ('Update', now(), user, NEW.transactionNo, NEW.date, NEW.email, OLD.amount, OLD.projectId, OLD.softDelete, NEW.amount, NEW.projectId, NEW.softDelete);
+			RETURN NEW;
+		ELSIF(TG_OP = 'INSERT') THEN
+			INSERT INTO Trans_log VALUES ('Insert', now(), user, NEW.transactionNo, NEW.date, NEW.email, null, null, null, NEW.amount, NEW.projectId, NEW.softDelete);
+			RETURN NEW;
+		END IF;
+		RETURN NULL;
+	END;
+$Trans_log$ LANGUAGE plpgsql;
+
+CREATE TRIGGER Member_log
+AFTER INSERT OR UPDATE OR DELETE ON Member
+	FOR EACH ROW EXECUTE PROCEDURE process_member_log();
+
+CREATE TRIGGER Category_log
+AFTER INSERT OR UPDATE OR DELETE ON Category
+	FOR EACH ROW EXECUTE PROCEDURE process_category_log();
+
+CREATE TRIGGER Project_log
+AFTER INSERT OR UPDATE OR DELETE ON Project
+	FOR EACH ROW EXECUTE PROCEDURE process_project_log();
+
+CREATE TRIGGER Trans_log
+AFTER INSERT OR UPDATE OR DELETE ON Trans
+	FOR EACH ROW EXECUTE PROCEDURE process_trans_log();
 
 
 INSERT INTO Category(name) VALUES ('Animals');

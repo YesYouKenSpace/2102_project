@@ -86,6 +86,11 @@
                       <i class="fa fa-recycle"></i> <span>Reactivation</span>
                     </a>
                 </li>
+                <li clas="treeview">
+                  <a href="history.php">
+                    <i class="fa fa-history"></i><span>History</span>
+                  </a>
+                </li>
           </ul>
     </section>
   </aside>
@@ -122,23 +127,24 @@
                     <div class="modal-body">
                       <div class="input-group">
                         <span class="input-group-addon">Amount $</span>
-                        <input name="amount" type="text" class="form-control" placeholder="Enter First Name" value=<?php echo "'".$transaction['amount']."'";?>>
+                        <input name="amount" type="number" min="100" max="1000000" class="form-control" placeholder="Transaction Amount" value=<?php echo "'".$transaction['amount']."'";?>>
+                        <span class="input-group-addon">.00</span>
                       </div><br/>
+                      
                       <div class="input-group">
-                          <span class="input-group-addon">Transaction From (Email)</span>
-                          <select name="transactFromEmail" class="form-control">
-                            <option value="" disabled selected>Select An Email</option>
+                          <span class="input-group-addon">Project</span>
+                          <select name="projectid" class="form-control">
+                            <option value="" disabled selected>Select a Project</option>
                             <?php
-                              $query = 'SELECT * 
-                                        FROM Member
-                                        ORDER BY email';
+                              $query = 'SELECT * FROM Project
+                                        ORDER BY title';
                               $result = pg_query($query) or die('Query failed: ' . pg_last_error());
 
                               while($row=pg_fetch_assoc($result)) {
-                                if ($transaction['email'] === $row['email']) {
-                                  echo "<option value='".$row['email']."' selected='selected'>".$row['email']."</option>";
+                                if ($transaction['projectid'] === $row['id']) {
+                                  echo "<option value='".$row['id']."' selected='selected'>".$row['title']."</option>";
                                 } else {
-                                  echo "<option value='".$row['email']."'>".$row['email']."</option>";
+                                  echo "<option value='".$row['id']."'>".$row['title']."</option>";
                                 }
                               }
 
@@ -146,28 +152,7 @@
                             ?>            
                           </select>
                         </div><br/>
-                        <div class="input-group">
-                            <span class="input-group-addon">Project</span>
-                            <select name="projectid" class="form-control">
-                              <option value="" disabled selected>Select a Project</option>
-                              <?php
-                                $query = 'SELECT * FROM Project
-                                          ORDER BY title';
-                                $result = pg_query($query) or die('Query failed: ' . pg_last_error());
-
-                                while($row=pg_fetch_assoc($result)) {
-                                  if ($transaction['projectid'] === $row['id']) {
-                                    echo "<option value='".$row['id']."' selected='selected'>".$row['title']."</option>";
-                                  } else {
-                                    echo "<option value='".$row['id']."'>".$row['title']."</option>";
-                                  }
-                                }
-
-                                pg_free_result($result);
-                              ?>            
-                            </select>
-                          </div><br/>
-                        </div>
+                      </div>
                       <div class="modal-footer">
                         <button type="submit" name="editTransactForm" class="btn btn-primary">Save</button>
                         <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
@@ -175,7 +160,7 @@
                     </form>     
                     <?php
                       if(isset($_POST['editTransactForm'])){
-                        $query = "UPDATE Trans SET amount = '".$_POST['amount']."', projectid = '".$_POST['projectid']."', email = '".$_POST['transactFromEmail']."' 
+                        $query = "UPDATE Trans SET amount = '".$_POST['amount']."', projectid = '".$_POST['projectid']."'  
                         WHERE transactionno = ".$_GET['trans-no'];
                         $result = pg_query($query) or die('Query failed: ' . pg_last_error());
                         
