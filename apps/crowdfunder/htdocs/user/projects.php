@@ -127,12 +127,10 @@
 														<div class="input-group">
 															<span class="input-group-addon">Title</span>
 															<input name="title" type="text" class="form-control" placeholder="Enter Project Title">
-															<span class="text-danger"><?php if (isset($title_error)) echo $title_error; ?></span>
 														</div><br/>
 														<div class="input-group">
 															<span class="input-group-addon">Description</span>
 															<textarea name="description" class="form-control custom-control" rows="3" style="resize:none" placeholder="Enter Project Description"></textarea>
-															<span class="text-danger"><?php if (isset($description_error)) echo $description_error; ?></span>
 														</div><br/>
 														<div class="input-group">
 														  <div class="input-group-addon">
@@ -180,22 +178,23 @@
 													$startDate = date('Y-m-d', strtotime(str_replace('/', '-', $dateArr[0])));
 													$endDate = date('Y-m-d', strtotime(str_replace('/', '-', $dateArr[1])));
 													
-												    if (!preg_match("/^[a-zA-Z0-9 .\- \/ _]+$/", $title)) {
+												    if (!preg_match("/^[a-zA-Z0-9 .,\- \/ _]+$/", $title)) {
 												        $error = true;
 												        $title_error = "Project title must contain only alphanumerics, dashes, underscores, forward slashes and spaces";
 												    }
 
-												    if (!preg_match("/^[a-zA-Z0-9 .\- \/ _]+$/", $description)) {
+												    if (!preg_match("/^[a-zA-Z0-9 .,\- \/ _]+$/", $description)) {
 												        $error = true;
 												        $description_error = "Description must contain only alphanumerics, dashes, underscores, forward slashes and spaces";
 												    }
 
-												    if(!error) {
+												    if(!$error) {
 												    	$query = "INSERT INTO Project (title, description, startDate, endDate, categoryId, amountFundingSought, email)
 															VALUES ('".$title."','".$description."','".$startDate."','".$endDate."','".$_POST['category']."',".$_POST['amount'].",'".$_SESSION['usr_id']."')";
 													
 														$result = pg_query($query) or die('Query failed: ' . pg_last_error());
-												    }
+												    } else {
+														echo "<script type='text/javascript'>alert('Invalid characters detected in title or description.');</script>";												    }
 												}
 											?>	
 											</div>
