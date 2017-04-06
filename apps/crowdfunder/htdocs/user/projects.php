@@ -19,7 +19,7 @@
 		$dbconn = pg_connect("host=localhost port=5432 dbname=postgres user=postgres password=postgres")
 	    or die('Could not connect: ' . pg_last_error());
 
-	    $query = "SELECT m.firstname, m.lastname, m.email, m.registrationdate, COUNT(p.id) AS pCount, COUNT(DISTINCT t.projectid) AS     tCount, SUM(t.amount) AS tSum
+	    $query = "SELECT m.firstname, m.lastname, m.email, m.registrationdate, COUNT(p.id) AS pCount, COUNT(DISTINCT t.projectid) AS tCount, SUM(t.amount) AS tSum
             FROM member m LEFT OUTER JOIN project p ON m.email = p.email
                           LEFT OUTER JOIN trans t ON t.email = m.email
             WHERE m.email = '".$_SESSION['usr_id']."'
@@ -144,7 +144,7 @@
 															<span class="input-group-addon">.00</span>
 														</div><br/>
 														<div class="input-group">
-															<span class="input-group-addon"><i class="fa fa-hashtag"></i></span>
+															<span class="input-group-addon"><i class="fa fa-bookmark"></i></span>
 															<select name="category" class="form-control">
 									 							<option value="" disabled selected>Select a category</option>
 															 	<?php
