@@ -142,15 +142,29 @@
 												</form>
 												<?php
 												if(isset($_POST['editProjectForm'])){
-													$dateStr = $_POST['duration'];
-													$dateArr = (explode(" - ",$dateStr));
-													$startDate = date('Y-m-d', strtotime(str_replace('/', '-', $dateArr[0])));
-													$endDate = date('Y-m-d', strtotime(str_replace('/', '-', $dateArr[1])));
+													$error = false;
+													$title = $_POST['title'];
+													$description = $_POST['description'];
 
-													$query = "UPDATE Project SET title = '".$_POST['title']."', description = '".$_POST['description']."', startdate = '".$startDate."', enddate = '".$endDate."', categoryid = '".$_POST['category']."', amountfundingsought = ".$_POST['amount']."
+													if (!preg_match("/^[a-zA-Z0-9 .,\- \/ _]+$/", $title)) {
+												        $error = true;
+												        $title_error = "Title must contain only alphanumerics, dashes, underscores, forward slashes and spaces";
+												    }
+
+												    if (!preg_match("/^[a-zA-Z0-9 .,\- \/ _]+$/", $description)) {
+												        $error = true;
+												        $description_error = "Description must contain only alphanumerics, dashes, underscores, forward slashes and spaces";
+												    }
+
+												    if (!$error) {
+												    	$query = "UPDATE Project SET title = '".$_POST['title']."', description = '".$_POST['description']."', categoryid = ".$_POST['category'].", amountfundingsought = ".$_POST['amount']."
 															WHERE id = ".$_GET['id'];
-													$result = pg_query($query) or die('Query failed: ' . pg_last_error());
-													echo "<meta http-equiv='refresh' content='0'>";
+														$result = pg_query($query) or die('Query failed: ' . pg_last_error());
+														echo "<meta http-equiv='refresh' content='0'>";
+												    }  else {
+                          								echo "<script type='text/javascript'>alert('Invalid characters detected in title or description.');</script>";                           
+                        							}
+													
 												}
 											?>
 											</div>

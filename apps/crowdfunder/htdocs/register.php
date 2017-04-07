@@ -47,18 +47,9 @@ if (isset($_POST['signup'])) {
     }
 
     if (!$error) {
-        $query = "INSERT INTO Member (password, firstName, lastName, email, roleId, registrationDate, countryId)
-        VALUES (
-        crypt('".$_POST['password']."', gen_salt('bf', 8)),
-        '".$_POST['fname']."',
-        '".$_POST['lname']."',
-        '".$_POST['email']."',
-        '2',
-        '".date("Y-m-d")."',    
-        '".$_POST['country']."'
-        )";
-
-        $result = pg_query($query);
+        $result = pg_prepare($dbconn, "query", "INSERT INTO Member (password, firstName, lastName, email, roleId, registrationDate, countryId)
+                                                VALUES (crypt($1, gen_salt('bf', 8)), $2, $3, $4, '2', $5, $6)");
+        $result = pg_execute($dbconn, "query", array($_POST['password'], $_POST['fname'], $_POST['lname'], $_POST['email'], date("Y-m-d"), $_POST['country']));
 
         if($result) {
             $successmsg = "Successfully Registered! <a href='login.php'>Click here to Login</a>";

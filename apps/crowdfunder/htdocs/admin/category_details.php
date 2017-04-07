@@ -151,10 +151,23 @@
 											  	</form>
 												<?php
 													if(isset($_POST['categoryForm'])){
-														$query = "UPDATE Category SET name = '".$_POST['catName']."'
-																	WHERE id = ".$_GET['id'];
-														$result = pg_query($query) or die('Query failed: ' . pg_last_error());
-														echo "<meta http-equiv='refresh' content='0'>";
+														$error = false;
+
+														$categoryName = $_POST['catName'];
+
+													  	if (!preg_match("/^[a-zA-Z0-9 .,\- \/ _]+$/", $categoryName)) {
+								                                $error = true;
+								                                $category_error = "Category Name must contain only alphanumerics, dashes, underscores, forward slashes and spaces";
+							                            }
+
+							                            if(!$error) {
+							                              	$query = "UPDATE Category SET name = '".$categoryName."'
+																		WHERE id = ".$_GET['id'];
+															$result = pg_query($query) or die('Query failed: ' . pg_last_error());
+															echo "<meta http-equiv='refresh' content='0'>";
+							                            } else {
+							                              echo "<script type='text/javascript'>alert('Invalid characters detected in title or description.');</script>";                           
+							                            }
 													}
 												?>
 											</div>

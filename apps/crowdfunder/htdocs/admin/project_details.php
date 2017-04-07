@@ -193,14 +193,35 @@
                       </div>
                     </form>
                     <?php
+                      $error = false;
+                      
                       if(isset($_POST['editProjectForm'])){
-                        $query = "UPDATE Project SET title = '".$_POST['title']."', description = '".$_POST['description']."', categoryid = '".$_POST['category']."', amountfundingsought = ".$_POST['amount']."
-                        WHERE id = ".$_GET['id'];
-                        $result = pg_query($query) or die('Query failed: ' . pg_last_error());
 
-                        echo "<meta http-equiv='refresh' content='0'>";
-                      }
-                    ?>
+                            $title = $_POST['title'];
+                            $description = $_POST['description'];
+                            $category = $_POST['category'];
+                            $amount = $_POST['amount'];
+
+                            if (!preg_match("/^[a-zA-Z0-9 .,\- \/ _]+$/", $title)) {
+                                $error = true;
+                                $title_error = "Project title must contain only alphanumerics, dashes, underscores, forward slashes and spaces";
+                            }
+
+                            if (!preg_match("/^[a-zA-Z0-9 .,\- \/ _]+$/", $description)) {
+                                $error = true;
+                                $description_error = "Description must contain only alphanumerics, dashes, underscores, forward slashes and spaces";
+                            }
+
+                            if(!$error) {
+                               $query = "UPDATE Project SET title = '".$title."', description = '".$description."', categoryid = '".$category."', amountfundingsought = ".$amount."
+                                      WHERE id = ".$_GET['id'];
+                                $result = pg_query($query) or die('Query failed: ' . pg_last_error());
+                                echo "<meta http-equiv='refresh' content='0'>";
+                            } else {
+                              echo "<script type='text/javascript'>alert('Invalid characters detected in title or description.');</script>";                           
+                            }
+                        }
+                      ?>
                   </div>
                 </div>
               </div>

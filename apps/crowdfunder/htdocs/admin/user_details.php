@@ -213,11 +213,32 @@
                     </form>     
                     <?php
                       if(isset($_POST['editUserForm'])){
-                        $query = "UPDATE Member SET firstname = '".$_POST['firstname']."', lastname = '".$_POST['lastname']."', countryid = '".$_POST['countryid']."', roleid = ".$_POST['roleid']."
-                        WHERE email = '".$_GET['email']."'";
-                        $result = pg_query($query) or die('Query failed: ' . pg_last_error());
+                        $error = false;
 
-                        echo "<meta http-equiv='refresh' content='0'>";
+                        $firstname = $_POST['firstname'];
+                        $lastname = $_POST['lastname'];
+
+                        if (!preg_match("/^[a-zA-Z ]+$/",$firstname)) {
+                            $error = true;
+                            $firstname_error = "First Name must contain only alphabets and space";
+                        }
+
+                        if (!preg_match("/^[a-zA-Z ]+$/",$lastname)) {
+                            $error = true;
+                            $lastname_error = "Last Name must contain only alphabets and space";
+                        }
+
+                        if(!$error) {
+                          $query = "UPDATE Member SET firstname = '".$firstname."', lastname = '".$lastname."', countryid = '".$_POST['countryid']."', roleid = ".$_POST['roleid']."
+                            WHERE email = '".$_GET['email']."'";
+                          $result = pg_query($query) or die('Query failed: ' . pg_last_error());
+
+                          echo "<meta http-equiv='refresh' content='0'>";
+                        } else {
+                          echo "<script type='text/javascript'>alert('Invalid characters detected in First Name or Last Name.');</script>";                           
+                        }
+
+                        
                       }
                     ?>  
                   </div>
