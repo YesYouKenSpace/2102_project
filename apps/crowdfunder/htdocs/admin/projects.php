@@ -205,7 +205,7 @@
 														<span class="input-group-addon">.00</span>
 													</div><br/>
 													<div class="input-group">
-														<span class="input-group-addon"><i class="fa fa-hashtag"></i></span>
+														<span class="input-group-addon"><i class="fa fa-folder"></i></span>
 														<select name="category" class="form-control">
 															 <option value="" disabled selected>Select a category</option>
 															 <?php
