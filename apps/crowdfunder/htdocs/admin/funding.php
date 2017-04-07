@@ -60,7 +60,7 @@
                 <li><a href="../user/index.php">Switch to user</a></li>
                 <li><a href="../logout.php">Sign Out</a></li>
               </ul>
-          </li>
+            </li>
           </ul>
         </div>
       </nav>
