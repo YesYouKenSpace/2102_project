@@ -15,33 +15,38 @@
 
   <body>
 	<?php
-	$dbconn = pg_connect("host=localhost port=5432 dbname=postgres user=postgres password=postgres")
+
+    session_start();
+	 $dbconn = pg_connect("host=localhost port=5432 dbname=postgres user=postgres password=postgres")
     or die('Could not connect: ' . pg_last_error());
+
+    $query = "SELECT m.firstname, m.lastname
+              FROM Member m 
+              WHERE m.email = '".$_SESSION['usr_id']."'";
+      $result = pg_query($query) or die('Query failed: ' . pg_last_error());
+      $user=pg_fetch_assoc($result);
 	?> 
 	<div class="wrapper" style="height: auto;">
     <header class="main-header">
 
     <!-- Logo -->
     <a href="index.php" class="logo">
-      <!-- logo for regular state and mobile devices -->
       <span class="logo-lg"><b>CrowdFunder</b>Admin</span>
     </a>
 
-    <!-- Header Navbar: style can be found in header.less -->
     <nav class="navbar navbar-static-top">
-      <!-- Sidebar toggle button-->
       <a href="#" class="sidebar-toggle" data-toggle="offcanvas" role="button">
         <span class="sr-only">Toggle navigation</span>
       </a>
-      <!-- Navbar Right Menu -->
       <div class="navbar-custom-menu">
         <ul class="nav navbar-nav">
-          <!-- User Account: style can be found in dropdown.less -->
           <li class="dropdown user user-menu">
-            <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-              <span class="hidden-xs">Admin</span>
-            </a>
-          </li>
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><?php echo $user['firstname']." ".$user['lastname'];?><span class="caret"></span></a>
+            <ul class="dropdown-menu">
+              <li><a href="../user/index.php">Switch to user</a></li>
+              <li><a href="../logout.php">Sign Out</a></li>
+            </ul>
+        </li>
         </ul>
       </div>
 
@@ -103,7 +108,7 @@
 
 	<section class="content">
     <div class="row">
-      <div class="col-md-10">
+      <div class="col-md-12">
         <div class="box project-box">
           <div class="box-body">
             <button type="button" class="btn btn-primary pull-right" data-toggle="modal" data-target="#editTransactForm" show="false"><span><i class="fa fa-pencil"></i></span></button>
