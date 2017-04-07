@@ -23,11 +23,9 @@
   $dbconn = pg_connect("host=localhost port=5432 dbname=postgres user=postgres password=postgres")
     or die('Could not connect: ' . pg_last_error());
 
-    $query = "SELECT m.firstname, m.lastname, m.email, m.registrationdate, COUNT(p.id) AS pCount, COUNT(DISTINCT t.projectid) AS     tCount, SUM(t.amount) AS tSum
-            FROM member m LEFT OUTER JOIN project p ON m.email = p.email
-                          LEFT OUTER JOIN trans t ON t.email = m.email
-            WHERE m.email = '".$_SESSION['usr_id']."'
-            GROUP BY m.firstname, m.lastname, m.email, m.registrationdate";
+    $query = "SELECT m.firstname, m.lastname
+            FROM member m 
+            WHERE m.email = '".$_SESSION['usr_id']."'";
     $result = pg_query($query) or die('Query failed: ' . pg_last_error());
     $user=pg_fetch_assoc($result);
   ?>
@@ -50,11 +48,6 @@
       </a>
       <div class="navbar-custom-menu">
         <ul class="nav navbar-nav">
-          <li class="user user-menu">
-            <a href="#index.php">
-              <span class="hidden-xs">Profile</span>
-            </a>
-          </li>
           <li class="dropdown user user-menu">
             <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><?php echo $user['firstname']." ".$user['lastname'];?><span class="caret"></span></a>
             <ul class="dropdown-menu">
@@ -200,14 +193,35 @@
                       </div>
                     </form>
                     <?php
+                      $error = false;
+                      
                       if(isset($_POST['editProjectForm'])){
-                        $query = "UPDATE Project SET title = '".$_POST['title']."', description = '".$_POST['description']."', categoryid = '".$_POST['category']."', amountfundingsought = ".$_POST['amount']."
-                        WHERE id = ".$_GET['id'];
-                        $result = pg_query($query) or die('Query failed: ' . pg_last_error());
 
-                        echo "<meta http-equiv='refresh' content='0'>";
-                      }
-                    ?>
+                            $title = $_POST['title'];
+                            $description = $_POST['description'];
+                            $category = $_POST['category'];
+                            $amount = $_POST['amount'];
+
+                            if (!preg_match("/^[a-zA-Z0-9 .,\- \/ _]+$/", $title)) {
+                                $error = true;
+                                $title_error = "Project title must contain only alphanumerics, dashes, underscores, forward slashes and spaces";
+                            }
+
+                            if (!preg_match("/^[a-zA-Z0-9 .,\- \/ _]+$/", $description)) {
+                                $error = true;
+                                $description_error = "Description must contain only alphanumerics, dashes, underscores, forward slashes and spaces";
+                            }
+
+                            if(!$error) {
+                               $query = "UPDATE Project SET title = '".$title."', description = '".$description."', categoryid = '".$category."', amountfundingsought = ".$amount."
+                                      WHERE id = ".$_GET['id'];
+                                $result = pg_query($query) or die('Query failed: ' . pg_last_error());
+                                echo "<meta http-equiv='refresh' content='0'>";
+                            } else {
+                              echo "<script type='text/javascript'>alert('Invalid characters detected in title or description.');</script>";                           
+                            }
+                        }
+                      ?>
                   </div>
                 </div>
               </div>

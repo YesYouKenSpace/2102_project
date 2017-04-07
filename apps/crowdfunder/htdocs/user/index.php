@@ -225,10 +225,21 @@
                                   </form>     
                                   <?php
                                   if(isset($_POST['changePasswordForm'])){
-                                    $query = "UPDATE member 
-                                              SET password = crypt('".$_POST['newpassword']."', gen_salt('bf',8)) 
-                                              WHERE email = '".$_SESSION['usr_id']."'";
-                                    $result = pg_query($query) or die('Query failed: ' . pg_last_error());
+                                    $error = false;
+
+                                    if(strlen($password) < 6) {
+                                        $error = true;
+                                        $password_error = "Password must be minimum of 6 characters";
+                                    }
+
+                                    if (!$error) {
+                                      $result = pg_prepare($dbconn, "query", "UPDATE member 
+                                              SET password = crypt($1, gen_salt('bf',8)) 
+                                              WHERE email = $2");
+                                      $result = pg_execute($dbconn, "query", array($_POST['newpassword'], $_SESSION['usr_id']));
+                                    } else {
+                                      echo "<script type='text/javascript'>alert('$password_error');</script>";
+                                    }
                                   }
                                 ?>  
                                 </div>

@@ -22,11 +22,9 @@
 	$dbconn = pg_connect("host=localhost port=5432 dbname=postgres user=postgres password=postgres")
     or die('Could not connect: ' . pg_last_error());
 
-    $query = "SELECT m.firstname, m.lastname, m.email, m.registrationdate, COUNT(p.id) AS pCount, COUNT(DISTINCT t.projectid) AS     tCount, SUM(t.amount) AS tSum
-            FROM member m LEFT OUTER JOIN project p ON m.email = p.email
-                          LEFT OUTER JOIN trans t ON t.email = m.email
-            WHERE m.email = '".$_SESSION['usr_id']."'
-            GROUP BY m.firstname, m.lastname, m.email, m.registrationdate";
+    $query = "SELECT m.firstname, m.lastname
+              FROM member m 
+              WHERE m.email = '".$_SESSION['usr_id']."'";
     $result = pg_query($query) or die('Query failed: ' . pg_last_error());
     $user=pg_fetch_assoc($result);
 	?>
@@ -49,11 +47,6 @@
       </a>
       <div class="navbar-custom-menu">
         <ul class="nav navbar-nav">
-          <li class="user user-menu">
-            <a href="#index.php">
-              <span class="hidden-xs">Profile</span>
-            </a>
-          </li>
           <li class="dropdown user user-menu">
             <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><?php echo $user['firstname']." ".$user['lastname'];?><span class="caret"></span></a>
             <ul class="dropdown-menu">
