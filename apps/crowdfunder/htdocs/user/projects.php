@@ -452,10 +452,18 @@
 			$('#search-project-form').submit(function(e){
 				e.preventDefault();
 
+				var original = $("#table_data_all").html();
+
 				var queryString = $(this).serialize();
 				$.post( "filter/filter_projects.php", queryString)
 				.done(function(response){
-					$("#table_data_all").html(response);
+					console.log("response");
+					console.log(response);
+					if (response != "FAIL") {
+						$("#table_data_all").html(response);
+					} else {
+						alert("Project title must contain only alphanumerics, dashes, underscores, forward slashes and spaces");
+					}
 				});
 			});
 		});

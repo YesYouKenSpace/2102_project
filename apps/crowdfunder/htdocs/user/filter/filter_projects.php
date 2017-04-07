@@ -2,9 +2,7 @@
 
 	$dbconn = pg_connect("host=localhost port=5432 dbname=postgres user=postgres password=postgres")
     or die('Could not connect: ' . pg_last_error());
-	
-	ob_end_clean();
-	ob_start();
+
 	$searchProjectName = $_REQUEST['search-project-title'];
 	$searchProjectOwner = $_REQUEST['search-owner-name'];
 	$searchCategoryId = $_REQUEST['search-category'];
@@ -50,6 +48,21 @@
 	$query .= "ORDER BY endDate DESC, startDate DESC";
 
 	$result = pg_query($query) or die('Query failed: ' . pg_last_error());
+
+	$error = false;
+	$errorText = "";
+
+	if (!empty($searchProjectName) && !preg_match("/^[a-zA-Z0-9 .,\- \/ _]+$/", $searchProjectName)) {
+        $error = true;
+    }
+
+    if ($error) {
+		echo "FAIL";
+		return null;
+	}
+
+	ob_end_clean();
+	ob_start();
 
 	while($row=pg_fetch_assoc($result)) {
 		if ((!is_null($row['amountraised'])) && ($row['amountraised'] >= $row['amountfundingsought'])) { 

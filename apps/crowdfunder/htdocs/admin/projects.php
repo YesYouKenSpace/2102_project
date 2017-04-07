@@ -339,8 +339,6 @@
 												pg_free_result($result);
 
 												if (isset(($_POST['search-submit']))) {
-													ob_end_clean();
-													ob_start();
 													$searchProjectName = $_POST['search-project-title'];
 													$searchProjectOwner = $_POST['search-owner-name'];
 													$searchCategoryId = $_POST['search-category'];
@@ -354,6 +352,24 @@
 													$amountGoalArray = explode(" ", $searchAmountGoal);
 													$amountGoalMin = $amountGoalArray[0] * 1000;
 													$amountGoalMax = $amountGoalArray[1] * 1000;
+
+													$error = false;
+													$errorText = "";
+
+													if (!empty($searchProjectName) && !preg_match("/^[a-zA-Z0-9 .,\- \/ _]+$/", $searchProjectName)) {
+												        $error = true;
+												        $errorText .= "Project title must contain only alphanumerics, dashes, underscores, forward slashes and spaces. ";
+												    }
+
+												    if (!empty($searchProjectOwner)  && !preg_match("/^[a-zA-Z ]+$/", $searchProjectOwner)) {
+												        $error = true;
+												        $errorText .= "Invalid characters detected in searched owner name.";
+												    }
+
+												    if ($error) {
+														echo "<script type='text/javascript'>alert('{$errorText}');</script>";
+														return null;
+													}
 
 													$baseQuery = "SELECT p.id, p.title, p.startDate, p.endDate, c.id AS catId,
 																		 m.firstName, m.lastName,
@@ -386,6 +402,9 @@
 													$query .= "ORDER BY endDate DESC, startDate DESC";
 
 													$result = pg_query($query) or die('Query failed: ' . pg_last_error());
+
+													ob_end_clean();
+													ob_start();
 
 													while($row=pg_fetch_assoc($result)) {
 														if ((!is_null($row['amountraised'])) && ($row['amountraised'] >= $row['amountfundingsought'])) {
