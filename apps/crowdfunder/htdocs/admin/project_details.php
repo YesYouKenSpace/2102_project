@@ -24,7 +24,7 @@
     or die('Could not connect: ' . pg_last_error());
 
     $query = "SELECT m.firstname, m.lastname
-            FROM member m 
+            FROM member m
             WHERE m.email = '".$_SESSION['usr_id']."'";
     $result = pg_query($query) or die('Query failed: ' . pg_last_error());
     $user=pg_fetch_assoc($result);
@@ -194,7 +194,7 @@
                     </form>
                     <?php
                       $error = false;
-                      
+
                       if(isset($_POST['editProjectForm'])){
 
                             $title = $_POST['title'];
@@ -218,7 +218,7 @@
                                 $result = pg_query($query) or die('Query failed: ' . pg_last_error());
                                 echo "<meta http-equiv='refresh' content='0'>";
                             } else {
-                              echo "<script type='text/javascript'>alert('Invalid characters detected in title or description.');</script>";                           
+                              echo "<script type='text/javascript'>alert('Invalid characters detected in title or description.');</script>";
                             }
                         }
                       ?>
@@ -359,17 +359,17 @@
                   <canvas id="progressChart" width="848" height="424" style="display: block; height: 212px; width: 424px;"></canvas>
                   <script>
                     <?php
-                      $query = "SELECT sum(t.amount) AS sum
+                      $query = "SELECT sum(t.amount) AS sum, t.rank AS rank
                       FROM(SELECT   CASE
-                      WHEN current_date - t1.date <7 THEN 1
+                      WHEN current_date - t1.date <7 THEN 3
                       WHEN current_date - t1.date  <15 then 2
-                      WHEN current_date - t1.date  <22 then 3
-                      WHEN current_date - t1.date  <30 then 4
+                      WHEN current_date - t1.date  <22 then 1
+                      WHEN current_date - t1.date  <30 then 0
                       ELSE 5 END as rank, t1.amount
                       FROM Trans t1
                       WHERE t1.projectId = ".$_GET['id'].") AS t
                       GROUP BY t.rank
-                      ORDER BY t.rank DESC";
+                      ORDER BY t.rank ASC";
                       $result = pg_query($query) or die('Query failed: '.pg_last_error());
                       $graphData = array();
                       $graphLabels = [">1 month ago",  "A month ago", "Three weeks ago" , "Two weeks ago",  "This week"];
@@ -380,13 +380,23 @@
                         } else if($buffer ==null){
                           $graphData[$count] = (int) (0 + $graphData[$count - 1]);
                         }
-                        else if($count!=0){
-                          $graphData[$count] = (int) ($buffer['sum'] + $graphData[$count - 1]);
-                        }else{
-                          $graphData[$count] = (int) ($buffer['sum']);
+                        else{
+                          while($buffer['rank']!=$count){
+                            if($count!=0){
+                                $graphData[$count] = (0 + $graphData[$count - 1]);
+                              }else{
+                                $graphData[$count] = 0;
+                              }
+                          $count++;
                         }
-                        $count++;
-                      }
+                          if($count!=0){
+                              $graphData[$count] = (int) ($buffer['sum'] + $graphData[$count - 1]);
+                            }else{
+                              $graphData[$count] = (int) ($buffer['sum']);
+                            }
+                          }
+                          $count++;
+                        }
                       pg_free_result($result);
                     ?>
                     console.log("DRAWING");

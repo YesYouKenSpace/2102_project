@@ -3,6 +3,8 @@
   <head>
     <meta charset="utf-8">
     <link rel="icon" href="../../favicon.ico">
+    <script src="../plugins/chart.js/dist/Chart.bundle.min.js"></script>
+    <script src="../util/charts/projectChart.js"></script>
     <title>CrowdFunder</title>
 
     <!-- Bootstrap core CSS -->
@@ -162,9 +164,9 @@
 														$result = pg_query($query) or die('Query failed: ' . pg_last_error());
 														echo "<meta http-equiv='refresh' content='0'>";
 												    }  else {
-                          								echo "<script type='text/javascript'>alert('Invalid characters detected in title or description.');</script>";                           
+                          								echo "<script type='text/javascript'>alert('Invalid characters detected in title or description.');</script>";
                         							}
-													
+
 												}
 											?>
 											</div>
@@ -315,6 +317,96 @@
 			  				</div>
 						</div>
 					</div>
+          <div class="row">
+            <div class="col-md-6">
+              <div class="box project-box">
+                <div class="box-body">
+                  <canvas id="dailyChart" width="1328" height="664" style="display: block; height: 332px; width: 664px;"></canvas>
+                  <script>
+                    <?php
+                      $query = "SELECT t1.date, sum(t1.amount) AS sum
+                      FROM Trans t1
+                      WHERE t1.projectId = ".$_GET['id']."
+                      GROUP BY t1.date, t1.projectId
+                      ORDER BY t1.date ASC";
+
+                      $result = pg_query($query) or die('Query failed: '.pg_last_error());
+                      $graphData = array();
+                      $graphLabels = array();
+                      $count =0;
+                      while($buffer = pg_fetch_assoc($result)) {
+                        if ($count!=0) {
+                          $graphData[$count] = (int) ($buffer['sum']); // + $graphData[$count - 1]);
+                          $graphLabels[$count] = $buffer['date'];
+                        } else {
+                          $graphData[$count] = (int) $buffer['sum'];
+                          $graphLabels[$count] = $buffer['date'];
+                        }
+                        $count++;
+                      }
+                      pg_free_result($result);
+                      ?>
+                      console.log("DRAWING");
+                      drawLineGraph(<?php echo json_encode($graphData) ?>, "$ Raised daily",<?php echo json_encode($graphLabels) ?>, document.getElementById("dailyChart"));
+                    </script>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="box project-box">
+                  <div class="box-body">
+                    <div class="canvas-holder">
+                      <canvas id="progressChart" width="848" height="424" style="display: block; height: 212px; width: 424px;"></canvas>
+                      <script>
+                        <?php
+                          $query = "SELECT sum(t.amount) AS sum, t.rank AS rank
+                          FROM(SELECT   CASE
+                          WHEN current_date - t1.date <7 THEN 3
+                          WHEN current_date - t1.date  <15 then 2
+                          WHEN current_date - t1.date  <22 then 1
+                          WHEN current_date - t1.date  <30 then 0
+                          ELSE 5 END as rank, t1.amount
+                          FROM Trans t1
+                          WHERE t1.projectId = ".$_GET['id'].") AS t
+                          GROUP BY t.rank
+                          ORDER BY t.rank ASC";
+                          $result = pg_query($query) or die('Query failed: '.pg_last_error());
+                          $graphData = array();
+                          $graphLabels = [">1 month ago",  "A month ago", "Three weeks ago" , "Two weeks ago",  "This week"];
+                          $count =0;
+                          while(($buffer = pg_fetch_assoc($result)) || $count <5){
+                            if ($buffer ==null && $count==0){
+                              $graphData[$count] = 0;
+                            } else if($buffer ==null){
+                              $graphData[$count] = (int) (0 + $graphData[$count - 1]);
+                            }
+                            else{
+                              while($buffer['rank']!=$count){
+                                if($count!=0){
+                                    $graphData[$count] = (0 + $graphData[$count - 1]);
+                                  }else{
+                                    $graphData[$count] = 0;
+                                  }
+                              $count++;
+                            }
+                              if($count!=0){
+                                  $graphData[$count] = (int) ($buffer['sum'] + $graphData[$count - 1]);
+                                }else{
+                                  $graphData[$count] = (int) ($buffer['sum']);
+                                }
+                              }
+                              $count++;
+                            }
+                          pg_free_result($result);
+                        ?>
+                        console.log("DRAWING");
+                        drawLineGraph(<?php echo json_encode($graphData) ?>, "Aggregate $ raised", <?php echo json_encode($graphLabels) ?>, document.getElementById("progressChart"));
+                      </script>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
 					<div class="row">
 						<div class="col-md-12">
 							<div class="box project-box">
@@ -360,6 +452,7 @@
     			</section>
   			</div>
 		</div>
+
     	<script src="../plugins/jQuery/jquery-2.2.3.min.js"></script>
 		<script src="../bootstrap/js/bootstrap.min.js"></script>
 		<script src="../plugins/bootbox.min.js"></script>
