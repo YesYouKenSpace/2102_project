@@ -283,8 +283,6 @@
                     pg_free_result($result);
 
                     if (isset(($_POST['search-submit']))) {
-                        ob_end_clean();
-                        ob_start();
                         $searchProjectTitle = $_POST['search-project-title'];
                         $searchDonorName = $_POST['search-donor-name'];
 
@@ -292,6 +290,24 @@
                         $amountDonatedArray = explode(" ", $searchAmountDonated);
                         $amountDonatedMin = $amountDonatedArray[0] * 1000;
                         $amountDonatedMax = $amountDonatedArray[1] * 1000;
+
+                        $error = false;
+                        $errorText = "";
+
+                        if (!empty($searchProjectTitle) && !preg_match("/^[a-zA-Z0-9 .,\- \/ _]+$/", $searchProjectTitle)) {
+                            $error = true;
+                            $errorText .= "Project title must contain only alphanumerics, dashes, underscores, forward slashes and spaces. ";
+                        }
+
+                        if (!empty($searchDonorName)  && !preg_match("/^[a-zA-Z ]+$/", $searchDonorName)) {
+                            $error = true;
+                            $errorText .= "Invalid characters detected in searched donor name.";
+                        }
+
+                        if ($error) {
+                            echo "<script type='text/javascript'>alert('{$errorText}');</script>";
+                            return null;
+                        }
 
                         $baseQuery = "SELECT m.firstName, m.lastName, t.amount, t.date,
                                              p.title, t.email, t.transactionNo
@@ -311,6 +327,9 @@
                         $query .= "ORDER BY date DESC";
 
                         $result = pg_query($query) or die('Query failed: ' . pg_last_error());
+
+                        ob_end_clean();
+                        ob_start();
 
                         while($row=pg_fetch_assoc($result)) {
                             $trans_no = $row['transactionno'];

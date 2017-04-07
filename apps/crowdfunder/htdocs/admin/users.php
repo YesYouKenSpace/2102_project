@@ -378,8 +378,6 @@
 					pg_free_result($result);
 
 					if (isset(($_POST['search-submit']))) {
-						ob_end_clean();
-						ob_start();
 						$searchName = $_POST['search-user'];
 						$searchCountryId = $_POST['search-country'];
 						$searchRoleId = $_POST['search-role'];
@@ -398,6 +396,18 @@
 						$donationArray = explode(" ", $searchDonationValue);
 						$donationMin = $donationArray[0] * 1000;
 						$donationMax = $donationArray[1] * 1000;
+
+						$error = false;
+
+						//name can contain only alpha characters and space
+					    if (!empty($searchName)  && !preg_match("/^[a-zA-Z ]+$/", $searchName)) {
+					        $error = true;
+					    }
+
+					    if ($error) {
+							echo "<script type='text/javascript'>alert('Invalid characters detected in searched name.');</script>";
+							return null;
+						}
 
 						$baseQuery = "SELECT m.firstName, m.lastName, m.email, m.roleId, m.countryId,
 										 c.name AS countryName, m.registrationDate, r.type,
@@ -442,6 +452,9 @@
 						$query .= "ORDER BY firstName, lastName";
 
 						$result = pg_query($query) or die('Query failed: ' . pg_last_error());
+
+						ob_end_clean();
+						ob_start();
 
 						while($row=pg_fetch_assoc($result)) {
 							echo "<tr><td>".$row['firstname']
