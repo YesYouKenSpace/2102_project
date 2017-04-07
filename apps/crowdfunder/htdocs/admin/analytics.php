@@ -116,7 +116,7 @@
     <section class="content">
       <div class="row">
         <div class="col-md-4">
-         <div class="box project-box">
+         <div class="box analytics-box">
            <div class="box-body">
               <h3 class="text-center">Popular Project of the Month</h3>
               <ul class="list-group list-group-unbordered">
@@ -147,7 +147,7 @@
           </div>
         </div>
         <div class="col-md-4">
-         <div class="box project-box">
+         <div class="box analytics-box">
            <div class="box-body">
               <h3 class="text-center">Top 100 Investors of the Week</h3>
               <ul class="list-group list-group-unbordered">
@@ -178,7 +178,7 @@
           </div>
         </div>
         <div class="col-md-4">
-         <div class="box project-box">
+         <div class="box analytics-box">
            <div class="box-body">
               <h3 class="text-center">New Projects of the Last 30 Days</h3>
               <table id="projectsTable" class="table table-bordered table-hover" >
@@ -241,7 +241,7 @@
       </div>
       <div class="row">
         <div class="col-md-6">
-         <div class="box project-box">
+         <div class="box analytics-box">
            <div class="box-body">
               <div class="canvas-holder">
               <canvas id="numberOfUsersChart" width="848" height="424" style="display: block; height: 212px; width: 424px;"></canvas>
@@ -279,7 +279,7 @@
       </div>
       <div class='row'>
         <div class="col-md-12">
-         <div class="box project-box">
+         <div class="box analytics-box">
            <div class="box-body">
               <h3 class="text-center">Non-New Users Who Not Invested for More Than 30 Days</h3>
               <table id="usersTable" class="table table-bordered table-hover" >

@@ -344,7 +344,7 @@ a:hover, a:focus {
 }
 
 .project-box {
-	border-top: 3px solid #f39c12;
+	border-top: 3px solid #f1c40f;
 }
 
 .user-box {
@@ -355,6 +355,21 @@ a:hover, a:focus {
     border-top: 3px solid #8e44ad;
 }
 
+.funding-box {
+    border-top: 3px solid #00a65a;
+}
+
+.history-box {
+    border-top: 3px solid #c0392b;
+}
+
+.analytics-box {
+    border-top: 3px solid #e67e22;
+}
+
+.reactivation-box {
+    border-top: 3px solid #7f8c8d;
+}
 .category-box h3 {
     color: #8e44ad;
 }

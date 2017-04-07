@@ -109,7 +109,7 @@
 	<section class="content">
     <div class="row">
       <div class="col-md-12">
-        <div class="box project-box">
+        <div class="box funding-box">
           <div class="box-body">
             <button type="button" class="btn btn-primary pull-right" data-toggle="modal" data-target="#editTransactForm" show="false"><span><i class="fa fa-pencil"></i></span></button>
             <?php

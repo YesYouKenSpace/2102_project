@@ -124,7 +124,7 @@
     <section class="content">
       <div class="row">
         <div class="col-xs-12">
-          <div class="box project-box">
+          <div class="box funding-box">
             <div class="box-header">
               <h3 class="box-title">All Fundings</h3>
               <button type="button" class="btn btn-primary pull-right" data-toggle="modal" data-target="#fundingForm" show="false"><span><i class="fa fa-plus"></i></span> New Funding</button><br/>

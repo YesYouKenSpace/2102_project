@@ -123,7 +123,7 @@
     <section class="content">
       <div class="row">
         <div class="col-xs-12">
-          <div class="box user-box">
+          <div class="box history-box">
             <div class="box-header">
               <h3 class="box-title" id="user-title">History for Users</h3>
               <h3 class="box-title" id="project-title">History for Projects</h3>
