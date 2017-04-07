@@ -130,7 +130,7 @@
                $result = pg_query($query) or die('Query failed: ' . pg_last_error());
 
                if (pg_num_rows($result) > 0) {
-                  $num_to_display = 10;
+                  $num_to_display = 20;
                  while($num_to_display > 0 && $row=pg_fetch_assoc($result)) {
                     $num_to_display--;
                    echo "<li class=\"list-group-item\"><strong>#".$row['ranking']." ".$row['title']." </strong><a class=\"pull-right\">$".$row['sum']."</a>";
@@ -149,7 +149,7 @@
         <div class="col-md-4">
          <div class="box analytics-box">
            <div class="box-body">
-              <h3 class="text-center">Top 100 Investors of the Week</h3>
+              <h3 class="text-center">Top 20 Investors of the Week</h3>
               <ul class="list-group list-group-unbordered">
                <?php
                $query = "SELECT SUM(t1.amount) AS sum, m1.lastName, m1.firstName, RANK() OVER (ORDER BY SUM(t1.amount) DESC) as ranking
@@ -161,7 +161,7 @@
                $result = pg_query($query) or die('Query failed: ' . pg_last_error());
 
                if (pg_num_rows($result) > 0) {
-                  $num_to_display = 10;
+                  $num_to_display = 20;
                  while($num_to_display > 0 && $row=pg_fetch_assoc($result)) {
                     $num_to_display--;
                    echo "<li class=\"list-group-item\"><strong>#".$row['ranking']." ".$row['lastname']." ".$row['firstname']."</strong><a class=\"pull-right\">$".$row['sum']."</a>";
@@ -180,59 +180,60 @@
         <div class="col-md-4">
          <div class="box analytics-box">
            <div class="box-body">
-              <h3 class="text-center">New Projects of the Last 30 Days</h3>
-              <table id="projectsTable" class="table table-bordered table-hover" >
-                        <thead>
-                  <tr>
-                    <th>Title</th>
-                    <th>Start Date</th>
-                    <th>Amount Raised</th>
-                    <th></th>
-                  </tr>
-                        </thead>
-                        <tbody id="table_data">
-                          <?php
-                          $query = "SELECT t1.projectId AS pid, SUM(t1.amount) AS sum, p1.title, RANK() OVER (ORDER BY p1.startdate DESC) as ranking, p1.amountFundingSought, p1.startDate
-                                     FROM Trans t1 INNER JOIN Project p1 ON t1.projectId = p1.id
-                                     WHERE current_date- p1.startDate  < 30
-                                     GROUP BY t1.projectId, p1.title, p1.amountFundingSought, p1.startDate
-                                     ORDER BY p1.startDate DESC";
+             <h3 class="text-center">10 Newest Projects</h3>
+             <table id="projectsTable" class="table table-bordered table-hover" >
+                       <thead>
+                 <tr>
+                   <th>Title</th>
+                   <th>Start Date</th>
+                   <th>Amount Raised</th>
+                   <th></th>
+                 </tr>
+                       </thead>
+                       <tbody id="table_data">
+                         <?php
+                         ob_start();
+                         $query = "SELECT SUM(t1.amount) AS amountraised, t1.projectId AS id, p1.title AS title, RANK() OVER (ORDER BY p1.startdate DESC) as ranking, p1.amountFundingSought, p1.startDate
+                                    FROM Trans t1 INNER JOIN Project p1 ON t1.projectId = p1.id
+                                    WHERE p1.softDelete = FALSE
+                                    GROUP BY t1.projectId, p1.title, p1.amountFundingSought, p1.startDate
+                                    ORDER BY p1.startDate DESC";
+                         $count = 0;
+                         $result = pg_query($query) or die('Query failed: ' . pg_last_error());
 
-                          $result = pg_query($query) or die('Query failed: ' . pg_last_error());
+                         while(($row=pg_fetch_assoc($result) )&& $count<10) {
+                           if ((!is_null($row['amountraised'])) && ($row['amountraised'] >= $row['amountfundingsought'])) {
+                             echo "<tr style=\"background-color:#c9ffc9;\">";
+                           } else {
+                             echo "<tr>";
+                           }
+
+                           echo "<td>".$row['title']
+                           ."</td><td>".$row['startdate']
+                           ."</td><td><div class=\"progress\" style=\"margin-bottom:2px;\"><div class=\"progress-bar progress-bar-success\" role=\"progressbar\" aria-valuenow=\"70\"
+                           aria-valuemin=\"0\" aria-valuemax=\"100\" style=\"width:"
+                           .(($row['amountraised'] * 100 / $row['amountfundingsought']))
+                           ."%;\">
+                           </div></div>";
+
+                           if ($row['amountraised'] >= $row['amountfundingsought']) {
+                             echo " <strong style=\"color:#5cb85c;\">$".$row['amountraised']."</strong> / $".$row['amountfundingsought'];
+                           } else {
+                             echo "$".$row['amountraised']." / $".$row['amountfundingsought'];
+                           }
+
+                                     $proj_id = $row['id'];
+
+                           echo "</td><td><button class=\"btn btn-primary btn-xs\" onClick=\"location.href='project_details.php?id=$proj_id'\"><span class=\"glyphicon glyphicon-info-sign\"></span></button></td></tr>";
+                           $count++;
+                         }
 
 
-                  while($row=pg_fetch_assoc($result)) {
-                      if ((!is_null($row['sum'])) && ($row['sum'] >= $row['amountfundingsought'])) {
-                        echo "<tr style=\"background-color:#c9ffc9;\">";
-                      } else {
-                        echo "<tr>";
-                      }
+                 pg_free_result($result);
 
-                      echo "<td>".$row['title']
-                      ."</td><td>".$row['startdate']
-                      ."</td><td><div class=\"progress\" style=\"margin-bottom:2px;\"><div class=\"progress-bar progress-bar-success\" role=\"progressbar\" aria-valuenow=\"70\"
-                      aria-valuemin=\"0\" aria-valuemax=\"100\" style=\"width:"
-                      .(($row['sum'] / $row['amountfundingsought'])*100)
-                      ."%;\">
-                      </div></div>";
-
-                      if (is_null($row['sum'])) {
-                        echo "$0 / $".$row['amountfundingsought'];
-                      }else if ($row['sum'] >= $row['amountfundingsought']) {
-                        echo " <strong style=\"color:#5cb85c;\">$".$row['sum']."</strong> / $".$row['amountfundingsought'];
-                      } else {
-                        echo "$".$row['sum']." / $".$row['amountfundingsought'];
-                      }
-                                $proj_id = $row['pid'];
-
-                      echo "</td><td><button class=\"btn btn-primary btn-xs\" onClick=\"location.href='project_details.php?id=$proj_id'\"><span class=\"glyphicon glyphicon-info-sign\"></span></button></td></tr>";
-                    }
-
-                  pg_free_result($result);
-
-                ?>
-                        </tbody>
-                      </table>
+               ?>
+                       </tbody>
+                     </table>
 
             </div>
           </div>
@@ -276,12 +277,48 @@
             </div>
           </div>
         </div>
+        <div class="col-md-6">
+         <div class="box analytics-box">
+           <div class="box-body">
+              <div class="canvas-holder">
+              <canvas id="totalFundingChart" width="848" height="424" style="display: block; height: 212px; width: 424px;"></canvas>
+              <script>
+              <?php
+              $query = "SELECT date, SUM(amount) AS sum
+                        FROM Trans t
+                        GROUP BY date
+                        ORDER BY date ASC
+                        ";
+              $result = pg_query($query) or die('Query failed: '.pg_last_error());
+              $graphData = array();
+              $graphLabels = array();
+              $count =0;
+              while($buffer = pg_fetch_assoc($result)){
+                  if($count!=0){
+                    $graphData[$count] = (int) ($buffer['sum'] + $graphData[$count - 1]);
+                    $graphLabels[$count] = $buffer['date'];
+                  }else{
+                    $graphData[$count] = (int) $buffer['count'];
+                    $graphLabels[$count] = $buffer['date'];
+                  }
+
+                    $count++;
+              }
+              pg_free_result($result);
+              ?>
+                console.log("DRAWING");
+                drawLineGraphWithTime(<?php echo json_encode($graphData) ?>, "Total funding",<?php echo json_encode($graphLabels) ?>, <?php echo $count ?>, document.getElementById("totalFundingChart"));
+                </script>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
       <div class='row'>
         <div class="col-md-12">
          <div class="box analytics-box">
            <div class="box-body">
-              <h3 class="text-center">Non-New Users Who Not Invested for More Than 30 Days</h3>
+              <h3 class="text-center">Non-New Users Who Not Invested for More Than 5 Days</h3>
               <table id="usersTable" class="table table-bordered table-hover" >
                         <thead>
                   <tr>
@@ -300,7 +337,7 @@
                FROM Member m1 NATURAL JOIN Trans t2
                WHERE NOT EXISTS(SELECT *
                                 FROM Trans T1
-                                WHERE M1.email=T1.email AND current_date-T1.date < 30)
+                                WHERE M1.email=T1.email AND current_date-T1.date < 5)
                     AND current_date - m1.registrationDate > 30
                GROUP BY m1.firstName,m1.lastName, m1.email
                ORDER BY latesttrans";
