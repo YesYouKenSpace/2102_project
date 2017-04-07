@@ -42,22 +42,15 @@
 
         <!-- Logo -->
         <a href="index.php" class="logo">
-          <!-- logo for regular state and mobile devices -->
           <span class="logo-lg"><b>CrowdFunder</b>Admin</span>
         </a>
 
-        <!-- Header Navbar: style can be found in header.less -->
         <nav class="navbar navbar-static-top">
           <a href="#" class="sidebar-toggle" data-toggle="offcanvas" role="button">
             <span class="sr-only">Toggle navigation</span>
           </a>
           <div class="navbar-custom-menu">
             <ul class="nav navbar-nav">
-              <li class="user user-menu">
-                <a href="#index.php">
-                  <span class="hidden-xs">Profile</span>
-                </a>
-              </li>
               <li class="dropdown user user-menu">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><?php echo $user['firstname']." ".$user['lastname'];?><span class="caret"></span></a>
                 <ul class="dropdown-menu">

@@ -46,11 +46,6 @@
 			        </a>
 		        	<div class="navbar-custom-menu">
 			          	<ul class="nav navbar-nav">
-				            <li class="user user-menu">
-				              <a href="#index.php">
-				                <span class="hidden-xs">Profile</span>
-				              </a>
-				            </li>
 			            	<li class="dropdown user user-menu">
 			              		<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><?php echo $user['firstname']." ".$user['lastname'];?><span class="caret"></span></a>
 				              	<ul class="dropdown-menu">
