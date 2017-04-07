@@ -26,7 +26,7 @@
       or die('Could not connect: ' . pg_last_error());
 
       $query = "SELECT m.firstname, m.lastname
-                FROM member m 
+                FROM member m
                 WHERE m.email = '".$_SESSION['usr_id']."'";
       $result = pg_query($query) or die('Query failed: ' . pg_last_error());
       $user=pg_fetch_assoc($result);
@@ -90,7 +90,7 @@
         </li>
         <li class="active treeview">
           <a href="analytics.php">
-            <i class="fa fa-dollar"></i> <span>Analytics</span>
+            <i class="fa fa-chart"></i> <span>Analytics</span>
           </a>
         </li>
         <li class="treeview">
@@ -164,7 +164,7 @@
                   $num_to_display = 10;
                  while($num_to_display > 0 && $row=pg_fetch_assoc($result)) {
                     $num_to_display--;
-                   echo "<li class=\"list-group-item\"><strong>#".$row['ranking']." ".$row['lastName']." ".$row['firstName']."</strong><a class=\"pull-right\">$".$row['sum']."</a>";
+                   echo "<li class=\"list-group-item\"><strong>#".$row['ranking']." ".$row['lastname']." ".$row['firstname']."</strong><a class=\"pull-right\">$".$row['sum']."</a>";
                  }
                } else {
                  echo "<li class=\"list-group-item text-center\">No funding has been made this month.</li>";

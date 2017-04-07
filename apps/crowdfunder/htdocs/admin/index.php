@@ -23,7 +23,7 @@
     or die('Could not connect: ' . pg_last_error());
 
     $query = "SELECT m.firstname, m.lastname
-              FROM member m 
+              FROM member m
               WHERE m.email = '".$_SESSION['usr_id']."'";
     $result = pg_query($query) or die('Query failed: ' . pg_last_error());
     $user=pg_fetch_assoc($result);
@@ -94,7 +94,7 @@
         </li>
         <li class="treeview">
           <a href="analytics.php">
-            <i class="fa fa-dollar"></i> <span>Analytics</span>
+            <i class="fa fa-chart"></i> <span>Analytics</span>
           </a>
         </li>
     <li class="treeview">
@@ -283,7 +283,7 @@
 
       </div>
     </section>
-    </div> 
+    </div>
 
 
     <script src="../plugins/jQuery/jquery-2.2.3.min.js"></script>

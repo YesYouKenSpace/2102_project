@@ -28,7 +28,7 @@
 		      or die('Could not connect: ' . pg_last_error());
 
 		      $query = "SELECT m.firstname, m.lastname
-		              FROM member m 
+		              FROM member m
 		              WHERE m.email = '".$_SESSION['usr_id']."'";
 		      $result = pg_query($query) or die('Query failed: ' . pg_last_error());
 		      $user=pg_fetch_assoc($result);
@@ -86,7 +86,7 @@
 					    </li>
 						<li class="treeview">
 					      <a href="analytics.php">
-					        <i class="fa fa-dollar"></i> <span>Analytics</span>
+					        <i class="fa fa-chart"></i> <span>Analytics</span>
 					      </a>
 					    </li>
 						<li class="treeview">
@@ -248,14 +248,14 @@
 												$error = false;
 
 												if(isset($_POST['projectForm'])){
-													
+
 													$title = $_POST['title'];
 													$description = $_POST['description'];
 													$dateStr = $_POST['duration'];
 													$dateArr = (explode(" - ",$dateStr));
 													$startDate = date('Y-m-d', strtotime(str_replace('/', '-', $dateArr[0])));
 													$endDate = date('Y-m-d', strtotime(str_replace('/', '-', $dateArr[1])));
-													
+
 												    if (!preg_match("/^[a-zA-Z0-9 .,\- \/ _]+$/", $title)) {
 												        $error = true;
 												        $title_error = "Project title must contain only alphanumerics, dashes, underscores, forward slashes and spaces";
@@ -269,10 +269,10 @@
 												    if(!$error) {
 												    	$query = "INSERT INTO Project (title, description, startDate, endDate, categoryId, amountFundingSought, email)
 															VALUES ('".$title."','".$description."','".$startDate."','".$endDate."','".$_POST['category']."',".$_POST['amount'].",'".$_SESSION['usr_id']."')";
-													
+
 														$result = pg_query($query) or die('Query failed: ' . pg_last_error());
 												    } else {
-														echo "<script type='text/javascript'>alert('Invalid characters detected in title or description.');</script>";												    
+														echo "<script type='text/javascript'>alert('Invalid characters detected in title or description.');</script>";
 													}
 												}
 											?>
